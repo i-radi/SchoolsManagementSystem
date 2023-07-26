@@ -5,9 +5,9 @@ namespace SMS.Core.IServices;
 
 public interface IOrganizationService
 {
-    List<GetOrganizationDto> GetAll();
-    Task<GetOrganizationDto?> GetById(int id);
-    Task<GetOrganizationDto> Add(AddOrganizationDto model);
-    Task<bool> Update(UpdateOrganizationDto model);
+    List<GetClassDto> GetAll();
+    Task<GetClassDto?> GetById(int id);
+    Task<GetClassDto> Add(AddClassDto model);
+    Task<bool> Update(UpdateClassDto model);
     Task<bool> Delete(int id);
 }

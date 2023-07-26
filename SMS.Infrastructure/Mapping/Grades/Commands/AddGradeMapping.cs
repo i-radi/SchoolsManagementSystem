@@ -7,6 +7,6 @@ public partial class OrganizationProfile
 {
     public void AddOrganizationMapping()
     {
-        CreateMap<AddOrganizationDto, Organization>();
+        CreateMap<AddClassesDto, Organization>();
     }
 }

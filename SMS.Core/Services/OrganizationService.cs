@@ -18,32 +18,32 @@ public class OrganizationService : IOrganizationService
         _mapper = mapper;
     }
 
-    public List<GetOrganizationDto> GetAll()
+    public List<GetClassDto> GetAll()
     {
         var modelItems = _organizationRepo.GetTableNoTracking();
 
-        return _mapper.Map<List<GetOrganizationDto>>(modelItems);
+        return _mapper.Map<List<GetClassDto>>(modelItems);
     }
 
-    public async Task<GetOrganizationDto?> GetById(int id)
+    public async Task<GetClassDto?> GetById(int id)
     {
         var modelItem = await _organizationRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return _mapper.Map<GetOrganizationDto>(modelItem);
+        return _mapper.Map<GetClassDto>(modelItem);
     }
 
-    public async Task<GetOrganizationDto> Add(AddOrganizationDto dto)
+    public async Task<GetClassDto> Add(AddClassDto dto)
     {
         var modelItem = _mapper.Map<Organization>(dto);
 
         var model = await _organizationRepo.AddAsync(modelItem);
         await _organizationRepo.SaveChangesAsync();
 
-        return _mapper.Map<GetOrganizationDto>(modelItem);
+        return _mapper.Map<GetClassDto>(modelItem);
     }
 
-    public async Task<bool> Update(UpdateOrganizationDto dto)
+    public async Task<bool> Update(UpdateClassDto dto)
     {
         var modelItem = await _organizationRepo.GetByIdAsync(dto.Id);
 

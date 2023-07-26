@@ -7,7 +7,6 @@ using SMS.Core.IServices;
 using SMS.Models.Entities.Identity;
 using SMS.VModels.DTOS.Auth;
 using SMS.VModels.DTOS.Users.Queries;
-using System.Security.Claims;
 
 namespace SMS.Presentation.Controllers;
 

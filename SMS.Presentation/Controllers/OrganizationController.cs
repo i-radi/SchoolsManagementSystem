@@ -17,13 +17,13 @@ public class OrganizationController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<GetOrganizationDto>> GetAll()
+    public ActionResult<IEnumerable<GetClassDto>> GetAll()
     {
         return Ok(_organizationService.GetAll());
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<GetOrganizationDto>> GetById(int id)
+    public async Task<ActionResult<GetClassDto>> GetById(int id)
     {
         var dto = await _organizationService.GetById(id);
         if (dto is null)
@@ -32,13 +32,13 @@ public class OrganizationController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<GetOrganizationDto>> Create(AddOrganizationDto dto)
+    public async Task<ActionResult<GetClassDto>> Create(AddClassDto dto)
     {
         return Ok(await _organizationService.Add(dto));
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update(int id, UpdateOrganizationDto dto)
+    public async Task<ActionResult> Update(int id, UpdateClassDto dto)
     {
         if (id != dto.Id)
         {
