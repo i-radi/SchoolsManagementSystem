@@ -3,20 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS.Presentation", "SMS.Presentation\SMS.Presentation.csproj", "{450CAB06-B9D7-4B5C-98F2-C4E780BD5260}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMS.Core", "SMS.Core\SMS.Core.csproj", "{A9C74C08-EBF5-48C9-88FC-776ADF4237F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS.Core", "SMS.Core\SMS.Core.csproj", "{A9C74C08-EBF5-48C9-88FC-776ADF4237F5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS.Persistance", "SMS.Persistance\SMS.Persistance.csproj", "{B26A2C42-73A8-40B5-8D03-83F196F13F92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMS.Persistance", "SMS.Persistance\SMS.Persistance.csproj", "{B26A2C42-73A8-40B5-8D03-83F196F13F92}"
 	ProjectSection(ProjectDependencies) = postProject
 		{20A9D043-8A74-4D99-B68E-0B2936EA7B4A} = {20A9D043-8A74-4D99-B68E-0B2936EA7B4A}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS.Models", "SMS.Models\SMS.Models.csproj", "{20A9D043-8A74-4D99-B68E-0B2936EA7B4A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMS.Models", "SMS.Models\SMS.Models.csproj", "{20A9D043-8A74-4D99-B68E-0B2936EA7B4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS.VModels", "SMS.VModels\SMS.VModels.csproj", "{D1BB69A1-E7EE-42BD-B659-5D191C7D07A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMS.VModels", "SMS.VModels\SMS.VModels.csproj", "{D1BB69A1-E7EE-42BD-B659-5D191C7D07A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS.Infrastructure", "SMS.Infrastructure\SMS.Infrastructure.csproj", "{8141D2A2-F409-4E57-AF81-851B7E0F8FC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMS.Infrastructure", "SMS.Infrastructure\SMS.Infrastructure.csproj", "{8141D2A2-F409-4E57-AF81-851B7E0F8FC6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMS.Presentation", "SMS.Presentation\SMS.Presentation.csproj", "{3DF91317-89BD-4918-A9FE-135D7FE2E490}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,10 +24,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{450CAB06-B9D7-4B5C-98F2-C4E780BD5260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{450CAB06-B9D7-4B5C-98F2-C4E780BD5260}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{450CAB06-B9D7-4B5C-98F2-C4E780BD5260}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{450CAB06-B9D7-4B5C-98F2-C4E780BD5260}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A9C74C08-EBF5-48C9-88FC-776ADF4237F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A9C74C08-EBF5-48C9-88FC-776ADF4237F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9C74C08-EBF5-48C9-88FC-776ADF4237F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -48,6 +44,10 @@ Global
 		{8141D2A2-F409-4E57-AF81-851B7E0F8FC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8141D2A2-F409-4E57-AF81-851B7E0F8FC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8141D2A2-F409-4E57-AF81-851B7E0F8FC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DF91317-89BD-4918-A9FE-135D7FE2E490}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DF91317-89BD-4918-A9FE-135D7FE2E490}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DF91317-89BD-4918-A9FE-135D7FE2E490}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DF91317-89BD-4918-A9FE-135D7FE2E490}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
