@@ -7,8 +7,9 @@ namespace SMS.Persistance.DI;
 
 public static class ServiceRegisteration
 {
-    public static IServiceCollection AddServiceRegisteration(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddPersistanceServiceRegisteration(this IServiceCollection services, IConfiguration configuration)
     {
+        #region Identity
         services.AddIdentity<User, Role>(option =>
         {
             // Password settings.
@@ -25,6 +26,7 @@ public static class ServiceRegisteration
             option.User.RequireUniqueEmail = true;
 
         }).AddEntityFrameworkStores<ApplicationDBContext>();
+        #endregion
 
         return services;
     }

@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SMS.Core.IServices;
 using SMS.Models.Entities.Identity;
+using SMS.VModels.DTOS.Auth;
 using SMS.VModels.DTOS.Users.Queries;
 using System.Security.Claims;
 
@@ -14,23 +17,51 @@ public class UsersController : ControllerBase
 {
     private readonly SignInManager<User> _signInManager;
     private readonly UserManager<User> _userManager;
-    //private readonly IAuthService _authService;
+    private readonly IAuthService _authService;
     private readonly IMapper _mapper;
 
     public UsersController(
         SignInManager<User> signInManager,
         UserManager<User> userManager,
-        //IAuthService authService,
+        IAuthService authService,
         IMapper mapper)
     {
         _userManager = userManager;
         _signInManager = signInManager;
-        //_authService = authService;
+        _authService = authService;
         _mapper = mapper;
     }
 
+    [HttpPost("register")]
+    public async Task<IActionResult> RegisterAsync(RegisterDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _authService.RegisterAsync(dto);
+
+        if (!result.IsAuthenticated)
+            return BadRequest(result.Message);
+
+        return Ok(result);
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> GetTokenAsync(LoginDto model)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _authService.LoginAsync(model);
+
+        if (!result.IsAuthenticated)
+            return BadRequest(result.Message);
+
+        return Ok(result);
+    }
+
     [HttpGet]
-    //[Authorize(Policy = "SuperAdmin")]
+    [Authorize(Policy = "Admin")]
     public async Task<ActionResult<IEnumerable<GetUserDto>>> GetAll()
     {
         var modelItems = await _userManager.Users.ToListAsync();
@@ -43,7 +74,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("id")]
-    //[Authorize(Policy = "SuperAdmin")]
+    [Authorize(Policy = "Admin")]
     public async Task<ActionResult<GetUserDto>> GetById(int id)
     {
         var modelItem = await _userManager.FindByIdAsync(id.ToString());

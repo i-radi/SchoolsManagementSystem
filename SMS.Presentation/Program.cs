@@ -23,7 +23,8 @@ builder.Services.AddDbContext<ApplicationDBContext>(option =>
 builder.Services.AddPersistanceDependencies()
                  .AddInfrastructureDependencies()
                  .AddCoreDependencies()
-                 .AddServiceRegisteration(builder.Configuration);
+                 .AddPersistanceServiceRegisteration(builder.Configuration)
+                 .AddInfrastructureServiceRegisteration(builder.Configuration);
 
 #endregion
 
@@ -53,6 +54,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
