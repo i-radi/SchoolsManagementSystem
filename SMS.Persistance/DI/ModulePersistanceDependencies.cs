@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SMS.Persistance.IRepos;
 using SMS.Persistance.Repos;
 
 namespace SMS.Persistance.DI;
@@ -12,6 +13,7 @@ public static class ModulePersistanceDependencies
         services.AddScoped<IOrganizationRepo, OrganizationRepo>();
         services.AddScoped<ISchoolRepo, SchoolRepo>();
         services.AddScoped<ISeasonRepo, SeasonRepo>();
+        services.AddScoped<IUserTypeRepo, UserTypeRepo>();
         services.AddScoped(typeof(IGenericRepoAsync<>), typeof(GenericRepoAsync<>));
         return services;
     }

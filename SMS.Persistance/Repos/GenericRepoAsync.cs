@@ -42,10 +42,10 @@ public class GenericRepoAsync<T> : IGenericRepoAsync<T> where T : class
 
     public virtual async Task<T> AddAsync(T entity)
     {
-        await _dbContext.Set<T>().AddAsync(entity);
+        var model = await _dbContext.Set<T>().AddAsync(entity);
         await _dbContext.SaveChangesAsync();
 
-        return entity;
+        return model.Entity;
     }
 
     public virtual async Task AddRangeAsync(ICollection<T> entities)
