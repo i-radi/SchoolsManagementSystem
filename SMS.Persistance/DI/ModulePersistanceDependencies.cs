@@ -13,6 +13,7 @@ public static class ModulePersistanceDependencies
         services.AddScoped<IOrganizationRepo, OrganizationRepo>();
         services.AddScoped<ISchoolRepo, SchoolRepo>();
         services.AddScoped<ISeasonRepo, SeasonRepo>();
+        services.AddScoped<IUserClassRepo, UserClassRepo>();
         services.AddScoped<IUserTypeRepo, UserTypeRepo>();
         services.AddScoped(typeof(IGenericRepoAsync<>), typeof(GenericRepoAsync<>));
         return services;

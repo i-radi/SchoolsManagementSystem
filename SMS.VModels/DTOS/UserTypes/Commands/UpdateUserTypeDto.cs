@@ -1,6 +1,6 @@
 ﻿namespace SMS.VModels.DTOS;
 
-public class UpdateSeasonDto
+public class UpdateUserTypeDto
 {
     public int Id { get; set; }
 }

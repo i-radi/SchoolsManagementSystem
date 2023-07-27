@@ -2,8 +2,8 @@
 
 public partial class UserClassProfile
 {
-    public void GetUserClassByIdMapping()
+    public void UpdateUserClassMapping()
     {
-        CreateMap<UserClass, GetUserClassDto>();
+        CreateMap<UpdateUserClassDto, UserClass>();
     }
 }

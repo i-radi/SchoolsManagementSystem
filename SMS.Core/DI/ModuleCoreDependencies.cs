@@ -9,8 +9,14 @@ public static class ModuleCoreDependencies
 {
     public static IServiceCollection AddCoreDependencies(this IServiceCollection services)
     {
-        services.AddScoped<IOrganizationService, OrganizationService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IClassesService, ClassesService>();
+        services.AddScoped<IGradeService, GradeService>();
+        services.AddScoped<IOrganizationService, OrganizationService>();
+        services.AddScoped<ISchoolService, SchoolService>();
+        services.AddScoped<ISeasonService, SeasonService>();
+        services.AddScoped<IUserClassService, UserClassService>();
+        services.AddScoped<IUserTypeService, UserTypeService>();
 
         #region Authorization
 

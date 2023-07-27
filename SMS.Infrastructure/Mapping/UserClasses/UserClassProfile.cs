@@ -2,12 +2,12 @@
 
 namespace SMS.Infrastructure.Mapping;
 
-public partial class SeasonProfile : Profile
+public partial class UserClassProfile : Profile
 {
-    public SeasonProfile()
+    public UserClassProfile()
     {
-        GetSeasonByIdMapping();
-        AddSeasonMapping();
-        UpdateSeasonMapping();
+        GetUserClassByIdMapping();
+        AddUserClassMapping();
+        UpdateUserClassMapping();
     }
 }

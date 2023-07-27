@@ -1,9 +1,9 @@
 ﻿namespace SMS.Infrastructure.Mapping;
 
-public partial class SeasonProfile
+public partial class UserTypeProfile
 {
-    public void UpdateSeasonMapping()
+    public void UpdateUserTypeMapping()
     {
-        CreateMap<UpdateSeasonDto, Season>();
+        CreateMap<UpdateUserTypeDto, UserType>();
     }
 }

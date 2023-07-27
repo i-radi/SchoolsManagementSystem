@@ -1,6 +1,5 @@
-﻿namespace SMS.Persistance.IRepos
+﻿namespace SMS.Persistance.IRepos;
+
+public interface ISeasonRepo : IGenericRepoAsync<Season>
 {
-    internal interface ISeasonRepo
-    {
-    }
 }

@@ -1,6 +1,4 @@
-﻿using SMS.Core.IServices;
-
-namespace SMS.Core.Services;
+﻿namespace SMS.Core.Services;
 
 public class OrganizationService : IOrganizationService
 {

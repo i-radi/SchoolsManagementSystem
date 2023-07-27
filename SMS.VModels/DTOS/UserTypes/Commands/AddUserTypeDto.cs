@@ -1,5 +1,5 @@
 ﻿namespace SMS.VModels.DTOS;
 
-public class AddSeasonDto
+public class AddUserTypeDto
 {
 }
