@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SMS.Persistance.IRepos;
 using SMS.Persistance.Repos;
 
 namespace SMS.Persistance.DI;

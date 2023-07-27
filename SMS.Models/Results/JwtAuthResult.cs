@@ -8,7 +8,7 @@ public class JwtAuthResult
     public string Email { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
     public string AccessToken { get; set; } = string.Empty;
-    public RefreshToken refreshToken { get; set; } = null!;
+    public RefreshToken RefreshToken { get; set; } = null!;
 }
 public class RefreshToken
 {

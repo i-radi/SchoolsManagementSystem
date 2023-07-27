@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using SMS.Core.IServices;
 using SMS.Models.Entities.Identity;
 using SMS.Models.Helpers;
 using SMS.Persistance.Context;
@@ -83,8 +82,8 @@ public class AuthService : IAuthService
         {
             AccessToken = accessToken,
             IsAuthenticated = true,
-            Email = user.Email,
-            Username = user.UserName,
+            Email = user.Email ?? string.Empty,
+            Username = user.UserName ?? string.Empty,
             Role = (await _userManager.GetRolesAsync(user!)).FirstOrDefault()!
         };
         return response;
