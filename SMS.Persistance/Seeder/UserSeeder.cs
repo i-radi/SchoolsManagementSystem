@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using SMS.Models.Entities.Identity;
 
 namespace SMS.Persistance.Seeder;

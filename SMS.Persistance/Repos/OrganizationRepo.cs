@@ -1,9 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SMS.Models.Entities;
-using SMS.Persistance.Context;
-using SMS.Persistance.IRepos;
-
-namespace SMS.Persistance.Repos;
+﻿namespace SMS.Persistance.Repos;
 
 public class OrganizationRepo : GenericRepoAsync<Organization>, IOrganizationRepo
 {

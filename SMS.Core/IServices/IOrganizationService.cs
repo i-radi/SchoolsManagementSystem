@@ -1,13 +1,10 @@
-﻿using SMS.VModels.DTOS.Organizations.Commands;
-using SMS.VModels.DTOS.Organizations.Queries;
-
-namespace SMS.Core.IServices;
+﻿namespace SMS.Core.IServices;
 
 public interface IOrganizationService
 {
-    List<GetClassDto> GetAll();
-    Task<GetClassDto?> GetById(int id);
-    Task<GetClassDto> Add(AddClassDto model);
-    Task<bool> Update(UpdateClassDto model);
+    List<GetOrganizationDto> GetAll();
+    Task<GetOrganizationDto?> GetById(int id);
+    Task<GetOrganizationDto> Add(AddOrganizationDto model);
+    Task<bool> Update(UpdateOrganizationDto model);
     Task<bool> Delete(int id);
 }

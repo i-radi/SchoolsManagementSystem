@@ -1,7 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore;
-using SMS.Persistance.Context;
-using SMS.Persistance.IRepos;
 
 namespace SMS.Persistance.Repos;
 

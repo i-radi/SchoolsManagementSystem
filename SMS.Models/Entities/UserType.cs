@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace SMS.Models.Entities;
+﻿namespace SMS.Models.Entities;
 
 public class UserType
 {

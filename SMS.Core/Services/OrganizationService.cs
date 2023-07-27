@@ -1,9 +1,4 @@
-﻿using AutoMapper;
-using SMS.Core.IServices;
-using SMS.Models.Entities;
-using SMS.Persistance.IRepos;
-using SMS.VModels.DTOS.Organizations.Commands;
-using SMS.VModels.DTOS.Organizations.Queries;
+﻿using SMS.Core.IServices;
 
 namespace SMS.Core.Services;
 
@@ -18,32 +13,32 @@ public class OrganizationService : IOrganizationService
         _mapper = mapper;
     }
 
-    public List<GetClassDto> GetAll()
+    public List<GetOrganizationDto> GetAll()
     {
         var modelItems = _organizationRepo.GetTableNoTracking();
 
-        return _mapper.Map<List<GetClassDto>>(modelItems);
+        return _mapper.Map<List<GetOrganizationDto>>(modelItems);
     }
 
-    public async Task<GetClassDto?> GetById(int id)
+    public async Task<GetOrganizationDto?> GetById(int id)
     {
         var modelItem = await _organizationRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return _mapper.Map<GetClassDto>(modelItem);
+        return _mapper.Map<GetOrganizationDto>(modelItem);
     }
 
-    public async Task<GetClassDto> Add(AddClassDto dto)
+    public async Task<GetOrganizationDto> Add(AddOrganizationDto dto)
     {
         var modelItem = _mapper.Map<Organization>(dto);
 
         var model = await _organizationRepo.AddAsync(modelItem);
         await _organizationRepo.SaveChangesAsync();
 
-        return _mapper.Map<GetClassDto>(modelItem);
+        return _mapper.Map<GetOrganizationDto>(modelItem);
     }
 
-    public async Task<bool> Update(UpdateClassDto dto)
+    public async Task<bool> Update(UpdateOrganizationDto dto)
     {
         var modelItem = await _organizationRepo.GetByIdAsync(dto.Id);
 

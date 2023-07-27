@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SMS.Core.IServices;
-using SMS.VModels.DTOS.Organizations.Commands;
-using SMS.VModels.DTOS.Organizations.Queries;
-
-namespace SMS.Presentation.Controllers;
+﻿namespace SMS.Presentation.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -17,13 +12,13 @@ public class OrganizationController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<GetClassDto>> GetAll()
+    public ActionResult<IEnumerable<GetOrganizationDto>> GetAll()
     {
         return Ok(_organizationService.GetAll());
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<GetClassDto>> GetById(int id)
+    public async Task<ActionResult<GetOrganizationDto>> GetById(int id)
     {
         var dto = await _organizationService.GetById(id);
         if (dto is null)
@@ -32,13 +27,13 @@ public class OrganizationController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<GetClassDto>> Create(AddClassDto dto)
+    public async Task<ActionResult<GetOrganizationDto>> Create(AddOrganizationDto dto)
     {
         return Ok(await _organizationService.Add(dto));
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update(int id, UpdateClassDto dto)
+    public async Task<ActionResult> Update(int id, UpdateOrganizationDto dto)
     {
         if (id != dto.Id)
         {

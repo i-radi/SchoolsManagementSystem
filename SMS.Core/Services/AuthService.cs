@@ -1,12 +1,9 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using SMS.Core.IServices;
 using SMS.Models.Entities.Identity;
 using SMS.Models.Helpers;
-using SMS.Models.Results;
 using SMS.Persistance.Context;
-using SMS.VModels.DTOS.Auth;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -77,7 +74,7 @@ public class AuthService : IAuthService
 
         return await GetJWTToken(user);
     }
-    
+
     public async Task<JwtAuthResult> GetJWTToken(User user)
     {
         var (jwtToken, accessToken) = await GenerateJWTToken(user);

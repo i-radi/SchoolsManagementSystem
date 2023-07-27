@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using SMS.Models.Entities;
 using SMS.Models.Entities.Identity;
 using System.Reflection;
 

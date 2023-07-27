@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using SMS.Models.Entities.Identity;
-using SMS.Persistance.Context;
 
 namespace SMS.Persistance.Seeder;
 
@@ -13,7 +11,7 @@ public static class RoleSeeder
         context.Database.EnsureCreated();
 
         var rolesCount = await _roleManager.Roles.CountAsync();
-        if (rolesCount<=0)
+        if (rolesCount <= 0)
         {
             await _roleManager.CreateAsync(new Role()
             {

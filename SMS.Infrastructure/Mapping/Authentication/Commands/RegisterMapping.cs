@@ -1,5 +1,4 @@
 ﻿using SMS.Models.Entities.Identity;
-using SMS.VModels.DTOS.Auth;
 
 namespace SMS.Infrastructure.Mapping;
 

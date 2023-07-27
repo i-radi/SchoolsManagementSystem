@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SMS.Models.Entities.Identity;
-using SMS.Persistance.Context;
 using SMS.Persistance.Seeder;
-using SMS.Persistance.DI;
-using SMS.Infrastructure.DI;
 
 var builder = WebApplication.CreateBuilder(args);
 

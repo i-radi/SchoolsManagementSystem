@@ -1,12 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SMS.Core.IServices;
-using SMS.Models.Entities.Identity;
-using SMS.VModels.DTOS.Auth;
-using SMS.VModels.DTOS.Users.Queries;
 
 namespace SMS.Presentation.Controllers;
 

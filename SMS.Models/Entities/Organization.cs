@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using SMS.Models.Entities.Identity;
+﻿using SMS.Models.Entities.Identity;
 
 namespace SMS.Models.Entities;
 

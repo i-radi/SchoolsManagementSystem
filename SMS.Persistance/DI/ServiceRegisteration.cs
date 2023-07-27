@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SMS.Models.Entities.Identity;
-using SMS.Persistance.Context;
 
 namespace SMS.Persistance.DI;
 

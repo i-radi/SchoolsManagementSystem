@@ -1,6 +1,4 @@
 ﻿using SMS.Models.Entities.Identity;
-using SMS.Models.Results;
-using SMS.VModels.DTOS.Auth;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace SMS.Core.IServices;

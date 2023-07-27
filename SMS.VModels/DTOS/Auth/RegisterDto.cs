@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SMS.VModels.DTOS.Auth;
+namespace SMS.VModels.DTOS;
 
 public class RegisterDto
 {
