@@ -1,4 +1,6 @@
-﻿namespace SMS.Presentation.Controllers;
+﻿using SMS.Models.Helpers;
+
+namespace SMS.Presentation.Controllers;
 
 [Authorize(Policy = "Normal")]
 [Route("api/[controller]")]
@@ -13,9 +15,9 @@ public class OrganizationsController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<GetOrganizationDto>> GetAll()
+    public ActionResult<IEnumerable<GetOrganizationDto>> GetAll(int pageNumber, int pageSize)
     {
-        return Ok(_organizationService.GetAll());
+        return Ok(PaginatedList<GetOrganizationDto>.Create(_organizationService.GetAll(),pageNumber,pageSize));
     }
 
     [HttpGet("{id}")]

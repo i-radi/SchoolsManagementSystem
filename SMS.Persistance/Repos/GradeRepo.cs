@@ -14,6 +14,12 @@ public class GradeRepo : GenericRepoAsync<Grade>, IGradeRepo
     #endregion
 
     #region Handle Methods
-
+    public override async Task<Grade> GetByIdAsync(int id)
+    {
+#pragma warning disable CS8603
+        return await _dbContext.Set<Grade>()
+            .Include(c => c.School)
+            .FirstOrDefaultAsync(c => c.Id == id);
+    }
     #endregion
 }

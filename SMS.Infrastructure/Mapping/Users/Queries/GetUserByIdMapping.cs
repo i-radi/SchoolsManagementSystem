@@ -6,6 +6,7 @@ public partial class UserProfile
 {
     public void GetUserByIdMapping()
     {
-        CreateMap<User, GetUserDto>();
+        CreateMap<User, GetUserDto>()
+            .ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src.Organization!.Name));
     }
 }

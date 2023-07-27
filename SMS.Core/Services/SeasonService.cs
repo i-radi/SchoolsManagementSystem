@@ -1,4 +1,6 @@
-﻿namespace SMS.Core.Services;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace SMS.Core.Services;
 
 public class SeasonService : ISeasonService
 {
@@ -13,7 +15,7 @@ public class SeasonService : ISeasonService
 
     public List<GetSeasonDto> GetAll()
     {
-        var modelItems = _seasonRepo.GetTableNoTracking();
+        var modelItems = _seasonRepo.GetTableNoTracking().Include(m => m.School);
 
         return _mapper.Map<List<GetSeasonDto>>(modelItems);
     }

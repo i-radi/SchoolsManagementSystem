@@ -1,4 +1,6 @@
-﻿namespace SMS.Presentation.Controllers;
+﻿using SMS.Models.Helpers;
+
+namespace SMS.Presentation.Controllers;
 
 [Authorize(Policy = "Normal")]
 [Route("api/[controller]")]
@@ -13,9 +15,9 @@ public class SeasonsController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<GetSeasonDto>> GetAll()
+    public ActionResult<IEnumerable<GetSeasonDto>> GetAll(int pageNumber, int pageSize)
     {
-        return Ok(_seasonService.GetAll());
+        return Ok(PaginatedList<GetSeasonDto>.Create(_seasonService.GetAll(), pageNumber,pageSize));
     }
 
     [HttpGet("{id}")]

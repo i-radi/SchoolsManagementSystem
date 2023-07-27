@@ -1,4 +1,6 @@
-﻿namespace SMS.Core.Services;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace SMS.Core.Services;
 
 public class GradeService : IGradeService
 {
@@ -13,7 +15,7 @@ public class GradeService : IGradeService
 
     public List<GetGradeDto> GetAll()
     {
-        var modelItems = _gradeRepo.GetTableNoTracking();
+        var modelItems = _gradeRepo.GetTableNoTracking().Include(m => m.School);
 
         return _mapper.Map<List<GetGradeDto>>(modelItems);
     }

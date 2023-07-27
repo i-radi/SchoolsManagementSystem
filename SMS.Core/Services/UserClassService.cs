@@ -1,4 +1,6 @@
-﻿namespace SMS.Core.Services;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace SMS.Core.Services;
 
 public class UserClassService : IUserClassService
 {
@@ -13,7 +15,12 @@ public class UserClassService : IUserClassService
 
     public List<GetUserClassDto> GetAll()
     {
-        var modelItems = _userClassRepo.GetTableNoTracking();
+        var modelItems = _userClassRepo
+            .GetTableNoTracking()
+            .Include(m => m.User)
+            .Include(m => m.Classes)
+            .Include(m => m.UserType)
+            .Include(m => m.Season);
 
         return _mapper.Map<List<GetUserClassDto>>(modelItems);
     }

@@ -1,4 +1,6 @@
-﻿namespace SMS.Presentation.Controllers;
+﻿using SMS.Models.Helpers;
+
+namespace SMS.Presentation.Controllers;
 
 [Authorize(Policy = "Normal")]
 [Route("api/[controller]")]
@@ -13,9 +15,9 @@ public class GradesController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<GetGradeDto>> GetAll()
+    public ActionResult<IEnumerable<GetGradeDto>> GetAll(int pageNumber, int pageSize)
     {
-        return Ok(_gradeService.GetAll());
+        return Ok(PaginatedList<GetGradeDto>.Create(_gradeService.GetAll(), pageNumber, pageSize));
     }
 
     [HttpGet("{id}")]

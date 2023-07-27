@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SMS.Models.Helpers;
 
 namespace SMS.Presentation.Controllers;
 
@@ -56,9 +57,9 @@ public class UsersController : ControllerBase
 
     [HttpGet]
     [Authorize(Policy = "Admin")]
-    public async Task<ActionResult<IEnumerable<GetUserDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<GetUserDto>>> GetAll(int pageNumber, int pageSize)
     {
-        var modelItems = await _userManager.Users.ToListAsync();
+        var modelItems = PaginatedList<User>.Create(await _userManager.Users.ToListAsync(),pageNumber,pageSize);
         var result = _mapper.Map<IEnumerable<GetUserDto>>(modelItems);
         foreach (var userDto in result.Select((value, i) => new { i, value }))
         {

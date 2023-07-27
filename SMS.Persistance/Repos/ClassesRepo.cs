@@ -14,6 +14,12 @@ public class ClassesRepo : GenericRepoAsync<Classes>, IClassesRepo
     #endregion
 
     #region Handle Methods
-
+    public override async Task<Classes> GetByIdAsync(int id)
+    {
+        #pragma warning disable CS8603
+        return await _dbContext.Set<Classes>()
+            .Include(c => c.Grade)
+            .FirstOrDefaultAsync(c => c.Id == id);
+    }
     #endregion
 }

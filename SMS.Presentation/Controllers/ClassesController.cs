@@ -1,4 +1,6 @@
-﻿namespace SMS.Presentation.Controllers;
+﻿using SMS.Models.Helpers;
+
+namespace SMS.Presentation.Controllers;
 
 [Authorize(Policy = "Normal")]
 [Route("api/[controller]")]
@@ -6,16 +8,18 @@
 public class ClassesController : ControllerBase
 {
     private readonly IClassesService _classService;
+    private readonly IUserClassService _userClassService;
 
-    public ClassesController(IClassesService classService)
+    public ClassesController(IClassesService classService, IUserClassService userClassService)
     {
         _classService = classService;
+        _userClassService = userClassService;
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<GetClassDto>> GetAll()
+    public ActionResult<IEnumerable<GetClassDto>> GetAll(int pageNumber, int pageSize)
     {
-        return Ok(_classService.GetAll());
+        return Ok(PaginatedList<GetClassDto>.Create(_classService.GetAll(),pageNumber,pageSize));
     }
 
     [HttpGet("{id}")]
@@ -57,5 +61,12 @@ public class ClassesController : ControllerBase
             return BadRequest("Not Deleted");
         }
         return NoContent();
+    }
+
+    [HttpPost("/assign-user")]
+    [Authorize(Policy = "Admin")]
+    public async Task<ActionResult<GetUserClassDto>> AssignUser(AddUserClassDto dto)
+    {
+        return Ok(await _userClassService.Add(dto));
     }
 }
