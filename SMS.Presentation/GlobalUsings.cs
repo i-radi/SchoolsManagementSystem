@@ -5,3 +5,4 @@ global using SMS.Models.Entities.Identity;
 global using SMS.Persistance.Context;
 global using SMS.Persistance.DI;
 global using SMS.VModels.DTOS;
+global using Microsoft.AspNetCore.Authorization;

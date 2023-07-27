@@ -1,12 +1,15 @@
-﻿namespace SMS.Presentation.Controllers;
+﻿using Microsoft.AspNetCore.Authorization;
 
+namespace SMS.Presentation.Controllers;
+
+[Authorize(Policy = "Normal")]
 [Route("api/[controller]")]
 [ApiController]
-public class OrganizationController : ControllerBase
+public class OrganizationsController : ControllerBase
 {
     private readonly IOrganizationService _organizationService;
 
-    public OrganizationController(IOrganizationService organizationService)
+    public OrganizationsController(IOrganizationService organizationService)
     {
         _organizationService = organizationService;
     }
@@ -27,6 +30,7 @@ public class OrganizationController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "Admin")]
     public async Task<ActionResult<GetOrganizationDto>> Create(AddOrganizationDto dto)
     {
         return Ok(await _organizationService.Add(dto));

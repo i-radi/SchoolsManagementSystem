@@ -27,6 +27,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost("register")]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> RegisterAsync(RegisterDto dto)
     {
         if (!ModelState.IsValid)
