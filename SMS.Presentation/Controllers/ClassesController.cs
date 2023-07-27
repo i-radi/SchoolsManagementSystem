@@ -17,7 +17,7 @@ public class ClassesController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<GetClassDto>> GetAll(int pageNumber, int pageSize)
+    public ActionResult<IEnumerable<GetClassDto>> GetAll(int pageNumber = 1, int pageSize = 10)
     {
         return Ok(PaginatedList<GetClassDto>.Create(_classService.GetAll(),pageNumber,pageSize));
     }
@@ -63,10 +63,11 @@ public class ClassesController : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("/assign-user")]
+    [HttpPost("assign-user")]
     [Authorize(Policy = "Admin")]
     public async Task<ActionResult<GetUserClassDto>> AssignUser(AddUserClassDto dto)
     {
-        return Ok(await _userClassService.Add(dto));
+        var result = await _userClassService.Add(dto);
+        return Ok(await _userClassService.GetById(result.Id));
     }
 }

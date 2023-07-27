@@ -15,7 +15,7 @@ public class OrganizationsController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<GetOrganizationDto>> GetAll(int pageNumber, int pageSize)
+    public ActionResult<IEnumerable<GetOrganizationDto>> GetAll(int pageNumber = 1, int pageSize = 10)
     {
         return Ok(PaginatedList<GetOrganizationDto>.Create(_organizationService.GetAll(),pageNumber,pageSize));
     }

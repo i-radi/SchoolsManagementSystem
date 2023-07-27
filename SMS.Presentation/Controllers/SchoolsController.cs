@@ -15,7 +15,7 @@ public class SchoolsController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<GetSchoolDto>> GetAll(int pageNumber, int pageSize)
+    public ActionResult<IEnumerable<GetSchoolDto>> GetAll(int pageNumber = 1, int pageSize = 10)
     {
         return Ok(PaginatedList<GetSchoolDto>.Create(_schoolService.GetAll(), pageNumber, pageSize));
     }

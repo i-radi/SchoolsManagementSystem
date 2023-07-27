@@ -35,7 +35,7 @@ public class SchoolService : ISchoolService
         var model = await _schoolRepo.AddAsync(modelItem);
         await _schoolRepo.SaveChangesAsync();
 
-        return _mapper.Map<GetSchoolDto>(modelItem);
+        return _mapper.Map<GetSchoolDto>(model);
     }
 
     public async Task<bool> Update(UpdateSchoolDto dto)

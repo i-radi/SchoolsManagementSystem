@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Server.IIS.Core;
+using Microsoft.EntityFrameworkCore;
 
 namespace SMS.Core.Services;
 
@@ -30,6 +31,14 @@ public class SeasonService : ISeasonService
 
     public async Task<GetSeasonDto> Add(AddSeasonDto dto)
     {
+        var IsSchoolHasCurrentSeason = _seasonRepo
+            .GetTableAsTracking()
+            .Where(s => s.SchoolId == dto.SchoolId )
+            .Any(s => s.IsCurrent);
+
+        if (dto.IsCurrent && IsSchoolHasCurrentSeason)
+            throw new InvalidDataException("This school has already current season");
+
         var modelItem = _mapper.Map<Season>(dto);
 
         var model = await _seasonRepo.AddAsync(modelItem);
@@ -41,6 +50,13 @@ public class SeasonService : ISeasonService
     public async Task<bool> Update(UpdateSeasonDto dto)
     {
         var modelItem = await _seasonRepo.GetByIdAsync(dto.Id);
+        var IsSchoolHasCurrentSeason = _seasonRepo
+            .GetTableAsTracking()
+            .Where(s => s.SchoolId == dto.SchoolId && s.Id != dto.Id)
+            .Any(s => s.IsCurrent);
+
+        if ( dto.IsCurrent && IsSchoolHasCurrentSeason)
+            return false;
 
         if (modelItem is null)
             return false;

@@ -15,7 +15,7 @@ public class SeasonsController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<GetSeasonDto>> GetAll(int pageNumber, int pageSize)
+    public ActionResult<IEnumerable<GetSeasonDto>> GetAll(int pageNumber = 1, int pageSize = 10)
     {
         return Ok(PaginatedList<GetSeasonDto>.Create(_seasonService.GetAll(), pageNumber,pageSize));
     }

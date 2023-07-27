@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDBContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbContextConnection"));
-});
+}, ServiceLifetime.Transient);
 
 #endregion
 

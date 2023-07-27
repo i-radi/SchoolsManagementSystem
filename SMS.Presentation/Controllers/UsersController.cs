@@ -57,9 +57,13 @@ public class UsersController : ControllerBase
 
     [HttpGet]
     [Authorize(Policy = "Admin")]
-    public async Task<ActionResult<IEnumerable<GetUserDto>>> GetAll(int pageNumber, int pageSize)
+    public async Task<ActionResult<IEnumerable<GetUserDto>>> GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        var modelItems = PaginatedList<User>.Create(await _userManager.Users.ToListAsync(),pageNumber,pageSize);
+        var modelItems = PaginatedList<User>
+            .Create(await _userManager.Users
+            .Include(u => u.Organization)
+            .ToListAsync(),pageNumber,pageSize);
+
         var result = _mapper.Map<IEnumerable<GetUserDto>>(modelItems);
         foreach (var userDto in result.Select((value, i) => new { i, value }))
         {
@@ -72,7 +76,10 @@ public class UsersController : ControllerBase
     [Authorize(Policy = "Admin")]
     public async Task<ActionResult<GetUserDto>> GetById(int id)
     {
-        var modelItem = await _userManager.FindByIdAsync(id.ToString());
+        var modelItem = await _userManager.Users
+            .Include(u => u.Organization)
+            .FirstOrDefaultAsync(u => u.Id == id);
+
         var result = _mapper.Map<GetUserDto>(modelItem);
         result.Role = (await _userManager.GetRolesAsync(modelItem!)).FirstOrDefault()!;
         return Ok(result);

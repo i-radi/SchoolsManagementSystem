@@ -15,7 +15,7 @@ public class GradesController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<GetGradeDto>> GetAll(int pageNumber, int pageSize)
+    public ActionResult<IEnumerable<GetGradeDto>> GetAll(int pageNumber = 1, int pageSize = 10)
     {
         return Ok(PaginatedList<GetGradeDto>.Create(_gradeService.GetAll(), pageNumber, pageSize));
     }
