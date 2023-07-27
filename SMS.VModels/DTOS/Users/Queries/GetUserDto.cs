@@ -1,4 +1,4 @@
-﻿namespace SMS.VModels.DTOS.Users.Queries;
+﻿namespace SMS.VModels.DTOS;
 
 public class GetUserDto
 {

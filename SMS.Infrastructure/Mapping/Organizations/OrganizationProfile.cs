@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace SMS.Infrastructure.Mapping.Organizations;
+namespace SMS.Infrastructure.Mapping;
 
 public partial class OrganizationProfile : Profile
 {

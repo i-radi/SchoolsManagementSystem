@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace SMS.Infrastructure.Mapping.Authentication;
+namespace SMS.Infrastructure.Mapping;
 
 public partial class AuthenticationProfile : Profile
 {

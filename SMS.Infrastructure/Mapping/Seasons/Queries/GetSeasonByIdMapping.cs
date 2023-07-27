@@ -1,12 +1,9 @@
-﻿using SMS.Models.Entities;
-using SMS.VModels.DTOS.Organizations.Queries;
+﻿namespace SMS.Infrastructure.Mapping;
 
-namespace SMS.Infrastructure.Mapping.Organizations;
-
-public partial class OrganizationProfile
+public partial class SeasonProfile
 {
-    public void GetOrganizationByIdMapping()
+    public void GetSeasonByIdMapping()
     {
-        CreateMap<Organization, GetClassDto>();
+        CreateMap<Season, GetSeasonDto>();
     }
 }

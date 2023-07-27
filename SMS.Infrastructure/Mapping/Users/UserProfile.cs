@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace SMS.Infrastructure.Mapping.Users;
+namespace SMS.Infrastructure.Mapping;
 
 public partial class UserProfile : Profile
 {

@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 
-namespace SMS.Infrastructure.Mapping.Organizations;
+namespace SMS.Infrastructure.Mapping;
 
-public partial class OrganizationProfile : Profile
+public partial class SchoolProfile : Profile
 {
-    public OrganizationProfile()
+    public SchoolProfile()
     {
-        GetOrganizationByIdMapping();
-        AddOrganizationMapping();
-        UpdateOrganizationMapping();
+        GetSchoolByIdMapping();
+        AddSchoolMapping();
+        UpdateSchoolMapping();
     }
 }

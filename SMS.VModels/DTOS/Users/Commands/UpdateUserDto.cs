@@ -1,4 +1,4 @@
-﻿namespace SMS.VModels.DTOS.Users.Commands;
+﻿namespace SMS.VModels.DTOS;
 
 public class UpdateUserDto
 {

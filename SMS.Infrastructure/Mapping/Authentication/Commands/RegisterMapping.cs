@@ -1,7 +1,7 @@
 ﻿using SMS.Models.Entities.Identity;
 using SMS.VModels.DTOS.Auth;
 
-namespace SMS.Infrastructure.Mapping.Authentication;
+namespace SMS.Infrastructure.Mapping;
 
 public partial class AuthenticationProfile
 {

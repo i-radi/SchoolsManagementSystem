@@ -1,12 +1,9 @@
-﻿using SMS.Models.Entities;
-using SMS.VModels.DTOS.Organizations.Commands;
+﻿namespace SMS.Infrastructure.Mapping;
 
-namespace SMS.Infrastructure.Mapping.Organizations;
-
-public partial class OrganizationProfile
+public partial class GradeProfile
 {
-    public void AddOrganizationMapping()
+    public void AddGradeMapping()
     {
-        CreateMap<AddClassesDto, Organization>();
+        CreateMap<AddGradeDto, Grade>();
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace SMS.VModels.DTOS.Organizations.Commands;
+﻿namespace SMS.VModels.DTOS;
 
 public class AddClassDto
 {

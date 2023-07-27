@@ -1,4 +1,4 @@
-﻿namespace SMS.VModels.DTOS.Organizations.Queries;
+﻿namespace SMS.VModels.DTOS;
 
 public class GetOrganizationDto
 {

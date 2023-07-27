@@ -1,7 +1,6 @@
 ﻿using SMS.Models.Entities.Identity;
-using SMS.VModels.DTOS.Users.Commands;
 
-namespace SMS.Infrastructure.Mapping.Users;
+namespace SMS.Infrastructure.Mapping;
 
 public partial class UserProfile
 {

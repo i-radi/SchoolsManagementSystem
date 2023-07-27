@@ -1,14 +1,9 @@
-﻿using SMS.Models.Entities;
-using SMS.Models.Entities.Identity;
-using SMS.VModels.DTOS.Organizations.Commands;
-using SMS.VModels.DTOS.Users.Commands;
+﻿namespace SMS.Infrastructure.Mapping;
 
-namespace SMS.Infrastructure.Mapping.Organizations;
-
-public partial class OrganizationProfile
+public partial class GradeProfile
 {
-    public void UpdateOrganizationMapping()
+    public void UpdateGradeMapping()
     {
-        CreateMap<UpdateClassDto, Organization>();
+        CreateMap<UpdateGradeDto, Grade>();
     }
 }
