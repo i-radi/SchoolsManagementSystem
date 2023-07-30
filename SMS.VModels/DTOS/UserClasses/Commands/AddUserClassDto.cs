@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace SMS.VModels.DTOS;
+﻿namespace SMS.VModels.DTOS;
 
 public class AddUserClassDto
 {

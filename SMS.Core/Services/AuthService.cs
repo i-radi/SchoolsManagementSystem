@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using SMS.Models.Entities.Identity;
-using SMS.Models.Helpers;
 using SMS.Persistance.Context;
+using SMS.VModels.DTOS.Auth;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -32,29 +32,13 @@ public class AuthService : IAuthService
     #endregion
 
     #region Handle Methods
-
-    public async Task<JwtAuthResult> LoginAsync(LoginDto dto)
-    {
-        var authModel = new JwtAuthResult();
-
-        var user = await _userManager.FindByEmailAsync(dto.Email);
-
-        if (user is null || !await _userManager.CheckPasswordAsync(user, dto.Password))
-        {
-            authModel.Message = "Email or Password is incorrect!";
-            return authModel;
-        }
-
-        return await GetJWTToken(user);
-    }
-
-    public async Task<JwtAuthResult> RegisterAsync(RegisterDto dto)
+    public async Task<Response<string>> RegisterAsync(RegisterDto dto)
     {
         if (await _userManager.FindByEmailAsync(dto.Email) is not null)
-            return new JwtAuthResult { Message = "Email is already registered!" };
+            return ResponseHandler.BadRequest<string>("Email is already registered!");
 
         if (await _userManager.FindByNameAsync(dto.UserName) is not null)
-            return new JwtAuthResult { Message = "Username is already registered!" };
+            return ResponseHandler.BadRequest<string>("Username is already registered!");
 
         var user = _mapper.Map<User>(dto);
 
@@ -68,28 +52,54 @@ public class AuthService : IAuthService
             foreach (var error in result.Errors)
                 errors += $"{error.Description},";
 
-            return new JwtAuthResult { Message = errors };
+            return ResponseHandler.BadRequest<string>(errors);
         }
 
-        return await GetJWTToken(user);
+        return ResponseHandler.Success<string>($"{dto.UserName} created successfully");
     }
 
-    public async Task<JwtAuthResult> GetJWTToken(User user)
+    public async Task<Response<JwtAuthResult>> LoginAsync(LoginDto dto)
     {
-        var (jwtToken, accessToken) = await GenerateJWTToken(user);
+        var authModel = new JwtAuthResult();
+
+        var user = await _userManager.FindByEmailAsync(dto.Email);
+
+        if (user is null || !await _userManager.CheckPasswordAsync(user, dto.Password))
+        {
+            return ResponseHandler.NotFound<JwtAuthResult>("Email or Password is incorrect!");
+        }
+
+        return ResponseHandler.Success<JwtAuthResult>(await GetJWTToken(user, Guid.NewGuid()));
+    }
+
+    private async Task<JwtAuthResult> GetJWTToken(User user, Guid refreshToken = new Guid())
+    {
+        var (accessToken, expireDate) = await GenerateJWTToken(user);
 
         var response = new JwtAuthResult
         {
             AccessToken = accessToken,
+            AccessTokenExpiryDate = expireDate,
+            RefreshToken = refreshToken,
+            RefreshTokenExpiryDate = DateTime.Now.AddDays(_jwtSettings.RefreshTokenExpireDate),
             IsAuthenticated = true,
             Email = user.Email ?? string.Empty,
             Username = user.UserName ?? string.Empty,
             Role = (await _userManager.GetRolesAsync(user!)).FirstOrDefault()!
         };
+
+        user.AccessToken = response.AccessToken;
+        user.RefreshToken = response.RefreshToken;
+        user.RefreshTokenExpiryDate = response.RefreshTokenExpiryDate;
+        var updatedUser = await _userManager.UpdateAsync(user);
+        if (!updatedUser.Succeeded)
+        {
+            return new JwtAuthResult { IsAuthenticated = false };
+        }
         return response;
     }
 
-    private async Task<(JwtSecurityToken, string)> GenerateJWTToken(User user)
+    private async Task<(string accessToken, DateTime expiryDate)> GenerateJWTToken(User user)
     {
         var claims = await GetClaims(user);
         var jwtToken = new JwtSecurityToken(
@@ -99,10 +109,10 @@ public class AuthService : IAuthService
             expires: DateTime.Now.AddDays(_jwtSettings.AccessTokenExpireDate),
             signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtSettings.Secret)), SecurityAlgorithms.HmacSha256Signature));
         var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
-        return (jwtToken, accessToken);
+        return (accessToken, jwtToken.ValidTo);
     }
 
-    public async Task<List<Claim>> GetClaims(User user)
+    private async Task<List<Claim>> GetClaims(User user)
     {
         var roles = await _userManager.GetRolesAsync(user);
         var claims = new List<Claim>()
@@ -122,45 +132,50 @@ public class AuthService : IAuthService
         return claims;
     }
 
-    public JwtSecurityToken ReadJWTToken(string accessToken)
+    public async Task<Response<JwtAuthResult>> RefreshTokenAsync(RefreshTokenInputDto dto)
     {
-        if (string.IsNullOrEmpty(accessToken))
+
+        #region Validation
+
+        var token = new JwtSecurityTokenHandler().ReadJwtToken(dto.AccessToken);
+        var username = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
+
+        var user = await _userManager.FindByNameAsync(username);
+        if (user is null)
         {
-            throw new ArgumentNullException(nameof(accessToken));
+            return ResponseHandler.BadRequest<JwtAuthResult>("Invalid token");
         }
-        var handler = new JwtSecurityTokenHandler();
-        var response = handler.ReadJwtToken(accessToken);
-        return response;
+
+        if (user.AccessToken != dto.AccessToken
+            || user.RefreshToken != dto.RefreshToken
+            || user.RefreshTokenExpiryDate <= DateTime.Now)
+        {
+            return ResponseHandler.BadRequest<JwtAuthResult>("Token is invalid");
+        }
+
+        #endregion
+
+        #region Generating Token 
+        var generateToken = await GetJWTToken(user, user.RefreshToken);
+        return ResponseHandler.Success(generateToken);
+        #endregion
+
     }
 
-    public async Task<string> ValidateToken(string accessToken)
+    public async Task<Response<bool>> RevokeTokenAsync(string username)
     {
-        var handler = new JwtSecurityTokenHandler();
-        var parameters = new TokenValidationParameters
-        {
-            ValidateIssuer = _jwtSettings.ValidateIssuer,
-            ValidIssuers = new[] { _jwtSettings.Issuer },
-            ValidateIssuerSigningKey = _jwtSettings.ValidateIssuerSigningKey,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtSettings.Secret)),
-            ValidAudience = _jwtSettings.Audience,
-            ValidateAudience = _jwtSettings.ValidateAudience,
-            ValidateLifetime = _jwtSettings.ValidateLifeTime,
-        };
         try
         {
-            var validator = handler.ValidateToken(accessToken, parameters, out SecurityToken validatedToken);
-
-            if (validator == null)
-            {
-                return "InvalidToken";
-            }
-
-            return "NotExpired";
+            var user = await _userManager.FindByNameAsync(username);
+            user!.RefreshToken = Guid.NewGuid();
+            await _userManager.UpdateAsync(user);
+            return ResponseHandler.Success<bool>(true);
         }
         catch (Exception ex)
         {
-            return ex.Message;
+            return ResponseHandler.UnprocessableEntity<bool>(ex.Message);
         }
     }
+
     #endregion
 }

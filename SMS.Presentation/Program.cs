@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SMS.Infrastructure.MiddleWares;
 using SMS.Persistance.Seeder;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+#region Services
+
 #region Connection To SQL Server
 
 builder.Services.AddDbContext<ApplicationDBContext>(option =>
@@ -24,10 +27,30 @@ builder.Services.AddPersistanceDependencies()
 
 #endregion
 
+#region Default
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+#endregion
 
+#region AllowCORS
+var CORS = "_cors";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: CORS,
+                      policy =>
+                      {
+                          policy.AllowAnyHeader();
+                          policy.AllowAnyMethod();
+                          policy.AllowAnyOrigin();
+                      });
+});
+
+#endregion
+
+#endregion
+
+#region Middlewares
 var app = builder.Build();
 
 #region Seed 3 roles and superAdmin user only first time
@@ -44,15 +67,18 @@ using (var scope = app.Services.CreateScope())
 
 #endregion
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseHttpsRedirection();
+app.UseCors(CORS);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+
+#endregion

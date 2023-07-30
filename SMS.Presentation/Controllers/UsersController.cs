@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SMS.Models.Helpers;
 
 namespace SMS.Presentation.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/users")]
 [ApiController]
 public class UsersController : ControllerBase
 {
@@ -35,46 +34,74 @@ public class UsersController : ControllerBase
 
         var result = await _authService.RegisterAsync(dto);
 
-        if (!result.IsAuthenticated)
-            return BadRequest(result.Message);
-
         return Ok(result);
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> GetTokenAsync(LoginDto model)
     {
+        throw new UnauthorizedAccessException();
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
         var result = await _authService.LoginAsync(model);
 
-        if (!result.IsAuthenticated)
-            return BadRequest(result.Message);
+        if (!result.Data.IsAuthenticated)
+            return BadRequest(result);
 
         return Ok(result);
     }
 
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> GetRefreshTokenAsync(RefreshTokenInputDto model)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _authService.RefreshTokenAsync(model);
+
+        if (!result.Data.IsAuthenticated)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [HttpDelete("revoke-token")]
+    [Authorize(Policy = "Admin")]
+
+    public async Task<IActionResult> RevokeTokenAsync(string username)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _authService.RevokeTokenAsync(username);
+
+        if (!result.Data)
+            return BadRequest("Opps, something went wrong.");
+
+        return Ok("done.");
+    }
+
     [HttpGet]
     [Authorize(Policy = "Admin")]
-    public async Task<ActionResult<IEnumerable<GetUserDto>>> GetAll(int pageNumber = 1, int pageSize = 10)
+    public async Task<IActionResult> GetAll(int pageNumber = 1, int pageSize = 10)
     {
         var modelItems = PaginatedList<User>
             .Create(await _userManager.Users
             .Include(u => u.Organization)
-            .ToListAsync(),pageNumber,pageSize);
+            .ToListAsync(), pageNumber, pageSize);
 
         var result = _mapper.Map<IEnumerable<GetUserDto>>(modelItems);
         foreach (var userDto in result.Select((value, i) => new { i, value }))
         {
             userDto.value.Role = (await _userManager.GetRolesAsync(modelItems[userDto.i])).FirstOrDefault()!;
         }
-        return Ok(result);
+        return Ok(ResponseHandler.Success(result));
     }
 
-    [HttpGet("id")]
+    [HttpGet("{id}")]
     [Authorize(Policy = "Admin")]
-    public async Task<ActionResult<GetUserDto>> GetById(int id)
+    public async Task<IActionResult> GetById(int id)
     {
         var modelItem = await _userManager.Users
             .Include(u => u.Organization)
@@ -82,6 +109,6 @@ public class UsersController : ControllerBase
 
         var result = _mapper.Map<GetUserDto>(modelItem);
         result.Role = (await _userManager.GetRolesAsync(modelItem!)).FirstOrDefault()!;
-        return Ok(result);
+        return Ok(ResponseHandler.Success(result));
     }
 }
