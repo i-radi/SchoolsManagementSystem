@@ -1,9 +1,7 @@
-﻿using SMS.Models.Helpers;
-
-namespace SMS.Presentation.Controllers;
+﻿namespace SMS.Presentation.Controllers;
 
 [Authorize(Policy = "Normal")]
-[Route("api/[controller]")]
+[Route("api/seasons")]
 [ApiController]
 public class SeasonsController : ControllerBase
 {
@@ -15,49 +13,51 @@ public class SeasonsController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<GetSeasonDto>> GetAll(int pageNumber = 1, int pageSize = 10)
+    public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(PaginatedList<GetSeasonDto>.Create(_seasonService.GetAll(), pageNumber,pageSize));
+        return Ok(_seasonService.GetAll(pageNumber, pageSize));
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<GetSeasonDto>> GetById(int id)
+    public async Task<IActionResult> GetById(int id)
     {
         var dto = await _seasonService.GetById(id);
-        if (dto is null)
-            return BadRequest("Not Found Season");
+        if (dto.Data is null)
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Found Season"));
         return Ok(dto);
     }
 
     [HttpPost]
     [Authorize(Policy = "Admin")]
-    public async Task<ActionResult<GetSeasonDto>> Create(AddSeasonDto dto)
+    public async Task<IActionResult> Create(AddSeasonDto dto)
     {
         return Ok(await _seasonService.Add(dto));
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update(int id, UpdateSeasonDto dto)
+    public async Task<IActionResult> Update(int id, UpdateSeasonDto dto)
     {
         if (id != dto.Id)
         {
-            return BadRequest("Id not matched");
+            return BadRequest(ResponseHandler.BadRequest<string>("Id not matched"));
         }
-        if (!await _seasonService.Update(dto))
+        var result = await _seasonService.Update(dto);
+        if (!result.Data)
         {
-            return BadRequest("Not Updated");
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Updated"));
         }
 
-        return NoContent();
+        return Ok(result);
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        if (!await _seasonService.Delete(id))
+        var result = await _seasonService.Delete(id);
+        if (!result.Data)
         {
-            return BadRequest("Not Deleted");
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Deleted"));
         }
-        return NoContent();
+        return Ok(result);
     }
 }

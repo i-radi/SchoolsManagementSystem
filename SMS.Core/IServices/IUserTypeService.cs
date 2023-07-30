@@ -2,9 +2,9 @@
 
 public interface IUserTypeService
 {
-    List<GetUserTypeDto> GetAll();
-    Task<GetUserTypeDto?> GetById(int id);
-    Task<GetUserTypeDto> Add(AddUserTypeDto model);
-    Task<bool> Update(UpdateUserTypeDto model);
-    Task<bool> Delete(int id);
+    Response<List<GetUserTypeDto>> GetAll(int pageNumber, int pageSize);
+    Task<Response<GetUserTypeDto?>> GetById(int id);
+    Task<Response<GetUserTypeDto>> Add(AddUserTypeDto model);
+    Task<Response<bool>> Update(UpdateUserTypeDto model);
+    Task<Response<bool>> Delete(int id);
 }

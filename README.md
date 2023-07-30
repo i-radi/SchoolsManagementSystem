@@ -10,7 +10,8 @@ ASP.NET 6 API Project
 2- run project using visual studio or .net cli 
 
 ## Architecture, Patterns, and Libraries
-Clean Architecture, Identity, Repository Pattern, DTOs, and Automapper
+Clean Architecture, Identity, Repository Pattern, DTOs, Automapper <br/>
+JWT, Refresh Token, Fluent Validation, xUnit.
 
 ## Database Diagram
 ![ERD](https://github.com/i-radi/SchoolsManagementSystem/assets/60944957/7fdeb75a-a970-4690-ac84-be2b1f1dbf8e)

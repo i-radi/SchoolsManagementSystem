@@ -1,66 +1,64 @@
 ﻿namespace SMS.Core.Services;
 
-public class OrganizationService : IOrganizationService
+public class OrganizationsService : IOrganizationService
 {
-    private readonly IOrganizationRepo _organizationRepo;
+    private readonly IOrganizationRepo _organizationsRepo;
     private readonly IMapper _mapper;
 
-    public OrganizationService(IOrganizationRepo organizationRepo, IMapper mapper)
+    public OrganizationsService(IOrganizationRepo organizationsRepo, IMapper mapper)
     {
-        _organizationRepo = organizationRepo;
+        _organizationsRepo = organizationsRepo;
         _mapper = mapper;
     }
 
-    public List<GetOrganizationDto> GetAll()
+    public Response<List<GetOrganizationDto>> GetAll(int pageNumber, int pageSize)
     {
-        var modelItems = _organizationRepo.GetTableNoTracking();
+        var modelItems = _organizationsRepo.GetTableNoTracking();
+        var result = PaginatedList<GetOrganizationDto>.Create(_mapper.Map<List<GetOrganizationDto>>(modelItems), pageNumber, pageSize);
 
-        return _mapper.Map<List<GetOrganizationDto>>(modelItems);
+        return ResponseHandler.Success(_mapper.Map<List<GetOrganizationDto>>(result));
     }
 
-    public async Task<GetOrganizationDto?> GetById(int id)
+    public async Task<Response<GetOrganizationDto?>> GetById(int id)
     {
-        var modelItem = await _organizationRepo.GetByIdAsync(id);
+        var modelItem = await _organizationsRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return _mapper.Map<GetOrganizationDto>(modelItem);
+        return ResponseHandler.Success(_mapper.Map<GetOrganizationDto>(modelItem))!;
     }
 
-    public async Task<GetOrganizationDto> Add(AddOrganizationDto dto)
+    public async Task<Response<GetOrganizationDto>> Add(AddOrganizationDto dto)
     {
         var modelItem = _mapper.Map<Organization>(dto);
 
-        var model = await _organizationRepo.AddAsync(modelItem);
-        await _organizationRepo.SaveChangesAsync();
+        var model = await _organizationsRepo.AddAsync(modelItem);
 
-        return _mapper.Map<GetOrganizationDto>(modelItem);
+        return ResponseHandler.Created(_mapper.Map<GetOrganizationDto>(modelItem));
     }
 
-    public async Task<bool> Update(UpdateOrganizationDto dto)
+    public async Task<Response<bool>> Update(UpdateOrganizationDto dto)
     {
-        var modelItem = await _organizationRepo.GetByIdAsync(dto.Id);
+        var modelItem = await _organizationsRepo.GetByIdAsync(dto.Id);
 
         if (modelItem is null)
-            return false;
+            return ResponseHandler.NotFound<bool>();
 
         _mapper.Map(dto, modelItem);
 
-        var model = _organizationRepo.UpdateAsync(modelItem);
-        await _organizationRepo.SaveChangesAsync();
+        var model = _organizationsRepo.UpdateAsync(modelItem);
 
-        return true;
+        return ResponseHandler.Success(true);
     }
 
-    public async Task<bool> Delete(int id)
+    public async Task<Response<bool>> Delete(int id)
     {
 
-        var dbModel = await _organizationRepo.GetByIdAsync(id);
+        var dbModel = await _organizationsRepo.GetByIdAsync(id);
 
         if (dbModel == null)
-            return false;
+            return ResponseHandler.NotFound<bool>();
 
-        await _organizationRepo.DeleteAsync(dbModel);
-        await _organizationRepo.SaveChangesAsync();
-        return true;
+        await _organizationsRepo.DeleteAsync(dbModel);
+        return ResponseHandler.Deleted<bool>();
     }
 }

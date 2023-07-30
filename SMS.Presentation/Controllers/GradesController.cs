@@ -1,9 +1,7 @@
-﻿using SMS.Models.Helpers;
-
-namespace SMS.Presentation.Controllers;
+﻿namespace SMS.Presentation.Controllers;
 
 [Authorize(Policy = "Normal")]
-[Route("api/[controller]")]
+[Route("api/grades")]
 [ApiController]
 public class GradesController : ControllerBase
 {
@@ -15,49 +13,51 @@ public class GradesController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<GetGradeDto>> GetAll(int pageNumber = 1, int pageSize = 10)
+    public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(PaginatedList<GetGradeDto>.Create(_gradeService.GetAll(), pageNumber, pageSize));
+        return Ok(_gradeService.GetAll(pageNumber, pageSize));
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<GetGradeDto>> GetById(int id)
+    public async Task<IActionResult> GetById(int id)
     {
         var dto = await _gradeService.GetById(id);
-        if (dto is null)
-            return BadRequest("Not Found Grade");
+        if (dto.Data is null)
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Found Grade"));
         return Ok(dto);
     }
 
     [HttpPost]
     [Authorize(Policy = "Admin")]
-    public async Task<ActionResult<GetGradeDto>> Create(AddGradeDto dto)
+    public async Task<IActionResult> Create(AddGradeDto dto)
     {
         return Ok(await _gradeService.Add(dto));
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update(int id, UpdateGradeDto dto)
+    public async Task<IActionResult> Update(int id, UpdateGradeDto dto)
     {
         if (id != dto.Id)
         {
-            return BadRequest("Id not matched");
+            return BadRequest(ResponseHandler.BadRequest<string>("Id not matched"));
         }
-        if (!await _gradeService.Update(dto))
+        var result = await _gradeService.Update(dto);
+        if (!result.Data)
         {
-            return BadRequest("Not Updated");
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Updated"));
         }
 
-        return NoContent();
+        return Ok(result);
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        if (!await _gradeService.Delete(id))
+        var result = await _gradeService.Delete(id);
+        if (!result.Data)
         {
-            return BadRequest("Not Deleted");
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Deleted"));
         }
-        return NoContent();
+        return Ok(result);
     }
 }

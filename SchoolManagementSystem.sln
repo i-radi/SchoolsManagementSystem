@@ -18,6 +18,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMS.Infrastructure", "SMS.I
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMS.Presentation", "SMS.Presentation\SMS.Presentation.csproj", "{3DF91317-89BD-4918-A9FE-135D7FE2E490}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS.Tests", "SMS.Tests\SMS.Tests.csproj", "{B04F79A6-13E8-4972-B741-CF2F8C9E8A05}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3DF91317-89BD-4918-A9FE-135D7FE2E490} = {3DF91317-89BD-4918-A9FE-135D7FE2E490}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +53,10 @@ Global
 		{3DF91317-89BD-4918-A9FE-135D7FE2E490}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DF91317-89BD-4918-A9FE-135D7FE2E490}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DF91317-89BD-4918-A9FE-135D7FE2E490}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B04F79A6-13E8-4972-B741-CF2F8C9E8A05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B04F79A6-13E8-4972-B741-CF2F8C9E8A05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B04F79A6-13E8-4972-B741-CF2F8C9E8A05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B04F79A6-13E8-4972-B741-CF2F8C9E8A05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

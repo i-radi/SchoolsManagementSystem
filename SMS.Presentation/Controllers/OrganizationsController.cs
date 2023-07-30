@@ -1,9 +1,7 @@
-﻿using SMS.Models.Helpers;
-
-namespace SMS.Presentation.Controllers;
+﻿namespace SMS.Presentation.Controllers;
 
 [Authorize(Policy = "Normal")]
-[Route("api/[controller]")]
+[Route("api/organizations")]
 [ApiController]
 public class OrganizationsController : ControllerBase
 {
@@ -15,49 +13,51 @@ public class OrganizationsController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<GetOrganizationDto>> GetAll(int pageNumber = 1, int pageSize = 10)
+    public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(PaginatedList<GetOrganizationDto>.Create(_organizationService.GetAll(),pageNumber,pageSize));
+        return Ok(_organizationService.GetAll(pageNumber, pageSize));
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<GetOrganizationDto>> GetById(int id)
+    public async Task<IActionResult> GetById(int id)
     {
         var dto = await _organizationService.GetById(id);
-        if (dto is null)
-            return BadRequest("Not Found Organization");
+        if (dto.Data is null)
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Found Organization"));
         return Ok(dto);
     }
 
     [HttpPost]
     [Authorize(Policy = "Admin")]
-    public async Task<ActionResult<GetOrganizationDto>> Create(AddOrganizationDto dto)
+    public async Task<IActionResult> Create(AddOrganizationDto dto)
     {
         return Ok(await _organizationService.Add(dto));
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update(int id, UpdateOrganizationDto dto)
+    public async Task<IActionResult> Update(int id, UpdateOrganizationDto dto)
     {
         if (id != dto.Id)
         {
-            return BadRequest("Id not matched");
+            return BadRequest(ResponseHandler.BadRequest<string>("Id not matched"));
         }
-        if (!await _organizationService.Update(dto))
+        var result = await _organizationService.Update(dto);
+        if (!result.Data)
         {
-            return BadRequest("Not Updated");
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Updated"));
         }
 
-        return NoContent();
+        return Ok(result);
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        if (!await _organizationService.Delete(id))
+        var result = await _organizationService.Delete(id);
+        if (!result.Data)
         {
-            return BadRequest("Not Deleted");
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Deleted"));
         }
-        return NoContent();
+        return Ok(result);
     }
 }

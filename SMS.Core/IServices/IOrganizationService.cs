@@ -2,9 +2,9 @@
 
 public interface IOrganizationService
 {
-    List<GetOrganizationDto> GetAll();
-    Task<GetOrganizationDto?> GetById(int id);
-    Task<GetOrganizationDto> Add(AddOrganizationDto model);
-    Task<bool> Update(UpdateOrganizationDto model);
-    Task<bool> Delete(int id);
+    Response<List<GetOrganizationDto>> GetAll(int pageNumber, int pageSize);
+    Task<Response<GetOrganizationDto?>> GetById(int id);
+    Task<Response<GetOrganizationDto>> Add(AddOrganizationDto model);
+    Task<Response<bool>> Update(UpdateOrganizationDto model);
+    Task<Response<bool>> Delete(int id);
 }

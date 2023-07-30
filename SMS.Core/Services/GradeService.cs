@@ -1,68 +1,64 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿namespace SMS.Core.Services;
 
-namespace SMS.Core.Services;
-
-public class GradeService : IGradeService
+public class GradesService : IGradeService
 {
-    private readonly IGradeRepo _gradeRepo;
+    private readonly IGradeRepo _gradesRepo;
     private readonly IMapper _mapper;
 
-    public GradeService(IGradeRepo gradeRepo, IMapper mapper)
+    public GradesService(IGradeRepo gradesRepo, IMapper mapper)
     {
-        _gradeRepo = gradeRepo;
+        _gradesRepo = gradesRepo;
         _mapper = mapper;
     }
 
-    public List<GetGradeDto> GetAll()
+    public Response<List<GetGradeDto>> GetAll(int pageNumber, int pageSize)
     {
-        var modelItems = _gradeRepo.GetTableNoTracking().Include(m => m.School);
+        var modelItems = _gradesRepo.GetTableNoTracking().Include(m => m.School);
+        var result = PaginatedList<GetGradeDto>.Create(_mapper.Map<List<GetGradeDto>>(modelItems), pageNumber, pageSize);
 
-        return _mapper.Map<List<GetGradeDto>>(modelItems);
+        return ResponseHandler.Success(_mapper.Map<List<GetGradeDto>>(result));
     }
 
-    public async Task<GetGradeDto?> GetById(int id)
+    public async Task<Response<GetGradeDto?>> GetById(int id)
     {
-        var modelItem = await _gradeRepo.GetByIdAsync(id);
+        var modelItem = await _gradesRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return _mapper.Map<GetGradeDto>(modelItem);
+        return ResponseHandler.Success(_mapper.Map<GetGradeDto>(modelItem))!;
     }
 
-    public async Task<GetGradeDto> Add(AddGradeDto dto)
+    public async Task<Response<GetGradeDto>> Add(AddGradeDto dto)
     {
         var modelItem = _mapper.Map<Grade>(dto);
 
-        var model = await _gradeRepo.AddAsync(modelItem);
-        await _gradeRepo.SaveChangesAsync();
+        var model = await _gradesRepo.AddAsync(modelItem);
 
-        return _mapper.Map<GetGradeDto>(modelItem);
+        return ResponseHandler.Created(_mapper.Map<GetGradeDto>(modelItem));
     }
 
-    public async Task<bool> Update(UpdateGradeDto dto)
+    public async Task<Response<bool>> Update(UpdateGradeDto dto)
     {
-        var modelItem = await _gradeRepo.GetByIdAsync(dto.Id);
+        var modelItem = await _gradesRepo.GetByIdAsync(dto.Id);
 
         if (modelItem is null)
-            return false;
+            return ResponseHandler.NotFound<bool>();
 
         _mapper.Map(dto, modelItem);
 
-        var model = _gradeRepo.UpdateAsync(modelItem);
-        await _gradeRepo.SaveChangesAsync();
+        var model = _gradesRepo.UpdateAsync(modelItem);
 
-        return true;
+        return ResponseHandler.Success(true);
     }
 
-    public async Task<bool> Delete(int id)
+    public async Task<Response<bool>> Delete(int id)
     {
 
-        var dbModel = await _gradeRepo.GetByIdAsync(id);
+        var dbModel = await _gradesRepo.GetByIdAsync(id);
 
         if (dbModel == null)
-            return false;
+            return ResponseHandler.NotFound<bool>();
 
-        await _gradeRepo.DeleteAsync(dbModel);
-        await _gradeRepo.SaveChangesAsync();
-        return true;
+        await _gradesRepo.DeleteAsync(dbModel);
+        return ResponseHandler.Deleted<bool>();
     }
 }

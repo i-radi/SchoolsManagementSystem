@@ -1,66 +1,64 @@
 ﻿namespace SMS.Core.Services;
 
-public class UserTypeService : IUserTypeService
+public class UserTypesService : IUserTypeService
 {
-    private readonly IUserTypeRepo _userTypeRepo;
+    private readonly IUserTypeRepo _userTypesRepo;
     private readonly IMapper _mapper;
 
-    public UserTypeService(IUserTypeRepo userTypeRepo, IMapper mapper)
+    public UserTypesService(IUserTypeRepo userTypesRepo, IMapper mapper)
     {
-        _userTypeRepo = userTypeRepo;
+        _userTypesRepo = userTypesRepo;
         _mapper = mapper;
     }
 
-    public List<GetUserTypeDto> GetAll()
+    public Response<List<GetUserTypeDto>> GetAll(int pageNumber, int pageSize)
     {
-        var modelItems = _userTypeRepo.GetTableNoTracking();
+        var modelItems = _userTypesRepo.GetTableNoTracking();
+        var result = PaginatedList<GetUserTypeDto>.Create(_mapper.Map<List<GetUserTypeDto>>(modelItems), pageNumber, pageSize);
 
-        return _mapper.Map<List<GetUserTypeDto>>(modelItems);
+        return ResponseHandler.Success(_mapper.Map<List<GetUserTypeDto>>(result));
     }
 
-    public async Task<GetUserTypeDto?> GetById(int id)
+    public async Task<Response<GetUserTypeDto?>> GetById(int id)
     {
-        var modelItem = await _userTypeRepo.GetByIdAsync(id);
+        var modelItem = await _userTypesRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return _mapper.Map<GetUserTypeDto>(modelItem);
+        return ResponseHandler.Success(_mapper.Map<GetUserTypeDto>(modelItem))!;
     }
 
-    public async Task<GetUserTypeDto> Add(AddUserTypeDto dto)
+    public async Task<Response<GetUserTypeDto>> Add(AddUserTypeDto dto)
     {
         var modelItem = _mapper.Map<UserType>(dto);
 
-        var model = await _userTypeRepo.AddAsync(modelItem);
-        await _userTypeRepo.SaveChangesAsync();
+        var model = await _userTypesRepo.AddAsync(modelItem);
 
-        return _mapper.Map<GetUserTypeDto>(modelItem);
+        return ResponseHandler.Created(_mapper.Map<GetUserTypeDto>(modelItem));
     }
 
-    public async Task<bool> Update(UpdateUserTypeDto dto)
+    public async Task<Response<bool>> Update(UpdateUserTypeDto dto)
     {
-        var modelItem = await _userTypeRepo.GetByIdAsync(dto.Id);
+        var modelItem = await _userTypesRepo.GetByIdAsync(dto.Id);
 
         if (modelItem is null)
-            return false;
+            return ResponseHandler.NotFound<bool>();
 
         _mapper.Map(dto, modelItem);
 
-        var model = _userTypeRepo.UpdateAsync(modelItem);
-        await _userTypeRepo.SaveChangesAsync();
+        var model = _userTypesRepo.UpdateAsync(modelItem);
 
-        return true;
+        return ResponseHandler.Success(true);
     }
 
-    public async Task<bool> Delete(int id)
+    public async Task<Response<bool>> Delete(int id)
     {
 
-        var dbModel = await _userTypeRepo.GetByIdAsync(id);
+        var dbModel = await _userTypesRepo.GetByIdAsync(id);
 
         if (dbModel == null)
-            return false;
+            return ResponseHandler.NotFound<bool>();
 
-        await _userTypeRepo.DeleteAsync(dbModel);
-        await _userTypeRepo.SaveChangesAsync();
-        return true;
+        await _userTypesRepo.DeleteAsync(dbModel);
+        return ResponseHandler.Deleted<bool>();
     }
 }

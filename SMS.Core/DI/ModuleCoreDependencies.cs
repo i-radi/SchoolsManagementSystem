@@ -10,12 +10,12 @@ public static class ModuleCoreDependencies
     {
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IClassesService, ClassesService>();
-        services.AddScoped<IGradeService, GradeService>();
-        services.AddScoped<IOrganizationService, OrganizationService>();
-        services.AddScoped<ISchoolService, SchoolService>();
-        services.AddScoped<ISeasonService, SeasonService>();
-        services.AddScoped<IUserClassService, UserClassService>();
-        services.AddScoped<IUserTypeService, UserTypeService>();
+        services.AddScoped<IGradeService, GradesService>();
+        services.AddScoped<IOrganizationService, OrganizationsService>();
+        services.AddScoped<ISchoolService, SchoolsService>();
+        services.AddScoped<ISeasonService, SeasonsService>();
+        services.AddScoped<IUserClassService, UserClassesService>();
+        services.AddScoped<IUserTypeService, UserTypesService>();
 
         #region Authorization
 

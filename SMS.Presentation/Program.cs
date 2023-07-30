@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SMS.Infrastructure.MiddleWares;
 using SMS.Persistance.Seeder;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 

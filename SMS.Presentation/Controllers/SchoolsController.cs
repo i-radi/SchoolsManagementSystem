@@ -1,63 +1,63 @@
-﻿using SMS.Models.Helpers;
-
-namespace SMS.Presentation.Controllers;
+﻿namespace SMS.Presentation.Controllers;
 
 [Authorize(Policy = "Normal")]
-[Route("api/[controller]")]
+[Route("api/schools")]
 [ApiController]
-public class SchoolsController : ControllerBase
+public class schoolsController : ControllerBase
 {
     private readonly ISchoolService _schoolService;
 
-    public SchoolsController(ISchoolService schoolService)
+    public schoolsController(ISchoolService schoolService)
     {
         _schoolService = schoolService;
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<GetSchoolDto>> GetAll(int pageNumber = 1, int pageSize = 10)
+    public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(PaginatedList<GetSchoolDto>.Create(_schoolService.GetAll(), pageNumber, pageSize));
+        return Ok(_schoolService.GetAll(pageNumber, pageSize));
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<GetSchoolDto>> GetById(int id)
+    public async Task<IActionResult> GetById(int id)
     {
         var dto = await _schoolService.GetById(id);
-        if (dto is null)
-            return BadRequest("Not Found School");
+        if (dto.Data is null)
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Found School"));
         return Ok(dto);
     }
 
     [HttpPost]
     [Authorize(Policy = "Admin")]
-    public async Task<ActionResult<GetSchoolDto>> Create(AddSchoolDto dto)
+    public async Task<IActionResult> Create(AddSchoolDto dto)
     {
         return Ok(await _schoolService.Add(dto));
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update(int id, UpdateSchoolDto dto)
+    public async Task<IActionResult> Update(int id, UpdateSchoolDto dto)
     {
         if (id != dto.Id)
         {
-            return BadRequest("Id not matched");
+            return BadRequest(ResponseHandler.BadRequest<string>("Id not matched"));
         }
-        if (!await _schoolService.Update(dto))
+        var result = await _schoolService.Update(dto);
+        if (!result.Data)
         {
-            return BadRequest("Not Updated");
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Updated"));
         }
 
-        return NoContent();
+        return Ok(result);
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        if (!await _schoolService.Delete(id))
+        var result = await _schoolService.Delete(id);
+        if (!result.Data)
         {
-            return BadRequest("Not Deleted");
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Deleted"));
         }
-        return NoContent();
+        return Ok(result);
     }
 }

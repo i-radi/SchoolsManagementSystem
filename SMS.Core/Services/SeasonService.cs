@@ -1,84 +1,64 @@
-﻿using Microsoft.AspNetCore.Server.IIS.Core;
-using Microsoft.EntityFrameworkCore;
+﻿namespace SMS.Core.Services;
 
-namespace SMS.Core.Services;
-
-public class SeasonService : ISeasonService
+public class SeasonsService : ISeasonService
 {
-    private readonly ISeasonRepo _seasonRepo;
+    private readonly ISeasonRepo _seasonsRepo;
     private readonly IMapper _mapper;
 
-    public SeasonService(ISeasonRepo seasonRepo, IMapper mapper)
+    public SeasonsService(ISeasonRepo seasonsRepo, IMapper mapper)
     {
-        _seasonRepo = seasonRepo;
+        _seasonsRepo = seasonsRepo;
         _mapper = mapper;
     }
 
-    public List<GetSeasonDto> GetAll()
+    public Response<List<GetSeasonDto>> GetAll(int pageNumber, int pageSize)
     {
-        var modelItems = _seasonRepo.GetTableNoTracking().Include(m => m.School);
+        var modelItems = _seasonsRepo.GetTableNoTracking().Include(m => m.School);
+        var result = PaginatedList<GetSeasonDto>.Create(_mapper.Map<List<GetSeasonDto>>(modelItems), pageNumber, pageSize);
 
-        return _mapper.Map<List<GetSeasonDto>>(modelItems);
+        return ResponseHandler.Success(_mapper.Map<List<GetSeasonDto>>(result));
     }
 
-    public async Task<GetSeasonDto?> GetById(int id)
+    public async Task<Response<GetSeasonDto?>> GetById(int id)
     {
-        var modelItem = await _seasonRepo.GetByIdAsync(id);
+        var modelItem = await _seasonsRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return _mapper.Map<GetSeasonDto>(modelItem);
+        return ResponseHandler.Success(_mapper.Map<GetSeasonDto>(modelItem))!;
     }
 
-    public async Task<GetSeasonDto> Add(AddSeasonDto dto)
+    public async Task<Response<GetSeasonDto>> Add(AddSeasonDto dto)
     {
-        var IsSchoolHasCurrentSeason = _seasonRepo
-            .GetTableAsTracking()
-            .Where(s => s.SchoolId == dto.SchoolId )
-            .Any(s => s.IsCurrent);
-
-        if (dto.IsCurrent && IsSchoolHasCurrentSeason)
-            throw new InvalidDataException("This school has already current season");
-
         var modelItem = _mapper.Map<Season>(dto);
 
-        var model = await _seasonRepo.AddAsync(modelItem);
-        await _seasonRepo.SaveChangesAsync();
+        var model = await _seasonsRepo.AddAsync(modelItem);
 
-        return _mapper.Map<GetSeasonDto>(modelItem);
+        return ResponseHandler.Created(_mapper.Map<GetSeasonDto>(modelItem));
     }
 
-    public async Task<bool> Update(UpdateSeasonDto dto)
+    public async Task<Response<bool>> Update(UpdateSeasonDto dto)
     {
-        var modelItem = await _seasonRepo.GetByIdAsync(dto.Id);
-        var IsSchoolHasCurrentSeason = _seasonRepo
-            .GetTableAsTracking()
-            .Where(s => s.SchoolId == dto.SchoolId && s.Id != dto.Id)
-            .Any(s => s.IsCurrent);
-
-        if ( dto.IsCurrent && IsSchoolHasCurrentSeason)
-            return false;
+        var modelItem = await _seasonsRepo.GetByIdAsync(dto.Id);
 
         if (modelItem is null)
-            return false;
+            return ResponseHandler.NotFound<bool>();
 
         _mapper.Map(dto, modelItem);
 
-        var model = _seasonRepo.UpdateAsync(modelItem);
-        await _seasonRepo.SaveChangesAsync();
+        var model = _seasonsRepo.UpdateAsync(modelItem);
 
-        return true;
+        return ResponseHandler.Success(true);
     }
 
-    public async Task<bool> Delete(int id)
+    public async Task<Response<bool>> Delete(int id)
     {
 
-        var dbModel = await _seasonRepo.GetByIdAsync(id);
+        var dbModel = await _seasonsRepo.GetByIdAsync(id);
 
         if (dbModel == null)
-            return false;
+            return ResponseHandler.NotFound<bool>();
 
-        await _seasonRepo.DeleteAsync(dbModel);
-        await _seasonRepo.SaveChangesAsync();
-        return true;
+        await _seasonsRepo.DeleteAsync(dbModel);
+        return ResponseHandler.Deleted<bool>();
     }
 }

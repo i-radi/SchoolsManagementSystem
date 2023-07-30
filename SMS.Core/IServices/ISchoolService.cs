@@ -2,9 +2,9 @@
 
 public interface ISchoolService
 {
-    List<GetSchoolDto> GetAll();
-    Task<GetSchoolDto?> GetById(int id);
-    Task<GetSchoolDto> Add(AddSchoolDto model);
-    Task<bool> Update(UpdateSchoolDto model);
-    Task<bool> Delete(int id);
+    Response<List<GetSchoolDto>> GetAll(int pageNumber, int pageSize);
+    Task<Response<GetSchoolDto?>> GetById(int id);
+    Task<Response<GetSchoolDto>> Add(AddSchoolDto model);
+    Task<Response<bool>> Update(UpdateSchoolDto model);
+    Task<Response<bool>> Delete(int id);
 }

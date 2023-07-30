@@ -39,11 +39,10 @@ public class GenericRepoAsync<T> : IGenericRepoAsync<T> where T : class
         return _dbContext.Set<T>().AsQueryable();
     }
 
-
     public virtual async Task<T> AddAsync(T entity)
     {
         var model = await _dbContext.Set<T>().AddAsync(entity);
-
+        await _dbContext.SaveChangesAsync();
         return model.Entity;
     }
 
@@ -56,6 +55,7 @@ public class GenericRepoAsync<T> : IGenericRepoAsync<T> where T : class
     public virtual async Task UpdateAsync(T entity)
     {
         _dbContext.Set<T>().Update(entity);
+        await _dbContext.SaveChangesAsync();
     }
 
     public virtual async Task UpdateRangeAsync(ICollection<T> entities)
@@ -67,6 +67,7 @@ public class GenericRepoAsync<T> : IGenericRepoAsync<T> where T : class
     public virtual async Task DeleteAsync(T entity)
     {
         _dbContext.Set<T>().Remove(entity);
+        await _dbContext.SaveChangesAsync();
     }
 
     public virtual async Task DeleteRangeAsync(ICollection<T> entities)

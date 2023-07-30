@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace SMS.Core.Services;
+﻿namespace SMS.Core.Services;
 
 public class ClassesService : IClassesService
 {
@@ -13,56 +11,54 @@ public class ClassesService : IClassesService
         _mapper = mapper;
     }
 
-    public List<GetClassDto> GetAll()
+    public Response<List<GetClassDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _classesRepo.GetTableNoTracking().Include(m => m.Grade);
+        var result = PaginatedList<GetClassDto>.Create(_mapper.Map<List<GetClassDto>>(modelItems), pageNumber, pageSize);
 
-        return _mapper.Map<List<GetClassDto>>(modelItems);
+        return ResponseHandler.Success(_mapper.Map<List<GetClassDto>>(result));
     }
 
-    public async Task<GetClassDto?> GetById(int id)
+    public async Task<Response<GetClassDto?>> GetById(int id)
     {
         var modelItem = await _classesRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return _mapper.Map<GetClassDto>(modelItem);
+        return ResponseHandler.Success(_mapper.Map<GetClassDto>(modelItem))!;
     }
 
-    public async Task<GetClassDto> Add(AddClassDto dto)
+    public async Task<Response<GetClassDto>> Add(AddClassDto dto)
     {
         var modelItem = _mapper.Map<Classes>(dto);
 
         var model = await _classesRepo.AddAsync(modelItem);
-        await _classesRepo.SaveChangesAsync();
 
-        return _mapper.Map<GetClassDto>(modelItem);
+        return ResponseHandler.Created(_mapper.Map<GetClassDto>(modelItem));
     }
 
-    public async Task<bool> Update(UpdateClassDto dto)
+    public async Task<Response<bool>> Update(UpdateClassDto dto)
     {
         var modelItem = await _classesRepo.GetByIdAsync(dto.Id);
 
         if (modelItem is null)
-            return false;
+            return ResponseHandler.NotFound<bool>();
 
         _mapper.Map(dto, modelItem);
 
         var model = _classesRepo.UpdateAsync(modelItem);
-        await _classesRepo.SaveChangesAsync();
 
-        return true;
+        return ResponseHandler.Success(true);
     }
 
-    public async Task<bool> Delete(int id)
+    public async Task<Response<bool>> Delete(int id)
     {
 
         var dbModel = await _classesRepo.GetByIdAsync(id);
 
         if (dbModel == null)
-            return false;
+            return ResponseHandler.NotFound<bool>();
 
         await _classesRepo.DeleteAsync(dbModel);
-        await _classesRepo.SaveChangesAsync();
-        return true;
+        return ResponseHandler.Deleted<bool>();
     }
 }
