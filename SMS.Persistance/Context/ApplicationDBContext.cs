@@ -40,7 +40,7 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=SMS_DB;Integrated Security=True");
+            optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=SMS;Integrated Security=True");
         }
     }
 }
