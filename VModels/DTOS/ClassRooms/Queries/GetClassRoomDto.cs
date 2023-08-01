@@ -1,6 +1,6 @@
 ﻿namespace VModels.DTOS;
 
-public class GetClassDto
+public class GetClassRoomDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;

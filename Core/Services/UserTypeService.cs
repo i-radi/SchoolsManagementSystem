@@ -1,11 +1,11 @@
 ﻿namespace Core.Services;
 
-public class UserTypesService : IUserTypeService
+public class UserTypeService : IUserTypeService
 {
     private readonly IUserTypeRepo _userTypesRepo;
     private readonly IMapper _mapper;
 
-    public UserTypesService(IUserTypeRepo userTypesRepo, IMapper mapper)
+    public UserTypeService(IUserTypeRepo userTypesRepo, IMapper mapper)
     {
         _userTypesRepo = userTypesRepo;
         _mapper = mapper;

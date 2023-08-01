@@ -7,9 +7,9 @@ public class UserClass
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-    public int ClassId { get; set; }
-    [ForeignKey(nameof(ClassId))]
-    public virtual Classes? Classes { get; set; }
+    public int ClassRoomId { get; set; }
+    [ForeignKey(nameof(ClassRoomId))]
+    public virtual ClassRoom? ClassRoom { get; set; }
 
     public int UserId { get; set; }
     [ForeignKey(nameof(UserId))]

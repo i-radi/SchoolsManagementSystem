@@ -1,10 +1,10 @@
 ﻿namespace Infrastructure.Mapping;
 
-public partial class ClassesProfile
+public partial class ClassRoomProfile
 {
-    public void GetClassByIdMapping()
+    public void GetClassRoomByIdMapping()
     {
-        CreateMap<Classes, GetClassDto>()
+        CreateMap<ClassRoom, GetClassRoomDto>()
             .ForMember(dest => dest.Grade, opt => opt.MapFrom(src => src.Grade!.Name));
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace Models.Entities;
 
 
-public class Classes
+public class ClassRoom
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

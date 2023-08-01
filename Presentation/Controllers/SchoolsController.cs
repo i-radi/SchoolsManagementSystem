@@ -3,11 +3,11 @@
 [Authorize(Policy = "Normal")]
 [Route("api/schools")]
 [ApiController]
-public class schoolsController : ControllerBase
+public class SchoolsController : ControllerBase
 {
     private readonly ISchoolService _schoolService;
 
-    public schoolsController(ISchoolService schoolService)
+    public SchoolsController(ISchoolService schoolService)
     {
         _schoolService = schoolService;
     }

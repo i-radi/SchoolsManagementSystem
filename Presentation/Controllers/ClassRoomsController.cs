@@ -1,29 +1,29 @@
 ﻿namespace Presentation.Controllers;
 
 [Authorize(Policy = "Normal")]
-[Route("api/classes")]
+[Route("api/classrooms")]
 [ApiController]
-public class ClassesController : ControllerBase
+public class ClassRoomsController : ControllerBase
 {
-    private readonly IClassesService _classService;
+    private readonly IClassRoomService _classRoomService;
     private readonly IUserClassService _userClassService;
 
-    public ClassesController(IClassesService classService, IUserClassService userClassService)
+    public ClassRoomsController(IClassRoomService classRoomService, IUserClassService userClassService)
     {
-        _classService = classService;
+        _classRoomService = classRoomService;
         _userClassService = userClassService;
     }
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_classService.GetAll(pageNumber, pageSize));
+        return Ok(_classRoomService.GetAll(pageNumber, pageSize));
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var dto = await _classService.GetById(id);
+        var dto = await _classRoomService.GetById(id);
         if (dto.Data is null)
             return BadRequest(ResponseHandler.BadRequest<string>("Not Found Class"));
         return Ok(dto);
@@ -31,19 +31,19 @@ public class ClassesController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> Create(AddClassDto dto)
+    public async Task<IActionResult> Create(AddClassRoomDto dto)
     {
-        return Ok(await _classService.Add(dto));
+        return Ok(await _classRoomService.Add(dto));
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, UpdateClassDto dto)
+    public async Task<IActionResult> Update(int id, UpdateClassRoomDto dto)
     {
         if (id != dto.Id)
         {
             return BadRequest(ResponseHandler.BadRequest<string>("Id not matched"));
         }
-        var result = await _classService.Update(dto);
+        var result = await _classRoomService.Update(dto);
         if (!result.Data)
         {
             return BadRequest(ResponseHandler.BadRequest<string>("Not Updated"));
@@ -55,7 +55,7 @@ public class ClassesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var result = await _classService.Delete(id);
+        var result = await _classRoomService.Delete(id);
         if (!result.Data)
         {
             return BadRequest(ResponseHandler.BadRequest<string>("Not Deleted"));

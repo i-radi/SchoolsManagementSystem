@@ -3,7 +3,7 @@
 namespace Persistance.Configurations;
 
 
-public class UserClassesConfigurations : IEntityTypeConfiguration<UserClass>
+public class UserClassConfigurations : IEntityTypeConfiguration<UserClass>
 {
     public void Configure(EntityTypeBuilder<UserClass> builder)
     {
@@ -15,9 +15,9 @@ public class UserClassesConfigurations : IEntityTypeConfiguration<UserClass>
                  .HasForeignKey(k => k.SeasonId)
                  .OnDelete(DeleteBehavior.NoAction);
 
-        builder.HasOne(u => u.Classes)
+        builder.HasOne(u => u.ClassRoom)
          .WithMany(d => d.UserClasses)
-         .HasForeignKey(k => k.ClassId)
+         .HasForeignKey(k => k.ClassRoomId)
          .OnDelete(DeleteBehavior.NoAction);
     }
 }

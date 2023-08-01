@@ -1,11 +1,11 @@
 ﻿namespace Core.Services;
 
-public class SeasonsService : ISeasonService
+public class SeasonService : ISeasonService
 {
     private readonly ISeasonRepo _seasonsRepo;
     private readonly IMapper _mapper;
 
-    public SeasonsService(ISeasonRepo seasonsRepo, IMapper mapper)
+    public SeasonService(ISeasonRepo seasonsRepo, IMapper mapper)
     {
         _seasonsRepo = seasonsRepo;
         _mapper = mapper;

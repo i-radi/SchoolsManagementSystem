@@ -1,11 +1,11 @@
 ﻿namespace Core.Services;
 
-public class SchoolsService : ISchoolService
+public class SchoolService : ISchoolService
 {
     private readonly ISchoolRepo _schoolsRepo;
     private readonly IMapper _mapper;
 
-    public SchoolsService(ISchoolRepo schoolsRepo, IMapper mapper)
+    public SchoolService(ISchoolRepo schoolsRepo, IMapper mapper)
     {
         _schoolsRepo = schoolsRepo;
         _mapper = mapper;

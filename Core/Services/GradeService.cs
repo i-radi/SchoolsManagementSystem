@@ -1,11 +1,11 @@
 ﻿namespace Core.Services;
 
-public class GradesService : IGradeService
+public class GradeService : IGradeService
 {
     private readonly IGradeRepo _gradesRepo;
     private readonly IMapper _mapper;
 
-    public GradesService(IGradeRepo gradesRepo, IMapper mapper)
+    public GradeService(IGradeRepo gradesRepo, IMapper mapper)
     {
         _gradesRepo = gradesRepo;
         _mapper = mapper;

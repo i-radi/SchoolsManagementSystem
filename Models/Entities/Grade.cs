@@ -11,5 +11,5 @@ public class Grade
     [ForeignKey(nameof(SchoolId))]
     public virtual School? School { get; set; }
 
-    public virtual ICollection<Classes> Classes { get; set; } = new HashSet<Classes>();
+    public virtual ICollection<ClassRoom> ClassRooms { get; set; } = new HashSet<ClassRoom>();
 }

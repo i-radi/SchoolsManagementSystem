@@ -4,7 +4,7 @@ public class AddTest
 {
     #region Arrange
 
-    private readonly ClassesService _classesService;
+    private readonly ClassRoomService _classesService;
 
     public AddTest()
     {
@@ -13,7 +13,7 @@ public class AddTest
 
         var repoMock = ClassMock.Get();
 
-        _classesService = new ClassesService(repoMock.Object, mapper);
+        _classesService = new ClassRoomService(repoMock.Object, mapper);
     }
 
     #endregion Arrange

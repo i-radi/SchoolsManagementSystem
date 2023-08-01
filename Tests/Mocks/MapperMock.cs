@@ -9,7 +9,7 @@ public static class MapperMock
         var config = new MapperConfiguration(cfg =>
         {
             cfg.AddProfile(new AuthenticationProfile());
-            cfg.AddProfile(new ClassesProfile());
+            cfg.AddProfile(new ClassRoomProfile());
             cfg.AddProfile(new GradeProfile());
             cfg.AddProfile(new OrganizationProfile());
             cfg.AddProfile(new SchoolProfile());

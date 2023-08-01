@@ -1,11 +1,11 @@
 ﻿namespace Core.Services;
 
-public class UserClassesService : IUserClassService
+public class UserClassService : IUserClassService
 {
     private readonly IUserClassRepo _userClassesRepo;
     private readonly IMapper _mapper;
 
-    public UserClassesService(IUserClassRepo userClassesRepo, IMapper mapper)
+    public UserClassService(IUserClassRepo userClassesRepo, IMapper mapper)
     {
         _userClassesRepo = userClassesRepo;
         _mapper = mapper;
@@ -14,7 +14,7 @@ public class UserClassesService : IUserClassService
     public Response<List<GetUserClassDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _userClassesRepo.GetTableNoTracking()
-            .Include(m => m.Classes)
+            .Include(m => m.ClassRoom)
             .Include(m => m.User)
             .Include(m => m.Season)
             .Include(m => m.UserType);

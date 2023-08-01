@@ -1,11 +1,11 @@
 ﻿namespace Core.Services;
 
-public class OrganizationsService : IOrganizationService
+public class OrganizationService : IOrganizationService
 {
     private readonly IOrganizationRepo _organizationsRepo;
     private readonly IMapper _mapper;
 
-    public OrganizationsService(IOrganizationRepo organizationsRepo, IMapper mapper)
+    public OrganizationService(IOrganizationRepo organizationsRepo, IMapper mapper)
     {
         _organizationsRepo = organizationsRepo;
         _mapper = mapper;

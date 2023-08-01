@@ -19,7 +19,7 @@ public class UserClassRepo : GenericRepoAsync<UserClass>, IUserClassRepo
 #pragma warning disable CS8603
         return await _dbContext.Set<UserClass>()
             .Include(c => c.User)
-            .Include(c => c.Classes)
+            .Include(c => c.ClassRoom)
             .Include(c => c.UserType)
             .Include(c => c.Season)
             .FirstOrDefaultAsync(c => c.Id == id);
