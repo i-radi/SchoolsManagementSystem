@@ -1,4 +1,8 @@
-﻿namespace Core.Services;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query;
+using Models.Entities;
+
+namespace Core.Services;
 
 public class ClassRoomService : IClassRoomService
 {
@@ -11,9 +15,19 @@ public class ClassRoomService : IClassRoomService
         _mapper = mapper;
     }
 
-    public Response<List<GetClassRoomDto>> GetAll(int pageNumber, int pageSize)
+    public Response<List<GetClassRoomDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0)
     {
-        var modelItems = _classRoomsRepo.GetTableNoTracking().Include(m => m.Grade);
+        var modelItems = _classRoomsRepo.GetTableNoTracking();
+            ;
+        if (schoolId > 0)
+        {
+            modelItems = modelItems.Include(c => c.Grade).Where(cr => cr.Grade != null && cr.Grade.SchoolId == schoolId);
+        }
+        else
+        {
+            modelItems = modelItems.Include(c => c.Grade);
+        }
+
         var result = PaginatedList<GetClassRoomDto>.Create(_mapper.Map<List<GetClassRoomDto>>(modelItems), pageNumber, pageSize);
 
         return ResponseHandler.Success(_mapper.Map<List<GetClassRoomDto>>(result));

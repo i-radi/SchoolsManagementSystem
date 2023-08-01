@@ -83,7 +83,7 @@ public class UsersController : ControllerBase
 
     [HttpGet]
     [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> GetAll(int pageNumber = 1, int pageSize = 10)
+    public async Task<IActionResult> GetAll([FromHeader] int schoolId, int pageNumber = 1, int pageSize = 10)
     {
         var modelItems = PaginatedList<User>
             .Create(await _userManager.Users
@@ -100,7 +100,7 @@ public class UsersController : ControllerBase
 
     [HttpGet("{id}")]
     [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById([FromHeader] int schoolId, int id)
     {
         var modelItem = await _userManager.Users
             .Include(u => u.Organization)

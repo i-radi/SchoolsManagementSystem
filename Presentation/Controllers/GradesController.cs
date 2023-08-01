@@ -13,13 +13,13 @@ public class GradesController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
+    public IActionResult GetAll([FromHeader] int schoolId, int pageNumber = 1, int pageSize = 10)
     {
         return Ok(_gradeService.GetAll(pageNumber, pageSize));
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById([FromHeader] int schoolId, int id)
     {
         var dto = await _gradeService.GetById(id);
         if (dto.Data is null)
@@ -29,13 +29,13 @@ public class GradesController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> Create(AddGradeDto dto)
+    public async Task<IActionResult> Create([FromHeader] int schoolId, AddGradeDto dto)
     {
         return Ok(await _gradeService.Add(dto));
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, UpdateGradeDto dto)
+    public async Task<IActionResult> Update([FromHeader] int schoolId, int id, UpdateGradeDto dto)
     {
         if (id != dto.Id)
         {
@@ -51,7 +51,7 @@ public class GradesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete([FromHeader] int schoolId, int id)
     {
         var result = await _gradeService.Delete(id);
         if (!result.Data)

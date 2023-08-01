@@ -21,4 +21,5 @@ public class RegisterDto
     public string PhoneNumber { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
     public int? OrganizationId { get; set; }
+    public int? SchoolId { get; set; }
 }

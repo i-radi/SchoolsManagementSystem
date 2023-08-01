@@ -15,13 +15,13 @@ public class ClassRoomsController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
+    public IActionResult GetAll([FromHeader] int schoolId, int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_classRoomService.GetAll(pageNumber, pageSize));
+        return Ok(_classRoomService.GetAll(pageNumber, pageSize, schoolId));
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById([FromHeader] int schoolId, int id)
     {
         var dto = await _classRoomService.GetById(id);
         if (dto.Data is null)
@@ -31,13 +31,13 @@ public class ClassRoomsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> Create(AddClassRoomDto dto)
+    public async Task<IActionResult> Create([FromHeader] int schoolId, AddClassRoomDto dto)
     {
         return Ok(await _classRoomService.Add(dto));
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, UpdateClassRoomDto dto)
+    public async Task<IActionResult> Update([FromHeader] int schoolId, int id, UpdateClassRoomDto dto)
     {
         if (id != dto.Id)
         {
@@ -53,7 +53,7 @@ public class ClassRoomsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete([FromHeader] int schoolId, int id)
     {
         var result = await _classRoomService.Delete(id);
         if (!result.Data)
@@ -65,7 +65,7 @@ public class ClassRoomsController : ControllerBase
 
     [HttpPost("assign-user")]
     [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> AssignUser(AddUserClassDto dto)
+    public async Task<IActionResult> AssignUser([FromHeader] int schoolId, AddUserClassDto dto)
     {
         var result = await _userClassService.Add(dto);
         return Ok(await _userClassService.GetById(result.Data.Id));

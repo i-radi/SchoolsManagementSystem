@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Models\Models.csproj" />
+    <ProjectReference Include="..\Persistance\Persistance.csproj" />
     <ProjectReference Include="..\VModels\VModels.csproj" />
   </ItemGroup>
 

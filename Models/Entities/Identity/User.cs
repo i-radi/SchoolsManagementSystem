@@ -14,4 +14,5 @@ public class User : IdentityUser<int>
     [ForeignKey(nameof(OrganizationId))]
     public virtual Organization? Organization { get; set; }
     public virtual ICollection<UserClass> UserClasses { get; set; } = new HashSet<UserClass>();
+    public int? SchoolId { get; set; }
 }

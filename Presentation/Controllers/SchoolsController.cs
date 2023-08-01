@@ -19,7 +19,7 @@ public class SchoolsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById([FromHeader] int schoolId, int id)
     {
         var dto = await _schoolService.GetById(id);
         if (dto.Data is null)
@@ -35,7 +35,7 @@ public class SchoolsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, UpdateSchoolDto dto)
+    public async Task<IActionResult> Update([FromHeader] int schoolId, int id, UpdateSchoolDto dto)
     {
         if (id != dto.Id)
         {
