@@ -1,8 +1,8 @@
-﻿global using Microsoft.AspNetCore.Authorization;
-global using Microsoft.AspNetCore.Mvc;
-global using Core.IServices;
+﻿global using Core.IServices;
 global using Infrastructure.Bases;
 global using Infrastructure.DI;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Mvc;
 global using Models.Entities.Identity;
 global using Models.Helpers;
 global using Persistance.Context;

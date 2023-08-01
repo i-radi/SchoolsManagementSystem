@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
-using Models.Entities;
 using Persistance.Context;
 using System.Security.Claims;
-using System.Security.Policy;
 
 namespace Infrastructure.MiddleWares;
 
@@ -25,7 +22,7 @@ public class SchoolAuthorizationMiddleware
         {
             var schoolId = context.Request.Headers["schoolId"].ToString();
             if (string.IsNullOrEmpty(schoolId)
-                ||!(await IsAdminAuthorizedForSchool(userId, schoolId, dbContext)))
+                || !(await IsAdminAuthorizedForSchool(userId, schoolId, dbContext)))
             {
                 context.Response.StatusCode = 403;
                 return;
@@ -38,7 +35,7 @@ public class SchoolAuthorizationMiddleware
     private async Task<bool> IsAdminAuthorizedForSchool(string? adminId, string? schoolId, ApplicationDBContext dbContext)
     {
         var adminSchoolId = (await dbContext.Users.FindAsync(Int32.Parse(adminId!)))?.SchoolId;
-        if (adminSchoolId is not null 
+        if (adminSchoolId is not null
             && !string.IsNullOrEmpty(schoolId)
             && adminSchoolId == (Int32.Parse(schoolId!)))
         {

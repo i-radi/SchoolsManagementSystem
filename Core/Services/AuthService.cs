@@ -2,10 +2,10 @@
 using Microsoft.IdentityModel.Tokens;
 using Models.Entities.Identity;
 using Persistance.Context;
-using VModels.DTOS.Auth;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using VModels.DTOS.Auth;
 
 namespace Core.Services;
 

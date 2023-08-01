@@ -1,7 +1,8 @@
+using Infrastructure.MiddleWares;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Infrastructure.MiddleWares;
 using Persistance.Seeder;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDBContext>(option =>
 {
-    option.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbContextConnection"));
+    option.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbContextConnection")!);
 }, ServiceLifetime.Transient);
 
 #endregion
@@ -22,6 +23,7 @@ builder.Services.AddPersistanceDependencies()
                  .AddInfrastructureDependencies()
                  .AddCoreDependencies()
                  .AddPersistanceServiceRegisteration(builder.Configuration)
+                 .AddSerilogRegisteration(builder.Configuration, builder.Host)
                  .AddInfrastructureServiceRegisteration(builder.Configuration);
 
 #endregion
@@ -72,6 +74,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseSerilogRequestLogging();
+app.UseMiddleware<RequestResponseLoggingMiddleware>();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseHttpsRedirection();
 app.UseCors(CORS);

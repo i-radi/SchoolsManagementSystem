@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Infrastructure.Bases;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Infrastructure.Bases;
+using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
 
@@ -9,10 +10,12 @@ namespace Infrastructure.MiddleWares;
 public class ErrorHandlerMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly ILogger<ErrorHandlerMiddleware> _logger;
 
-    public ErrorHandlerMiddleware(RequestDelegate next)
+    public ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMiddleware> logger)
     {
         _next = next;
+        _logger = logger;
     }
 
     public async Task Invoke(HttpContext context)
@@ -23,9 +26,11 @@ public class ErrorHandlerMiddleware
         }
         catch (Exception error)
         {
+            _logger.LogError(error.ToString());
+
             var response = context.Response;
             response.ContentType = "application/json";
-            var responseModel = new Response<string>() { Succeeded = false, Message = error?.Message };
+            var responseModel = new Response<string>() { Succeeded = false, Message = error?.Message! };
             //TODO:: cover all validation errors
             switch (error)
             {

@@ -7,11 +7,13 @@ public class ClassRoomsController : ControllerBase
 {
     private readonly IClassRoomService _classRoomService;
     private readonly IUserClassService _userClassService;
+    private readonly ILogger<ClassRoomsController> _logger;
 
-    public ClassRoomsController(IClassRoomService classRoomService, IUserClassService userClassService)
+    public ClassRoomsController(IClassRoomService classRoomService, IUserClassService userClassService, ILogger<ClassRoomsController> logger)
     {
         _classRoomService = classRoomService;
         _userClassService = userClassService;
+        _logger = logger;
     }
 
     [HttpGet]
