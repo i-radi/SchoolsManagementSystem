@@ -27,7 +27,7 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SMS.Presentation\SMS.Presentation.csproj" />
+    <ProjectReference Include="..\SMS.Presentation\Presentation.csproj" />
   </ItemGroup>
 
 	<ItemGroup>

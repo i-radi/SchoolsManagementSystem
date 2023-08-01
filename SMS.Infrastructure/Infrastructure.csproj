@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SMS.Models\SMS.Models.csproj" />
-    <ProjectReference Include="..\SMS.VModels\SMS.VModels.csproj" />
+    <ProjectReference Include="..\SMS.Models\Models.csproj" />
+    <ProjectReference Include="..\SMS.VModels\VModels.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -16,9 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SMS.Core\SMS.Core.csproj" />
-    <ProjectReference Include="..\SMS.Infrastructure\SMS.Infrastructure.csproj" />
-    <ProjectReference Include="..\SMS.Persistance\SMS.Persistance.csproj" />
+    <ProjectReference Include="..\SMS.Core\Core.csproj" />
+    <ProjectReference Include="..\SMS.Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\SMS.Persistance\Persistance.csproj" />
   </ItemGroup>
 
 </Project>

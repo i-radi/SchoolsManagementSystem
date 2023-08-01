@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SMS.Infrastructure\SMS.Infrastructure.csproj" />
-    <ProjectReference Include="..\SMS.Persistance\SMS.Persistance.csproj" />
-    <ProjectReference Include="..\SMS.VModels\SMS.VModels.csproj" />
+    <ProjectReference Include="..\SMS.Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\SMS.Persistance\Persistance.csproj" />
+    <ProjectReference Include="..\SMS.VModels\VModels.csproj" />
   </ItemGroup>
 
 </Project>
