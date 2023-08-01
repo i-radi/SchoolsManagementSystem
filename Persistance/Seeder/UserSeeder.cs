@@ -15,7 +15,9 @@ public static class UserSeeder
                 UserName = "superAdmin",
                 Email = "admin@mail.com",
                 Name = "organizationProject",
-                PlainPassword = "123456"
+                PlainPassword = "123456",
+                RefreshToken = Guid.NewGuid(),
+                RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
             };
             await _userManager.CreateAsync(defaultuser, "123456");
             await _userManager.AddToRoleAsync(defaultuser, "SuperAdmin");

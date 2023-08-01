@@ -22,28 +22,6 @@ namespace Persistance.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roles", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
@@ -147,7 +125,7 @@ namespace Persistance.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Models.Entities.Classes", b =>
+            modelBuilder.Entity("Models.Entities.ClassRoom", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -166,7 +144,7 @@ namespace Persistance.Migrations
 
                     b.HasIndex("GradeId");
 
-                    b.ToTable("Classes");
+                    b.ToTable("ClassRooms");
                 });
 
             modelBuilder.Entity("Models.Entities.Grade", b =>
@@ -218,7 +196,7 @@ namespace Persistance.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("Models.Entities.Identity.User", b =>
@@ -231,6 +209,10 @@ namespace Persistance.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("AccessToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -276,6 +258,12 @@ namespace Persistance.Migrations
                     b.Property<string>("PlainPassword")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("RefreshToken")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("RefreshTokenExpiryDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -380,7 +368,7 @@ namespace Persistance.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("ClassId")
+                    b.Property<int>("ClassRoomId")
                         .HasColumnType("int");
 
                     b.Property<int>("SeasonId")
@@ -394,7 +382,7 @@ namespace Persistance.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClassId");
+                    b.HasIndex("ClassRoomId");
 
                     b.HasIndex("SeasonId");
 
@@ -473,10 +461,10 @@ namespace Persistance.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Models.Entities.Classes", b =>
+            modelBuilder.Entity("Models.Entities.ClassRoom", b =>
                 {
                     b.HasOne("Models.Entities.Grade", "Grade")
-                        .WithMany("Classes")
+                        .WithMany("ClassRooms")
                         .HasForeignKey("GradeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -528,9 +516,9 @@ namespace Persistance.Migrations
 
             modelBuilder.Entity("Models.Entities.UserClass", b =>
                 {
-                    b.HasOne("Models.Entities.Classes", "Classes")
+                    b.HasOne("Models.Entities.ClassRoom", "ClassRoom")
                         .WithMany("UserClasses")
-                        .HasForeignKey("ClassId")
+                        .HasForeignKey("ClassRoomId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -552,7 +540,7 @@ namespace Persistance.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Classes");
+                    b.Navigation("ClassRoom");
 
                     b.Navigation("Season");
 
@@ -561,14 +549,14 @@ namespace Persistance.Migrations
                     b.Navigation("UserType");
                 });
 
-            modelBuilder.Entity("Models.Entities.Classes", b =>
+            modelBuilder.Entity("Models.Entities.ClassRoom", b =>
                 {
                     b.Navigation("UserClasses");
                 });
 
             modelBuilder.Entity("Models.Entities.Grade", b =>
                 {
-                    b.Navigation("Classes");
+                    b.Navigation("ClassRooms");
                 });
 
             modelBuilder.Entity("Models.Entities.Identity.User", b =>
