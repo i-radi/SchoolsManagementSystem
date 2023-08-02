@@ -1,4 +1,5 @@
 using Infrastructure.MiddleWares;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistance.Seeder;
@@ -28,10 +29,32 @@ builder.Services.AddPersistanceDependencies()
 
 #endregion
 
-#region Default
-builder.Services.AddControllers();
+#region MVC
+
+builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient();
+builder.Services.AddSession();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = ".asp.cookie";
+        options.Cookie.Domain = "";
+        options.ExpireTimeSpan = TimeSpan.FromDays(2);
+    });
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.CheckConsentNeeded = context => false;
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+    options.Secure = CookieSecurePolicy.Always;
+});
+
+#endregion
+
+#region API
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 #endregion
 
 #region AllowCORS
@@ -52,6 +75,7 @@ builder.Services.AddCors(options =>
 #endregion
 
 #region Middlewares
+
 var app = builder.Build();
 
 #region Seed 3 roles and superAdmin user only first time
@@ -77,12 +101,26 @@ if (app.Environment.IsDevelopment())
 app.UseSerilogRequestLogging();
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
 app.UseMiddleware<ErrorHandlerMiddleware>();
+
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
 app.UseCors(CORS);
+app.UseSession();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<SchoolAuthorizationMiddleware>();
-app.MapControllers();
+app.UseCookiePolicy();
+
+app.UseEndpoints(endpoints =>
+{
+    // API Endpoints using attribute-based routing
+    endpoints.MapControllers();
+
+    // MVC Endpoints using conventional routing
+    endpoints.MapDefaultControllerRoute();
+});
 app.Run();
 
 #endregion
