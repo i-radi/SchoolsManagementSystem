@@ -1,4 +1,4 @@
-﻿namespace Presentation.Controllers;
+﻿namespace Presentation.API_Controllers;
 
 [Authorize(Policy = "Normal")]
 [Route("api/schools")]
@@ -29,7 +29,7 @@ public class SchoolsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> Create(AddSchoolDto dto)
+    public async Task<IActionResult> Add(AddSchoolDto dto)
     {
         return Ok(await _schoolService.Add(dto));
     }

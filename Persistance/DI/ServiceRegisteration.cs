@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Models.Entities.Identity;
 
@@ -11,6 +12,8 @@ public static class ServiceRegisteration
         #region Identity
         services.AddIdentity<User, Role>(option =>
         {
+            option.SignIn.RequireConfirmedAccount = false;
+
             // Password settings.
             option.Password.RequireDigit = false;
             option.Password.RequireLowercase = false;
@@ -24,7 +27,13 @@ public static class ServiceRegisteration
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
             option.User.RequireUniqueEmail = true;
 
-        }).AddEntityFrameworkStores<ApplicationDBContext>();
+        }).AddEntityFrameworkStores<ApplicationDBContext>()
+        .AddDefaultUI()
+        .AddDefaultTokenProviders()
+        .AddSignInManager<SignInManager<User>>();
+
+        services.Configure<SecurityStampValidatorOptions>(options =>
+                                                            options.ValidationInterval = TimeSpan.Zero);
         #endregion
 
         return services;

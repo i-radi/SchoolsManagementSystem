@@ -7,8 +7,9 @@ public class UserConfigurations : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder
-           .HasKey(x => x.Id);
+        builder.HasKey(x => x.Id);
+        builder.HasIndex(e => e.Email).IsUnique();
+        builder.HasIndex(e => e.UserName).IsUnique();
 
         builder.HasOne(u => u.Organization)
                  .WithMany(d => d.Users)

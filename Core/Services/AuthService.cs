@@ -37,10 +37,8 @@ public class AuthService : IAuthService
         if (await _userManager.FindByEmailAsync(dto.Email) is not null)
             return ResponseHandler.BadRequest<string>("Email is already registered!");
 
-        if (await _userManager.FindByNameAsync(dto.UserName) is not null)
-            return ResponseHandler.BadRequest<string>("Username is already registered!");
-
         var user = _mapper.Map<User>(dto);
+        user.UserName = dto.Email;
 
         var result = await _userManager.CreateAsync(user, dto.Password);
         await _userManager.AddToRoleAsync(user, dto.Role);
@@ -55,7 +53,7 @@ public class AuthService : IAuthService
             return ResponseHandler.BadRequest<string>(errors);
         }
 
-        return ResponseHandler.Success<string>($"{dto.UserName} created successfully");
+        return ResponseHandler.Success<string>($"{dto.Email} created successfully");
     }
 
     public async Task<Response<JwtAuthResult>> LoginAsync(LoginDto dto)

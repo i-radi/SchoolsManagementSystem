@@ -1,4 +1,4 @@
-﻿namespace Presentation.Controllers;
+﻿namespace Presentation.API_Controllers;
 
 [Authorize(Policy = "Normal")]
 [Route("api/grades")]
@@ -29,7 +29,7 @@ public class GradesController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> Create([FromHeader] int schoolId, AddGradeDto dto)
+    public async Task<IActionResult> Add([FromHeader] int schoolId, AddGradeDto dto)
     {
         return Ok(await _gradeService.Add(dto));
     }

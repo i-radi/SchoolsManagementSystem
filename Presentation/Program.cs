@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistance.Seeder;
 using Serilog;
+using Persistance.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbContextConnection")!);
 }, ServiceLifetime.Transient);
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 #endregion
 
@@ -94,8 +96,15 @@ using (var scope = app.Services.CreateScope())
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseMigrationsEndPoint();
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
 
 app.UseSerilogRequestLogging();
@@ -121,6 +130,8 @@ app.UseEndpoints(endpoints =>
     // MVC Endpoints using conventional routing
     endpoints.MapDefaultControllerRoute();
 });
+app.MapRazorPages();
+
 app.Run();
 
 #endregion

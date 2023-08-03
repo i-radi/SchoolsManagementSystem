@@ -12,7 +12,7 @@ public static class UserSeeder
         {
             var defaultuser = new User()
             {
-                UserName = "superAdmin",
+                UserName = "admin@mail.com",
                 Email = "admin@mail.com",
                 Name = "organizationProject",
                 PlainPassword = "123456",

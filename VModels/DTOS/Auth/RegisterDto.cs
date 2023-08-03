@@ -7,10 +7,6 @@ public class RegisterDto
     [StringLength(100)]
     public string Name { get; set; } = string.Empty;
 
-    [StringLength(50)]
-    [Required]
-    public string UserName { get; set; } = string.Empty;
-
     [StringLength(128)]
     [Required]
     public string Email { get; set; } = string.Empty;

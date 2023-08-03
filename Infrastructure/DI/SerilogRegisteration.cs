@@ -27,7 +27,7 @@ public static class SerilogRegisteration
                     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                     .Enrich.FromLogContext()
                     .WriteTo.Console()
-                    .WriteTo.File("log.json", LogEventLevel.Information)
+                    .WriteTo.File("log.txt", LogEventLevel.Information)
                     .WriteTo.Email(new EmailConnectionInfo
                     {
                         FromEmail = emailSettings.FromEmail,
@@ -53,7 +53,7 @@ public static class SerilogRegisteration
                     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                     .Enrich.FromLogContext()
                     .WriteTo.Console()
-                    .WriteTo.File("log.json", LogEventLevel.Information));
+                    .WriteTo.File("log.txt", LogEventLevel.Information));
         }
 
         #endregion

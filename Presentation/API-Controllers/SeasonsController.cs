@@ -1,4 +1,4 @@
-﻿namespace Presentation.Controllers;
+﻿namespace Presentation.API_Controllers;
 
 [Authorize(Policy = "Normal")]
 [Route("api/seasons")]
@@ -29,7 +29,7 @@ public class SeasonsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> Create([FromHeader] int schoolId, AddSeasonDto dto)
+    public async Task<IActionResult> Add([FromHeader] int schoolId, AddSeasonDto dto)
     {
         return Ok(await _seasonService.Add(dto));
     }

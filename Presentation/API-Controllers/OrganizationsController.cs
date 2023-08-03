@@ -1,4 +1,4 @@
-﻿namespace Presentation.Controllers;
+﻿namespace Presentation.API_Controllers;
 
 [Authorize(Policy = "Normal")]
 [Route("api/organizations")]
@@ -29,7 +29,7 @@ public class OrganizationsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> Create(AddOrganizationDto dto)
+    public async Task<IActionResult> Add(AddOrganizationDto dto)
     {
         return Ok(await _organizationService.Add(dto));
     }

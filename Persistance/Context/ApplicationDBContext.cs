@@ -30,7 +30,7 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
         //Change Identity Schema and Table Names
         modelBuilder.Entity<User>().ToTable("Users");
         modelBuilder.Entity<Role>().ToTable("Roles");
-        modelBuilder.Entity<IdentityUserRole<int>>().ToTable("UserRole");
+        modelBuilder.Entity<IdentityUserRole<int>>().ToTable("UserRoles");
         modelBuilder.Entity<IdentityUserLogin<int>>().ToTable("UserLogins");
         modelBuilder.Entity<IdentityUserClaim<int>>().ToTable("UserClaims");
         modelBuilder.Entity<IdentityRoleClaim<int>>().ToTable("RoleClaims");
