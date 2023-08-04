@@ -55,7 +55,7 @@ public class ClassRoomsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete([FromHeader] int schoolId, int id)
+    public async Task<IActionResult> Remove([FromHeader] int schoolId, int id)
     {
         var result = await _classRoomService.Delete(id);
         if (!result.Data)

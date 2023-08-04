@@ -51,7 +51,7 @@ public class GradesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete([FromHeader] int schoolId, int id)
+    public async Task<IActionResult> Remove([FromHeader] int schoolId, int id)
     {
         var result = await _gradeService.Delete(id);
         if (!result.Data)

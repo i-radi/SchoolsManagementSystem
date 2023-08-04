@@ -51,7 +51,7 @@ public class OrganizationsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Remove(int id)
     {
         var result = await _organizationService.Delete(id);
         if (!result.Data)
