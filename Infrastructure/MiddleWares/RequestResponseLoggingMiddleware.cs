@@ -14,26 +14,36 @@ public class RequestResponseLoggingMiddleware : IMiddleware
 
     public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
     {
-        // Middleware is enabled only when the EnableRequestResponseLogging config value is set.
-        var request = await ReadBodyFromRequest(httpContext.Request);
+        bool IsAPI = httpContext.Request.Path.ToString().Contains("/api/");
+        if (IsAPI)
+        {
 
-        logger.LogInformation("Request: {request}", request);
+            // Middleware is enabled only when the EnableRequestResponseLogging config value is set.
+            var request = await ReadBodyFromRequest(httpContext.Request);
 
-        // Temporarily replace the HttpResponseStream, which is a write-only stream, with a MemoryStream to capture it's value in-flight.
-        var originalResponseBody = httpContext.Response.Body;
-        using var newResponseBody = new MemoryStream();
-        httpContext.Response.Body = newResponseBody;
+            logger.LogInformation("Request: {request}", request);
 
-        // Call the next middleware in the pipeline
-        await next(httpContext);
+            // Temporarily replace the HttpResponseStream, which is a write-only stream, with a MemoryStream to capture it's value in-flight.
+            var originalResponseBody = httpContext.Response.Body;
+            using var newResponseBody = new MemoryStream();
+            httpContext.Response.Body = newResponseBody;
 
-        newResponseBody.Seek(0, SeekOrigin.Begin);
-        var responseBodyText = await new StreamReader(httpContext.Response.Body).ReadToEndAsync();
+            // Call the next middleware in the pipeline
+            await next(httpContext);
 
-        logger.LogInformation("Response: {response}", responseBodyText);
+            newResponseBody.Seek(0, SeekOrigin.Begin);
+            var responseBodyText = await new StreamReader(httpContext.Response.Body).ReadToEndAsync();
 
-        newResponseBody.Seek(0, SeekOrigin.Begin);
-        await newResponseBody.CopyToAsync(originalResponseBody);
+            logger.LogInformation("Response: {response}", responseBodyText);
+
+            newResponseBody.Seek(0, SeekOrigin.Begin);
+            await newResponseBody.CopyToAsync(originalResponseBody);
+        }
+        else
+        {
+            // Call the next middleware in the pipeline
+            await next(httpContext);
+        }
     }
 
     private static async Task<string> ReadBodyFromRequest(HttpRequest request)

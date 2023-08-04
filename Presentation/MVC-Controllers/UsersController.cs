@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Models.Entities.Identity;
-using Persistance.Context;
 
 namespace Presentation.MVC_Controllers
 {
+    [Authorize(Policy = "SuperAdmin")]
     public class UsersController : Controller
     {
         private readonly ApplicationDBContext _context;

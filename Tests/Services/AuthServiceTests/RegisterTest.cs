@@ -32,7 +32,6 @@ public class RegisterTest
         {
             Email = "test@mail.com",
             Name = "test",
-            UserName = "Test",
             Password = "password",
             PhoneNumber = "1234567890",
             Role = "SuperAdmin"

@@ -7,7 +7,6 @@ using Serilog;
 using Persistance.Context;
 
 var builder = WebApplication.CreateBuilder(args);
-
 #region Services
 
 #region Connection To SQL Server
@@ -16,7 +15,6 @@ builder.Services.AddDbContext<ApplicationDBContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbContextConnection")!);
 }, ServiceLifetime.Transient);
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 #endregion
 
@@ -28,27 +26,6 @@ builder.Services.AddPersistanceDependencies()
                  .AddPersistanceServiceRegisteration(builder.Configuration)
                  .AddSerilogRegisteration(builder.Configuration, builder.Host)
                  .AddInfrastructureServiceRegisteration(builder.Configuration);
-
-#endregion
-
-#region MVC
-
-builder.Services.AddControllersWithViews();
-builder.Services.AddHttpClient();
-builder.Services.AddSession();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.Cookie.Name = ".asp.cookie";
-        options.Cookie.Domain = "";
-        options.ExpireTimeSpan = TimeSpan.FromDays(2);
-    });
-builder.Services.Configure<CookiePolicyOptions>(options =>
-{
-    options.CheckConsentNeeded = context => false;
-    options.MinimumSameSitePolicy = SameSiteMode.None;
-    options.Secure = CookieSecurePolicy.Always;
-});
 
 #endregion
 
@@ -115,12 +92,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors(CORS);
-app.UseSession();
+
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseMiddleware<SchoolAuthorizationMiddleware>();
-app.UseCookiePolicy();
 
 app.UseEndpoints(endpoints =>
 {

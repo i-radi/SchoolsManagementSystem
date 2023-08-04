@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Models.Entities.Identity;
+using Persistance.Context;
 
 namespace Persistance.DI;
 
@@ -31,9 +32,6 @@ public static class ServiceRegisteration
         .AddDefaultUI()
         .AddDefaultTokenProviders()
         .AddSignInManager<SignInManager<User>>();
-
-        services.Configure<SecurityStampValidatorOptions>(options =>
-                                                            options.ValidationInterval = TimeSpan.Zero);
         #endregion
 
         return services;

@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Models.Helpers;
 using System.Text;
@@ -12,18 +17,19 @@ public static class ServiceRegisteration
 {
     public static IServiceCollection AddInfrastructureServiceRegisteration(this IServiceCollection services, IConfiguration configuration)
     {
-        #region JWT Authentication
+        #region JWT & Cookie Authentication
+
         var jwtSettings = new JwtSettings();
         configuration.GetSection(nameof(jwtSettings)).Bind(jwtSettings);
-
         services.AddSingleton(jwtSettings);
 
-        services.AddAuthentication(x =>
+        services.AddAuthentication(options =>
         {
-            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = "JWT_OR_COOKIE";
+            options.DefaultChallengeScheme = "JWT_OR_COOKIE";
+            options.DefaultAuthenticateScheme = "JWT_OR_COOKIE";
         })
-       .AddJwtBearer(x =>
+       .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, x =>
        {
            x.RequireHttpsMetadata = false;
            x.SaveToken = true;
@@ -37,7 +43,19 @@ public static class ServiceRegisteration
                ValidateAudience = jwtSettings.ValidateAudience,
                ValidateLifetime = jwtSettings.ValidateLifeTime,
            };
-       });
+       })
+        .AddPolicyScheme("JWT_OR_COOKIE", "JWT_OR_COOKIE", options =>
+        {
+            options.ForwardDefaultSelector = context =>
+            {
+                bool isApiRequest = context.Request.Path.ToString().Contains("/api/");
+                if (isApiRequest)
+                    return JwtBearerDefaults.AuthenticationScheme;
+
+                return IdentityConstants.ApplicationScheme;
+            };
+        });
+
         #endregion
 
         #region Swagger Gen

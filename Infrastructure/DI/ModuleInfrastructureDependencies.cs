@@ -12,7 +12,7 @@ public static class ModuleInfrastructureDependencies
 
         // Get Validators
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-        services.AddControllers().ConfigureApiBehaviorOptions(options =>
+        services.AddControllersWithViews().ConfigureApiBehaviorOptions(options =>
         {
             options.InvalidModelStateResponseFactory = c =>
             {
@@ -23,7 +23,8 @@ public static class ModuleInfrastructureDependencies
                 throw new ValidationException(errors);
             };
         });
-
+        services.AddRazorPages();
+        services.AddMvc();
         return services;
     }
 }

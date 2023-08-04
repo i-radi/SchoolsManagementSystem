@@ -45,7 +45,7 @@ public class UsersController : ControllerBase
 
         var result = await _authService.LoginAsync(model);
 
-        if (!result.Data.IsAuthenticated)
+        if (!result.Succeeded)
             return BadRequest(result);
 
         return Ok(result);
@@ -59,7 +59,7 @@ public class UsersController : ControllerBase
 
         var result = await _authService.RefreshTokenAsync(model);
 
-        if (!result.Data.IsAuthenticated)
+        if (!result.Succeeded)
             return BadRequest(result);
 
         return Ok(result);
@@ -75,7 +75,7 @@ public class UsersController : ControllerBase
 
         var result = await _authService.RevokeTokenAsync(username);
 
-        if (!result.Data)
+        if (!result.Succeeded)
             return BadRequest("Opps, something went wrong.");
 
         return Ok("done.");
