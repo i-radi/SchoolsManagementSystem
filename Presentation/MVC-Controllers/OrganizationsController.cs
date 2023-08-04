@@ -15,9 +15,9 @@ namespace Presentation.MVC_Controllers
         // GET: Organizations
         public async Task<IActionResult> Index()
         {
-              return _context.Organizations != null ? 
-                          View(await _context.Organizations.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDBContext.Organizations'  is null.");
+            return _context.Organizations != null ?
+                        View(await _context.Organizations.ToListAsync()) :
+                        Problem("Entity set 'ApplicationDBContext.Organizations'  is null.");
         }
 
         // GET: Organizations/Details/5
@@ -143,14 +143,14 @@ namespace Presentation.MVC_Controllers
             {
                 _context.Organizations.Remove(organization);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool OrganizationExists(int id)
         {
-          return (_context.Organizations?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Organizations?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Models.Entities.Identity;
-using Persistance.Context;
 
 namespace Persistance.DI;
 
