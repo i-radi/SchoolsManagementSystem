@@ -31,7 +31,7 @@ namespace Presentation.MVC_Controllers
             var modelItems = PaginatedList<User>
             .Create(await _userManager.Users
             .Include(u => u.Organization)
-            .ToListAsync(),1,10);
+            .ToListAsync(), 1, 10);
 
             var result = _mapper.Map<IEnumerable<GetUserDto>>(modelItems);
             foreach (var userDto in result.Select((value, i) => new { i, value }))
@@ -44,7 +44,7 @@ namespace Presentation.MVC_Controllers
         // GET: Users/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null )
+            if (id == null)
             {
                 return NotFound();
             }

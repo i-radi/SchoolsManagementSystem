@@ -1,41 +1,46 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using Models.Entities;
+using Persistance.IRepos;
+using Persistance.Repos;
 
 namespace Presentation.MVC_Controllers
 {
     public class OrganizationsController : Controller
     {
-        private readonly ApplicationDBContext _context;
+        private readonly IOrganizationRepo _organizationRepo;
+        private readonly IMapper _mapper;
 
-        public OrganizationsController(ApplicationDBContext context)
+        public OrganizationsController(IOrganizationRepo organizationRepo, IMapper mapper)
         {
-            _context = context;
+            _organizationRepo = organizationRepo;
+            _mapper = mapper;
         }
 
         // GET: Organizations
-        public async Task<IActionResult> Index()
+        public IActionResult Index(int page = 1, int pageSize = 10)
         {
-            return _context.Organizations != null ?
-                        View(await _context.Organizations.ToListAsync()) :
-                        Problem("Entity set 'ApplicationDBContext.Organizations'  is null.");
+            var modelItems = _organizationRepo.GetTableNoTracking();
+            var result = PaginatedList<GetOrganizationDto>.Create(_mapper.Map<List<GetOrganizationDto>>(modelItems), page, pageSize);
+
+            return View(result);
         }
 
         // GET: Organizations/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Organizations == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var organization = await _context.Organizations
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (organization == null)
+            var modelItem = await _organizationRepo.GetByIdAsync(id.Value);
+            var dto = _mapper.Map<GetOrganizationDto>(modelItem);
+            if (dto == null)
             {
                 return NotFound();
             }
 
-            return View(organization);
+            return View(dto);
         }
 
         // GET: Organizations/Create
@@ -45,16 +50,14 @@ namespace Presentation.MVC_Controllers
         }
 
         // POST: Organizations/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Organization organization)
+        public async Task<IActionResult> Create([Bind("Id,Name")] GetOrganizationDto organization)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(organization);
-                await _context.SaveChangesAsync();
+                var modelItem = _mapper.Map<Organization>(organization);
+                var model = await _organizationRepo.AddAsync(modelItem);
                 return RedirectToAction(nameof(Index));
             }
             return View(organization);
@@ -63,25 +66,25 @@ namespace Presentation.MVC_Controllers
         // GET: Organizations/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Organizations == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var organization = await _context.Organizations.FindAsync(id);
-            if (organization == null)
+            var modelItem = await _organizationRepo.GetByIdAsync(id.Value);
+            var dto = _mapper.Map<GetOrganizationDto>(modelItem);
+            if (dto == null)
             {
                 return NotFound();
             }
-            return View(organization);
+
+            return View(dto);
         }
 
         // POST: Organizations/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Organization organization)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] GetOrganizationDto organization)
         {
             if (id != organization.Id)
             {
@@ -90,22 +93,14 @@ namespace Presentation.MVC_Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(organization);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!OrganizationExists(organization.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                var modelItem = await _organizationRepo.GetByIdAsync(organization.Id);
+
+                if (modelItem is null)
+                    return NotFound();
+
+                _mapper.Map(organization, modelItem);
+
+                var model = _organizationRepo.UpdateAsync(modelItem);
                 return RedirectToAction(nameof(Index));
             }
             return View(organization);
@@ -114,19 +109,19 @@ namespace Presentation.MVC_Controllers
         // GET: Organizations/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Organizations == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var organization = await _context.Organizations
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (organization == null)
+            var modelItem = await _organizationRepo.GetByIdAsync(id.Value);
+            var dto = _mapper.Map<GetOrganizationDto>(modelItem);
+            if (dto == null)
             {
                 return NotFound();
             }
 
-            return View(organization);
+            return View(dto);
         }
 
         // POST: Organizations/Delete/5
@@ -134,23 +129,13 @@ namespace Presentation.MVC_Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Organizations == null)
-            {
-                return Problem("Entity set 'ApplicationDBContext.Organizations'  is null.");
-            }
-            var organization = await _context.Organizations.FindAsync(id);
+            var organization = await _organizationRepo.GetByIdAsync(id);
             if (organization != null)
             {
-                _context.Organizations.Remove(organization);
+                await _organizationRepo.DeleteAsync(organization);
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool OrganizationExists(int id)
-        {
-            return (_context.Organizations?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

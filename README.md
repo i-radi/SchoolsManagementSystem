@@ -11,7 +11,8 @@ ASP.NET 6 API Project
 
 ## Architecture, Patterns, and Libraries
 Clean Architecture, Identity, Repository Pattern, DTOs, Automapper <br/>
-JWT, Refresh Token, Fluent Validation, xUnit.
+JWT, Refresh Token, Cookies, Fluent Validation, xUnit, MVC, API <br/>
+Serilog.
 
 ## Database Diagram
 ![ERD](https://github.com/i-radi/SchoolsManagementSystem/assets/60944957/7fdeb75a-a970-4690-ac84-be2b1f1dbf8e)

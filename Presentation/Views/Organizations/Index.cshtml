@@ -1,19 +1,19 @@
-﻿@model IEnumerable<Models.Entities.Organization>
+﻿@model PaginatedList<GetOrganizationDto>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Organizations</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                Name
             </th>
             <th></th>
         </tr>
@@ -33,3 +33,39 @@
 }
     </tbody>
 </table>
+@*<div class="form-inline">
+    <label for="pageSizeSelect">Page Size:</label>
+    <select id="pageSizeSelect" class="form-control" onchange="changePageSize(this.value)">
+        <option value="5" >5</option>
+        <option value="10" selected>10</option>
+        <option value="20" >20</option>
+        <option value="50" >50</option>
+        <option value="100" >100</option>
+    </select>
+</div>*@
+<ul class="pagination">
+    <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Index", new { page = 1 })">First</a>
+    </li>
+    <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex - 1 })">Previous</a>
+    </li>
+    @for (int i = 1; i <= Model.TotalPages; i++)
+    {
+        <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+        </li>
+    }
+    <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex + 1 })">Next</a>
+    </li>
+    <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Index", new { page = Model.TotalPages })">Last</a>
+    </li>
+</ul>
+
+<script>
+    function changePageSize(pageSize) {
+        window.location.href = `Organizations?page=${@Model.PageIndex}&pageSize=${pageSize}`;
+    }
+</script>

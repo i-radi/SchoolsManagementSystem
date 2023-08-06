@@ -14,8 +14,8 @@ public class RequestResponseLoggingMiddleware : IMiddleware
 
     public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
     {
-        bool IsAPI = httpContext.Request.Path.ToString().Contains("/api/");
-        if (IsAPI)
+        bool IsApiRequest = httpContext.Request.Path.ToString().Contains("/api/");
+        if (IsApiRequest)
         {
 
             // Middleware is enabled only when the EnableRequestResponseLogging config value is set.

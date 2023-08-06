@@ -5,6 +5,7 @@ using Persistance.Seeder;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
 #region Services
 
 #region Connection To SQL Server
@@ -90,7 +91,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors(CORS);
-
 
 app.UseAuthentication();
 app.UseAuthorization();
