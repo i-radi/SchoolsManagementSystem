@@ -2,9 +2,9 @@
 
 public static class OrganizationMock
 {
-    public static Mock<ISchoolsRepo> Get()
+    public static Mock<IOrganizationRepo> Get()
     {
-        var mock = new Mock<ISchoolsRepo>();
+        var mock = new Mock<IOrganizationRepo>();
 
         // Setup the mock
 

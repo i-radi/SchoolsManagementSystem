@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Presentation.MVC_Controllers
+namespace Presentation.Controllers.MVC
 {
     [Authorize(Policy = "SuperAdmin")]
     public class UsersController : Controller

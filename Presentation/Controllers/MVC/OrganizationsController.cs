@@ -3,7 +3,7 @@ using Models.Entities;
 using Persistance.IRepos;
 using Persistance.Repos;
 
-namespace Presentation.MVC_Controllers
+namespace Presentation.Controllers.MVC
 {
     public class OrganizationsController : Controller
     {

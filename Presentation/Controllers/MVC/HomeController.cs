@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using VModels.ViewModels;
 
-namespace Presentation.Controllers
+namespace Presentation.Controllers.MVC
 {
     public class HomeController : Controller
     {

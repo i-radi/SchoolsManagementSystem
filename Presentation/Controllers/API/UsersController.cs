@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Presentation.API_Controllers;
+namespace Presentation.Controllers.API;
 
 [Route("api/users")]
 [ApiController]

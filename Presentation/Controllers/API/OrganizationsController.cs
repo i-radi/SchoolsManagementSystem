@@ -1,4 +1,4 @@
-﻿namespace Presentation.Properties;
+﻿namespace Presentation.Controllers.API;
 
 [Authorize(Policy = "Normal")]
 [Route("api/organizations")]

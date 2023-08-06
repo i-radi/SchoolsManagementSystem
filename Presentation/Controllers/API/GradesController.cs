@@ -1,47 +1,47 @@
-﻿namespace Presentation.API_Controllers;
+﻿namespace Presentation.Controllers.API;
 
 [Authorize(Policy = "Normal")]
-[Route("api/seasons")]
+[Route("api/grades")]
 [ApiController]
-public class SeasonsController : ControllerBase
+public class GradesController : ControllerBase
 {
-    private readonly ISeasonService _seasonService;
+    private readonly IGradeService _gradeService;
 
-    public SeasonsController(ISeasonService seasonService)
+    public GradesController(IGradeService gradeService)
     {
-        _seasonService = seasonService;
+        _gradeService = gradeService;
     }
 
     [HttpGet]
     public IActionResult GetAll([FromHeader] int schoolId, int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_seasonService.GetAll(pageNumber, pageSize));
+        return Ok(_gradeService.GetAll(pageNumber, pageSize));
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromHeader] int schoolId, int id)
     {
-        var dto = await _seasonService.GetById(id);
+        var dto = await _gradeService.GetById(id);
         if (dto.Data is null)
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Found Season"));
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Found Grade"));
         return Ok(dto);
     }
 
     [HttpPost]
     [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> Add([FromHeader] int schoolId, AddSeasonDto dto)
+    public async Task<IActionResult> Add([FromHeader] int schoolId, AddGradeDto dto)
     {
-        return Ok(await _seasonService.Add(dto));
+        return Ok(await _gradeService.Add(dto));
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update([FromHeader] int schoolId, int id, UpdateSeasonDto dto)
+    public async Task<IActionResult> Update([FromHeader] int schoolId, int id, UpdateGradeDto dto)
     {
         if (id != dto.Id)
         {
             return BadRequest(ResponseHandler.BadRequest<string>("Id not matched"));
         }
-        var result = await _seasonService.Update(dto);
+        var result = await _gradeService.Update(dto);
         if (!result.Data)
         {
             return BadRequest(ResponseHandler.BadRequest<string>("Not Updated"));
@@ -53,7 +53,7 @@ public class SeasonsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Remove([FromHeader] int schoolId, int id)
     {
-        var result = await _seasonService.Delete(id);
+        var result = await _gradeService.Delete(id);
         if (!result.Data)
         {
             return BadRequest(ResponseHandler.BadRequest<string>("Not Deleted"));

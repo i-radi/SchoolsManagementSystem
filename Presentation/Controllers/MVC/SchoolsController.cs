@@ -5,7 +5,7 @@ using Models.Entities;
 using Persistance.IRepos;
 using VModels.ViewModels;
 
-namespace Presentation.MVC_Controllers
+namespace Presentation.Controllers.MVC
 {
     public class SchoolsController : Controller
     {
@@ -50,7 +50,7 @@ namespace Presentation.MVC_Controllers
         // GET: Schools/Create
         public IActionResult Create()
         {
-            var organizations =  _organizationRepo.GetTableNoTracking().ToList();
+            var organizations = _organizationRepo.GetTableNoTracking().ToList();
             var viewModel = new CreateSchoolViewModel
             {
                 OrganizationOptions = new SelectList(organizations, "Id", "Name")
@@ -72,7 +72,7 @@ namespace Presentation.MVC_Controllers
                     OrganizationId = viewModel.OrganizationId
                 };
 
-                
+
                 await _schoolsRepo.AddAsync(school);
                 return RedirectToAction(nameof(Index));
             }
