@@ -7,9 +7,6 @@ public static class RoleSeeder
 {
     public static async Task SeedAsync(RoleManager<Role> _roleManager)
     {
-        using var context = new ApplicationDBContext();
-        context.Database.EnsureCreated();
-
         var rolesCount = await _roleManager.Roles.CountAsync();
         if (rolesCount <= 0)
         {
@@ -19,11 +16,11 @@ public static class RoleSeeder
             });
             await _roleManager.CreateAsync(new Role()
             {
-                Name = "Admin"
+                Name = "OrganizationAdmin"
             });
             await _roleManager.CreateAsync(new Role()
             {
-                Name = "Normal"
+                Name = "SchoolAdmin"
             });
         }
     }

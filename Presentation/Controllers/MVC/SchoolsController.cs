@@ -21,9 +21,16 @@ namespace Presentation.Controllers.MVC
         }
 
         // GET: Schools
-        public IActionResult Index(int page = 1, int pageSize = 10)
+        public IActionResult Index(int page = 1, int pageSize = 10, int organizationId = 0)
         {
-            var modelItems = _schoolsRepo.GetTableNoTracking().Include(s => s.Organization);
+            var modelItems = _schoolsRepo.GetTableNoTracking()
+                .Include(s => s.Organization)
+                .AsQueryable();
+
+            if (organizationId > 0)
+            {
+                modelItems = modelItems.Where(s => s.OrganizationId == organizationId);
+            }
             var result = PaginatedList<GetSchoolDto>.Create(_mapper.Map<List<GetSchoolDto>>(modelItems), page, pageSize);
 
             return View(result);

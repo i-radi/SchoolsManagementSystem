@@ -23,10 +23,10 @@ public static class ModuleCoreDependencies
         {
             options.AddPolicy("SuperAdmin",
                 policy => policy.RequireClaim(ClaimTypes.Role, "SuperAdmin"));
-            options.AddPolicy("Admin",
-                policy => policy.RequireClaim(ClaimTypes.Role, "SuperAdmin", "Admin"));
-            options.AddPolicy("Normal",
-                policy => policy.RequireClaim(ClaimTypes.Role, "SuperAdmin", "Admin", "Normal"));
+            options.AddPolicy("OrganizationAdmin",
+                policy => policy.RequireClaim(ClaimTypes.Role, "SuperAdmin", "OrganizationAdmin"));
+            options.AddPolicy("SchoolAdmin",
+                policy => policy.RequireClaim(ClaimTypes.Role, "SuperAdmin", "OrganizationAdmin", "SchoolAdmin"));
 
         }
         );

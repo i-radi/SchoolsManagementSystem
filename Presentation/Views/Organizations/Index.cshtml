@@ -9,6 +9,13 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+@using (Html.BeginForm("Index", "Organizations", FormMethod.Get))
+{
+    <p>
+        @Html.TextBox("searchName", ViewBag.CurrentFilter as string, new { placeholder = "Search by name" })
+        <input type="submit" value="Search" />
+    </p>
+}
 <table class="table table-striped">
     <thead>
         <tr>
@@ -25,6 +32,7 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
+                <a href="/Schools?organizationId=@item.Id">Manage Schools</a> |
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
@@ -63,6 +71,7 @@
         <a class="page-link" href="@Url.Action("Index", new { page = Model.TotalPages })">Last</a>
     </li>
 </ul>
+
 
 <script>
     function changePageSize(pageSize) {

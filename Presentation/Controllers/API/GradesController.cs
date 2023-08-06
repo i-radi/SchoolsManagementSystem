@@ -1,6 +1,6 @@
 ﻿namespace Presentation.Controllers.API;
 
-[Authorize(Policy = "Normal")]
+[Authorize]
 [Route("api/grades")]
 [ApiController]
 public class GradesController : ControllerBase

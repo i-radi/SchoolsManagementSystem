@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Models.Entities;
 using Persistance.IRepos;
-using Persistance.Repos;
 
 namespace Presentation.Controllers.MVC
 {
@@ -17,9 +16,15 @@ namespace Presentation.Controllers.MVC
         }
 
         // GET: Organizations
-        public IActionResult Index(int page = 1, int pageSize = 10)
+        public IActionResult Index(int page = 1, int pageSize = 10, string searchName = "")
         {
             var modelItems = _organizationRepo.GetTableNoTracking();
+
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                modelItems = modelItems.Where(u => u.Name.Contains(searchName));
+            }
+
             var result = PaginatedList<GetOrganizationDto>.Create(_mapper.Map<List<GetOrganizationDto>>(modelItems), page, pageSize);
 
             return View(result);

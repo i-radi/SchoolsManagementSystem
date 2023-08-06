@@ -6,6 +6,18 @@
 
 <h1>Users</h1>
 
+@using (Html.BeginForm("Index", "Users", FormMethod.Get))
+{
+    <p>
+        @Html.TextBox("searchName", ViewBag.CurrentFilter as string, new { placeholder = "Search by name" })
+        
+        @Html.Label("Role:")
+        @Html.TextBox("searchRole", ViewBag.CurrentRoleFilter as string, new { placeholder = "Search by role" })
+
+        <input type="submit" value="Search" />
+    </p>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -20,9 +32,6 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Role)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Organization)
@@ -46,12 +55,10 @@
                 @Html.DisplayFor(modelItem => item.Email)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Role)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Organization)
             </td>
             <td>
+                <a href="/users/Roles/@item.Id">Manage Roles</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>

@@ -1,6 +1,6 @@
 ﻿namespace Presentation.Controllers.API;
 
-[Authorize(Policy = "Normal")]
+[Authorize]
 [Route("api/seasons")]
 [ApiController]
 public class SeasonsController : ControllerBase

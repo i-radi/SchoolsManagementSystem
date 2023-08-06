@@ -1,0 +1,87 @@
+﻿@using VModels.ViewModels.Users;
+@model CreateRoleViewModel
+
+@{
+    ViewData["Title"] = "CreateRole";
+}
+
+<h1>Create Role</h1>
+
+<h4>Email : @Model.UserName</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateRole">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="Id" hidden/>
+            <input asp-for="UserName" hidden/>
+            <div class="form-group">
+                <label for="RoleName">Role</label>
+                <select id="RoleName" name="RoleName" class="form-control">
+                    <option value="">-- Select Role --</option>
+                    @foreach (var role in Model.RoleOptions!)
+                    {
+                        <option value="@role.Text">@role.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group" id="organizations-list" style="display: none;">
+                <label for="OrganizationId">Organization</label>
+                <select id="OrganizationId" name="OrganizationId" class="form-control">
+                    <option value="">-- Select Organization --</option>
+                    @foreach (var listItem in Model.OrganizationOptions!)
+                    {
+                        <option value="@listItem.Value">@listItem.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group" id="schools-list" style="display: none;">
+                <label for="SchoolId">School</label>
+                <select id="SchoolId" name="SchoolId" class="form-control">
+                    <option value="">-- Select School --</option>
+                    @foreach (var listItem in Model.SchoolOptions!)
+                    {
+                        <option value="@listItem.Value">@listItem.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Roles" asp-route-id="@Model.Id">Back to Roles</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function toggleList() {
+        debugger;
+        var selectedRole = $('#RoleName').val();
+        var organizationsListDiv = $('#organizations-list');
+        var schoolsListDiv = $('#schools-list');
+
+
+        if (selectedRole === 'SchoolAdmin') {
+            schoolsListDiv.show();
+        } else {
+            schoolsListDiv.hide();
+        }
+        if (selectedRole === 'OrganizationAdmin') {
+            organizationsListDiv.show();
+        } else {
+            organizationsListDiv.hide();
+        }
+    }
+
+    $('#RoleName').on('change', toggleList);
+
+</script>
