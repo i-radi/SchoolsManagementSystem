@@ -88,7 +88,7 @@ public static class UserSeeder
             };
             await _userManager.CreateAsync(cairo2SchoolUser, "123456");
             await _userManager.AddToRoleAsync(cairo2SchoolUser, "SchoolAdmin");
-            
+
             var alex1SchoolUser = new User()
             {
                 UserName = "alex1@mail.com",

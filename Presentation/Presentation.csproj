@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Logs\" />
+    <Folder Include="Logs\August-2023\" />
   </ItemGroup>
 
 </Project>

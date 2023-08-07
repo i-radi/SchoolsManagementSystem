@@ -1,14 +1,23 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Infrastructure.IServices;
+using Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Models.Helpers;
 using System.Reflection;
 
 namespace Infrastructure.DI;
 
 public static class ModuleInfrastructureDependencies
 {
-    public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services, IConfiguration configuration)
     {
         // Configuration Of Automapper
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+        var emailSettings = new EmailSettings();
+        configuration.GetSection(nameof(emailSettings)).Bind(emailSettings);
+        services.AddSingleton(emailSettings);
+        services.AddTransient<IEmailSender, EmailSender>();
 
         // Get Validators
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());

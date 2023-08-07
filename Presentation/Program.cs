@@ -2,7 +2,6 @@ using Infrastructure.MiddleWares;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistance.Seeder;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +19,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(option =>
 #region Dependency injections
 
 builder.Services.AddPersistanceDependencies()
-                 .AddInfrastructureDependencies()
+                 .AddInfrastructureDependencies(builder.Configuration)
                  .AddCoreDependencies()
                  .AddPersistanceServiceRegisteration(builder.Configuration)
                  .AddSerilogRegisteration(builder.Configuration, builder.Host)
@@ -85,7 +84,7 @@ else
     app.UseHsts();
 }
 
-app.UseSerilogRequestLogging();
+//app.UseSerilogRequestLogging();
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 

@@ -2,10 +2,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Models.Helpers;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Email;
+using Serilog.Sinks.MSSqlServer;
+using System.Data;
 
 namespace Infrastructure.DI;
 
@@ -15,46 +18,54 @@ public static class SerilogRegisteration
     {
 
         #region Senk Email
+        var connectionString = configuration.GetConnectionString("ApplicationDbContextConnection");
+
+
+#pragma warning disable CS0618 // Type or member is obsolete
+        var loggerConfiguration = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .Enrich.FromLogContext()
+            .WriteTo.MSSqlServer(connectionString, "Logs",
+                columnOptions: GetMSSqlServerColumnOptions(),
+                autoCreateSqlTable: true)
+            .WriteTo.Console()
+            .WriteTo.File($"Logs/{DateTime.Now.ToString("MMMM-yyyy")}/{DateTime.Now.ToString("dd-MM-yyyy")}.txt", LogEventLevel.Information);
+#pragma warning restore CS0618 // Type or member is obsolete
 
         var emailSettings = new EmailSettings();
         configuration.GetSection(nameof(emailSettings)).Bind(emailSettings);
 
         if (emailSettings.SendEmails)
         {
-            host.UseSerilog((context, configuration) =>
-            configuration
-             .MinimumLevel.Information()
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                    .Enrich.FromLogContext()
-                    .WriteTo.Console()
-                    .WriteTo.File("log.txt", LogEventLevel.Information)
+            loggerConfiguration = loggerConfiguration
                     .WriteTo.Email(new EmailConnectionInfo
                     {
                         FromEmail = emailSettings.FromEmail,
                         ToEmail = emailSettings.ToEmails,
                         MailServer = emailSettings.SmtpServer,
-                        EmailSubject = emailSettings.EmailSubject,
                         EnableSsl = emailSettings.EnableSsl,
-                        Port = emailSettings.Port, // Use the appropriate SMTP port (e.g., 465 for gmail)
+                        Port = emailSettings.Port,
                         NetworkCredentials = new System.Net.NetworkCredential
                         {
-                            UserName = emailSettings.UserName, //your SMTP server username (if required)
-                            Password = emailSettings.Password //your SMTP server password (if required)
-                        }
-                    }, restrictedToMinimumLevel: LogEventLevel.Error,
-                    batchPostingLimit: 1,
-                    outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"));
+                            UserName = emailSettings.UserName,
+                            Password = emailSettings.Password
+                        },
+                        IsBodyHtml = false,
+                        EmailSubject = "Error Logs SMS",
+
+                    }, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error);
         }
-        else
+        loggerConfiguration = loggerConfiguration.ReadFrom.Configuration(configuration);
+
+        Log.Logger = loggerConfiguration.CreateLogger();
+
+        services.AddLogging(loggingBuilder =>
         {
-            host.UseSerilog((context, configuration) =>
-            configuration
-             .MinimumLevel.Information()
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                    .Enrich.FromLogContext()
-                    .WriteTo.Console()
-                    .WriteTo.File("log.txt", LogEventLevel.Information));
-        }
+            loggingBuilder.ClearProviders();
+            loggingBuilder.AddSerilog();
+        });
+
 
         #endregion
 
@@ -62,4 +73,20 @@ public static class SerilogRegisteration
 
         return services;
     }
+
+    [Obsolete]
+    private static ColumnOptions GetMSSqlServerColumnOptions()
+    {
+        var columnOptions = new ColumnOptions
+        {
+            AdditionalDataColumns = new List<DataColumn>
+            {
+                new DataColumn {DataType = typeof(string), ColumnName = "UserIpAddress", AllowDBNull = true}
+            }
+        };
+
+        return columnOptions;
+    }
+
+
 }

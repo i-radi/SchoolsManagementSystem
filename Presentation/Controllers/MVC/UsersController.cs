@@ -11,6 +11,7 @@ namespace Presentation.Controllers.MVC
     [Authorize(Policy = "SuperAdmin")]
     public class UsersController : Controller
     {
+        private readonly ILogger<UsersController> _logger;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
@@ -20,6 +21,7 @@ namespace Presentation.Controllers.MVC
         private readonly IMapper _mapper;
 
         public UsersController(
+            ILogger<UsersController> logger,
             SignInManager<User> signInManager,
             UserManager<User> userManager,
             RoleManager<Role> roleManager,
@@ -32,6 +34,7 @@ namespace Presentation.Controllers.MVC
             _roleManager = roleManager;
             _organizationService = organizationService;
             _schoolService = schoolService;
+            _logger = logger;
             _signInManager = signInManager;
             _authService = authService;
             _mapper = mapper;
@@ -143,6 +146,7 @@ namespace Presentation.Controllers.MVC
         // GET: Users/DeleteRole
         public async Task<IActionResult> DeleteRole(string userId, string roleName)
         {
+
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
@@ -152,6 +156,8 @@ namespace Presentation.Controllers.MVC
 
             if (result.Succeeded)
             {
+                string userIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()!;
+                _logger.LogInformation("User IP Address: {UserIpAddress}", userIpAddress);
                 return RedirectToAction("Roles", new { id = userId });
             }
             return NotFound();
@@ -210,6 +216,8 @@ namespace Presentation.Controllers.MVC
 
                 if (roles.Succeeded && userResult.Succeeded)
                 {
+                    string userIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()!;
+                    _logger.LogInformation("User IP Address: {UserIpAddress}", userIpAddress);
                     return RedirectToAction("Roles", new { id = viewModel.Id });
                 }
             }
