@@ -31,6 +31,9 @@
                 @Html.DisplayFor(modelItem => item.Organization)
             </td>
             <td>
+                <a asp-action="Index" asp-controller="Grades" asp-route-schoolId="@item.Id">Manage Grades</a> |
+                <a asp-action="Index" asp-controller="Seasons" asp-route-schoolId="@item.Id">Manage Seasons</a> |
+                <a asp-action="Index" asp-controller="Members" asp-route-schoolId="@item.Id">Manage Members</a> |
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>

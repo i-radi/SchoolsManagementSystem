@@ -42,7 +42,7 @@ namespace Presentation.Controllers.MVC
 
 
         // GET: Users
-        public async Task<IActionResult> Index(string searchName = "", string searchRole = "")
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string searchName = "", string searchRole = "")
         {
             IQueryable<User> usersQuery = _userManager.Users
                     .Include(u => u.Organization);
@@ -59,13 +59,9 @@ namespace Presentation.Controllers.MVC
                 usersQuery = usersQuery.Where(u => userIds.Contains(u.Id));
             }
 
-            var modelItems = PaginatedList<User>.Create(usersQuery, 1, 10);
+            var modelItems = PaginatedList<User>.Create(usersQuery, page, pageSize);
 
-            var result = _mapper.Map<IEnumerable<GetUserDto>>(modelItems);
-            //foreach (var userDto in result.Select((value, i) => new { i, value }))
-            //{
-            //    userDto.value.Role = (await _userManager.GetRolesAsync(modelItems[userDto.i])).FirstOrDefault()!;
-            //}
+            var result = PaginatedList<GetUserDto>.Create(_mapper.Map<List<GetUserDto>>(modelItems), page, pageSize);
             return View(result);
         }
 
