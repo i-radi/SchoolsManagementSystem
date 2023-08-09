@@ -2,9 +2,13 @@
 
 public class Attendance
 {
-    public int AttendanceId { get; set; }
-    public DateTime Date { get; set; }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
 
     public int ActivityId { get; set; }
-    public Activity? Activity { get; set; }
+    [ForeignKey(nameof(ActivityId))]
+    public virtual Activity? Activity { get; set; }
 }

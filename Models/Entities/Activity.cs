@@ -3,17 +3,22 @@
 namespace Models.Entities;
 public class Activity
 {
-    public int ActivityId { get; set; }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
     public string Title { get; set; } = string.Empty;
 
-    public int UserId { get; set; }
-    public User? User { get; set; }
+    public int AdminId { get; set; }
+    [ForeignKey(nameof(AdminId))]
+    public virtual User? User { get; set; }
 
     public int ClassroomId { get; set; }
-    public ClassRoom? ClassRoom { get; set; }
+    [ForeignKey(nameof(ClassroomId))]
+    public virtual ClassRoom? ClassRoom { get; set; }
 
     public int SeasonId { get; set; }
-    public Season? Season { get; set; }
+    [ForeignKey(nameof(SeasonId))]
+    public virtual Season? Season { get; set; }
 
-    public ICollection<Attendance> Attendances { get; set; } = new HashSet<Attendance>();
+    public virtual ICollection<Attendance> Attendances { get; set; } = new HashSet<Attendance>();
 }
