@@ -20,7 +20,7 @@ namespace Presentation.Controllers.MVC
         public async Task<IActionResult> Index(int schoolId)
         {
             var grades = _gradeRepo.GetTableNoTracking().Include(g => g.School).AsQueryable();
-            if (schoolId > 0 )
+            if (schoolId > 0)
             {
                 grades = grades.Where(g => g.SchoolId == schoolId);
             }

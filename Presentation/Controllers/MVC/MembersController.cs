@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
-using Humanizer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
-using Models.Entities.Identity;
 using Persistance.IRepos;
-using VModels.ViewModels.Users;
 
 namespace Presentation.Controllers.MVC
 {
@@ -74,7 +71,7 @@ namespace Presentation.Controllers.MVC
             if (!string.IsNullOrEmpty(search))
             {
                 users = users.Where(u => u.Name.Contains(search)
-                |u.UserClasses.Any(ur => ur.Season.To.ToString().Contains(search))
+                | u.UserClasses.Any(ur => ur.Season.To.ToString().Contains(search))
                 | u.UserClasses.Any(ur => ur.ClassRoom.Name.Contains(search))
                 | u.UserClasses.Any(ur => ur.UserType.Name.Contains(search)));
             }
@@ -124,10 +121,7 @@ namespace Presentation.Controllers.MVC
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
             };
             await _userManager.CreateAsync(newUser, newUser.PlainPassword);
-            return RedirectToAction(nameof(Index), new {schoolId = newUser.SchoolId});
-
-            //ViewData["OrganizationId"] = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name", user.OrganizationId);
-            //return View(user);
+            return RedirectToAction(nameof(Index), new { schoolId = newUser.SchoolId });
         }
 
         // GET: Members/Edit/5
@@ -151,7 +145,7 @@ namespace Presentation.Controllers.MVC
         // POST: Members/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,  User user)
+        public async Task<IActionResult> Edit(int id, User user)
         {
             if (id != user.Id)
             {
@@ -173,7 +167,7 @@ namespace Presentation.Controllers.MVC
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception( ex.Message);
+                    throw new Exception(ex.Message);
                 }
             }
             ViewData["OrganizationId"] = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name");
@@ -220,9 +214,15 @@ namespace Presentation.Controllers.MVC
             {
                 return NotFound();
             }
-            var classrooms = _classRoomRepo.GetTableNoTracking().ToList();
+            var classrooms = _classRoomRepo.GetTableNoTracking().Include(c => c.Grade).ToList();
             var seasons = _seasonRepo.GetTableNoTracking().ToList();
+                
             var usertypes = _userTypeRepo.GetTableNoTracking().ToList();
+            if (user.SchoolId is not null && user.SchoolId > 0)
+            {
+                classrooms = classrooms.Where(c => c.Grade!.SchoolId == user.SchoolId).ToList();
+                seasons = seasons.Where(c => c.SchoolId == user.SchoolId).ToList();
+            }
             ViewData["UserId"] = new SelectList(new List<User> { user }, "Id", "Name");
             ViewData["ClassRoomId"] = new SelectList(classrooms, "Id", "Name");
             ViewData["UserTypeId"] = new SelectList(usertypes, "Id", "Name");
@@ -241,5 +241,17 @@ namespace Presentation.Controllers.MVC
             return RedirectToAction(nameof(Index), new { schoolId = schoolId });
         }
 
+        public IActionResult GetSchools(int organizationId)
+        {
+            var schools = _schoolRepo.GetTableNoTracking().Where(s => s.OrganizationId == organizationId).ToList();
+
+            var schoolData = schools.Select(s => new
+            {
+                value = s.Id,     
+                text = s.Name    
+            });
+
+            return Json(schoolData);
+        }
     }
 }

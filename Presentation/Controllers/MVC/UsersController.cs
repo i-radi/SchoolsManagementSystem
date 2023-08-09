@@ -165,7 +165,12 @@ namespace Presentation.Controllers.MVC
             var roles = (await _roleManager.Roles.Select(r => r.Name).ToListAsync()).AsEnumerable();
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             var userRoles = (await _userManager.GetRolesAsync(user!)).AsEnumerable();
-            roles = roles.Except(userRoles).ToList();
+            var isSuperAdmin = userRoles.Any(u => u == "SuperAdmin");
+            if (isSuperAdmin)
+            {
+                roles = roles.Except(new List<string> { "SuperAdmin" }.AsEnumerable());
+            }
+            //roles = roles.Except(userRoles).ToList();
 
             var orgs = _organizationService.GetTableNoTracking()
                 .Select(o => new { OrganizationId = o.Id, o.Name }).ToList();
@@ -210,7 +215,7 @@ namespace Presentation.Controllers.MVC
 
                 var userResult = await _userManager.UpdateAsync(user);
 
-                if (roles.Succeeded && userResult.Succeeded)
+                if (userResult.Succeeded)
                 {
                     string userIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()!;
                     _logger.LogInformation("User IP Address: {UserIpAddress}", userIpAddress);

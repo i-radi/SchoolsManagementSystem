@@ -24,11 +24,11 @@
             </div>
             <div class="form-group">
                 <label asp-for="OrganizationId" class="control-label"></label>
-                <select asp-for="OrganizationId" class ="form-control" asp-items="ViewBag.OrganizationId"></select>
+                <select id="organizationSelect" asp-for="OrganizationId" class="form-control" asp-items="ViewBag.OrganizationId"></select>
             </div>
             <div class="form-group">
                 <label asp-for="SchoolId" class="control-label"></label>
-                <select asp-for="SchoolId" class="form-control" asp-items="ViewBag.SchoolId"></select>
+                <select id="schoolSelect" asp-for="SchoolId" class="form-control"></select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -44,3 +44,27 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>	
+<script>
+    $(document).ready(function () {
+        var $schoolSelect = $("#schoolSelect");
+
+        $("#organizationSelect").on("change", function () {
+            var selectedOrganizationId = $(this).val();
+
+            $.ajax({
+                url: "/Members/GetSchools", 
+                type: "GET",
+                data: { organizationId: selectedOrganizationId },
+                success: function (data) {
+                    $schoolSelect.empty();
+                    $.each(data, function (index, school) {
+                        $schoolSelect.append($("<option></option>")
+                            .attr("value", school.value)
+                            .text(school.text));
+                    });
+                }
+            });
+        });
+    });
+</script>

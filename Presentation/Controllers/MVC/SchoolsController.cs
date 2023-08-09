@@ -134,9 +134,6 @@ namespace Presentation.Controllers.MVC
                 return RedirectToAction(nameof(Index));
             }
             return View(viewModel);
-
-            viewModel.OrganizationOptions = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name", viewModel.OrganizationId);
-            return View(viewModel);
         }
 
         // GET: Schools/Delete/5

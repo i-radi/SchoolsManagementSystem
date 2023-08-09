@@ -40,7 +40,7 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=SMS;Integrated Security=True ;TrustServerCertificate=True");
+            optionsBuilder.UseSqlServer("Server=.;Database=SMS;Integrated Security=True ;TrustServerCertificate=True");
         }
     }
 }
