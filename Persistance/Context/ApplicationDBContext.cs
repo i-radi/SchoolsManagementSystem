@@ -21,6 +21,7 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
     public virtual DbSet<Season> Seasons => Set<Season>();
     public virtual DbSet<UserClass> UserClasses => Set<UserClass>();
     public virtual DbSet<UserType> UserTypes => Set<UserType>();
+    public virtual DbSet<Activity> Activities => Set<Activity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

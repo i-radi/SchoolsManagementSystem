@@ -82,8 +82,7 @@ public class AuthService : IAuthService
             RefreshTokenExpiryDate = DateTime.Now.AddDays(_jwtSettings.RefreshTokenExpireDate),
             IsAuthenticated = true,
             Email = user.Email ?? string.Empty,
-            Username = user.UserName ?? string.Empty,
-            Role = (await _userManager.GetRolesAsync(user!)).FirstOrDefault()!
+            Roles = (await _userManager.GetRolesAsync(user!)).ToList()
         };
 
         user.AccessToken = response.AccessToken;

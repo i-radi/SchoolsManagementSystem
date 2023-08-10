@@ -8,17 +8,11 @@ public class Activity
     public int Id { get; set; }
     public string Title { get; set; } = string.Empty;
 
-    public int AdminId { get; set; }
-    [ForeignKey(nameof(AdminId))]
-    public virtual User? User { get; set; }
+    public int SchoolId { get; set; }
+    [ForeignKey(nameof(SchoolId))]
+    public virtual School? School { get; set; }
 
-    public int ClassroomId { get; set; }
-    [ForeignKey(nameof(ClassroomId))]
-    public virtual ClassRoom? ClassRoom { get; set; }
-
-    public int SeasonId { get; set; }
-    [ForeignKey(nameof(SeasonId))]
-    public virtual Season? Season { get; set; }
-
-    public virtual ICollection<Attendance> Attendances { get; set; } = new HashSet<Attendance>();
+    public int RoleId { get; set; }
+    [ForeignKey(nameof(RoleId))]
+    public virtual Role? Role { get; set; }
 }

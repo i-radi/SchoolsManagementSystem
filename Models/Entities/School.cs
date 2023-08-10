@@ -12,4 +12,5 @@ public class School
     public virtual Organization? Organization { get; set; }
 
     public virtual ICollection<Season> Seasons { get; set; } = new HashSet<Season>();
+    public virtual ICollection<Activity> Activities { get; set; } = new HashSet<Activity>();
 }

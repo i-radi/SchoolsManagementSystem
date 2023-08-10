@@ -14,6 +14,7 @@ public static class ModulePersistanceDependencies
         services.AddScoped<ISeasonRepo, SeasonRepo>();
         services.AddScoped<IUserClassRepo, UserClassRepo>();
         services.AddScoped<IUserTypeRepo, UserTypeRepo>();
+        services.AddScoped<IActivityRepo, ActivityRepo>();
         services.AddScoped(typeof(IGenericRepoAsync<>), typeof(GenericRepoAsync<>));
         return services;
     }

@@ -67,6 +67,7 @@ using (var scope = app.Services.CreateScope())
     await UserTypeSeeder.SeedAsync(dbContext);
     await RoleSeeder.SeedAsync(roleManager);
     await UserSeeder.SeedAsync(userManager);
+    await ActivitySeeder.SeedAsync(dbContext);
 }
 
 #endregion

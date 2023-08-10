@@ -1,4 +1,5 @@
-﻿using Core.Services;
+﻿using Core.IServices;
+using Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
 
@@ -16,6 +17,7 @@ public static class ModuleCoreDependencies
         services.AddScoped<ISeasonService, SeasonService>();
         services.AddScoped<IUserClassService, UserClassService>();
         services.AddScoped<IUserTypeService, UserTypeService>();
+        services.AddScoped<IActivityService, ActivityService>();
 
         #region Authorization
 
