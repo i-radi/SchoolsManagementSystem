@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Persistance.Context;
 
-public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>, IdentityUserRole<int>, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
+public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>, UserRole, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
 {
     public ApplicationDBContext()
     {
@@ -14,6 +14,8 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
     {
     }
     public virtual DbSet<User> User => Set<User>();
+    public virtual DbSet<Role> Role => Set<Role>();
+    public virtual DbSet<UserRole> UserRole => Set<UserRole>();
     public virtual DbSet<Organization> Organizations => Set<Organization>();
     public virtual DbSet<School> Schools => Set<School>();
     public virtual DbSet<Grade> Grades => Set<Grade>();
@@ -31,7 +33,7 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
         //Change Identity Schema and Table Names
         modelBuilder.Entity<User>().ToTable("Users");
         modelBuilder.Entity<Role>().ToTable("Roles");
-        modelBuilder.Entity<IdentityUserRole<int>>().ToTable("UserRoles");
+        modelBuilder.Entity<UserRole>().ToTable("UserRoles");
         modelBuilder.Entity<IdentityUserLogin<int>>().ToTable("UserLogins");
         modelBuilder.Entity<IdentityUserClaim<int>>().ToTable("UserClaims");
         modelBuilder.Entity<IdentityRoleClaim<int>>().ToTable("RoleClaims");

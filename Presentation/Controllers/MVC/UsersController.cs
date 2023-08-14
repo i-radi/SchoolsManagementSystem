@@ -15,8 +15,10 @@ namespace Presentation.Controllers.MVC
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
-        private readonly IOrganizationRepo _organizationService;
-        private readonly ISchoolRepo _schoolService;
+        private readonly IOrganizationRepo _organizationRepo;
+        private readonly IUserRoleRepo _userRoleRepo;
+        private readonly ISchoolRepo _schoolRepo;
+        private readonly IActivityRepo _activityRepo;
         private readonly IAuthService _authService;
         private readonly IMapper _mapper;
 
@@ -25,15 +27,19 @@ namespace Presentation.Controllers.MVC
             SignInManager<User> signInManager,
             UserManager<User> userManager,
             RoleManager<Role> roleManager,
-            IOrganizationRepo organizationService,
-            ISchoolRepo schoolService,
+            IOrganizationRepo organizationRepo,
+            IUserRoleRepo userRoleRepo,
+            ISchoolRepo schoolRepo,
+            IActivityRepo activityRepo,
             IAuthService authService,
             IMapper mapper)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _organizationService = organizationService;
-            _schoolService = schoolService;
+            _organizationRepo = organizationRepo;
+            _userRoleRepo = userRoleRepo;
+            _schoolRepo = schoolRepo;
+            _activityRepo = activityRepo;
             _logger = logger;
             _signInManager = signInManager;
             _authService = authService;
@@ -62,6 +68,10 @@ namespace Presentation.Controllers.MVC
             var modelItems = PaginatedList<User>.Create(usersQuery, page, pageSize);
 
             var result = PaginatedList<GetUserDto>.Create(_mapper.Map<List<GetUserDto>>(modelItems), page, pageSize);
+
+            var roles = await _roleManager.Roles.ToListAsync();
+            ViewBag.RolesList = new SelectList(roles, "Name", "Name");
+
             return View(result);
         }
 
@@ -127,16 +137,27 @@ namespace Presentation.Controllers.MVC
         // GET: Users/Roles/5
         public async Task<IActionResult> Roles(int? id)
         {
-            var roles = new List<string>();
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+            var userRoles = await _userRoleRepo.GetTableNoTracking()
+                .Include(ur => ur.User)
+                .Include(ur => ur.Role)
+                .Include(ur => ur.Activity)
+                .Where(ur => ur.UserId == id).ToListAsync();
 
-            if (user is not null)
+            var viewmodels = new List<GetRoleViewModel>();
+            foreach (var userRole in userRoles)
             {
-                roles = (await _userManager.GetRolesAsync(user)).ToList();
+                viewmodels.Add(new GetRoleViewModel
+                {
+                    Name = userRole.Role?.Name ?? "",
+                    Activity = userRole.Activity?.Title ?? "",
+                    Organization = userRole.OrganizationId is not null ?
+                    (await _organizationRepo.GetByIdAsync(userRole.OrganizationId.Value)).Name : "",
+                    School = userRole.SchoolId is not null ?
+                    (await _schoolRepo.GetByIdAsync(userRole.SchoolId.Value)).Name : ""
+                });
             }
-
             ViewBag.UserId = id;
-            return View(roles);
+            return View(viewmodels);
         }
 
         // GET: Users/DeleteRole
@@ -162,7 +183,10 @@ namespace Presentation.Controllers.MVC
         // GET: Users/CreateRole/
         public async Task<IActionResult> CreateRole(int userId)
         {
-            var roles = (await _roleManager.Roles.Select(r => r.Name).ToListAsync()).AsEnumerable();
+            var roles = (await _roleManager.Roles.Select(r => r.Name)
+                .ToListAsync())
+                .AsEnumerable();
+
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             var userRoles = (await _userManager.GetRolesAsync(user!)).AsEnumerable();
             var isSuperAdmin = userRoles.Any(u => u == "SuperAdmin");
@@ -170,17 +194,15 @@ namespace Presentation.Controllers.MVC
             {
                 roles = roles.Except(new List<string> { "SuperAdmin" }.AsEnumerable());
             }
-            //roles = roles.Except(userRoles).ToList();
 
-            var orgs = _organizationService.GetTableNoTracking()
-                .Select(o => new { OrganizationId = o.Id, o.Name }).ToList();
+            var orgs = await _organizationRepo.GetTableNoTracking()
+                .Select(o => new { OrganizationId = o.Id, o.Name }).ToListAsync();
 
-            var schoolsQuery = _schoolService.GetTableNoTracking().AsQueryable();
-            if (user!.OrganizationId is not null && user.OrganizationId > 0)
-            {
-                schoolsQuery = schoolsQuery.Where(s => s.OrganizationId == user.OrganizationId);
-            }
-            var schools = schoolsQuery.Select(o => new { SchoolId = o.Id, o.Name }).ToList();
+            var schools = await _schoolRepo.GetTableNoTracking()
+                .Select(o => new { SchoolId = o.Id, o.Name }).ToListAsync();
+
+            var activities = await _activityRepo.GetTableNoTracking()
+                .Select(o => new { ActivityId = o.Id, Name = o.Title }).ToListAsync();
 
             var createRoleViewModel = new CreateRoleViewModel
             {
@@ -188,7 +210,8 @@ namespace Presentation.Controllers.MVC
                 UserName = user!.Email,
                 RoleOptions = new SelectList(roles),
                 OrganizationOptions = new SelectList(orgs, "OrganizationId", "Name"),
-                SchoolOptions = new SelectList(schools, "SchoolId", "Name")
+                SchoolOptions = new SelectList(schools, "SchoolId", "Name"),
+                ActivityOptions = new SelectList(activities, "ActivityId", "Name")
             };
 
             return View(createRoleViewModel);
@@ -201,26 +224,29 @@ namespace Presentation.Controllers.MVC
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == viewModel.Id);
             if (user is not null)
             {
-                var roles = await _userManager.AddToRoleAsync(user, viewModel.RoleName);
-
-                if (viewModel.SchoolId > 0)
+                if (viewModel.SchoolId != null)
                 {
-                    user.SchoolId = viewModel.SchoolId;
+                    viewModel.OrganizationId = (await _schoolRepo.GetByIdAsync(viewModel.SchoolId.Value)).OrganizationId;
                 }
-
-                if (viewModel.OrganizationId > 0)
+                if (viewModel.ActivityId != null)
                 {
-                    user.OrganizationId = viewModel.OrganizationId;
+                    viewModel.SchoolId = (await _activityRepo.GetByIdAsync(viewModel.ActivityId.Value)).SchoolId;
+                    viewModel.OrganizationId = (await _schoolRepo.GetByIdAsync(viewModel.SchoolId.Value)).OrganizationId;
                 }
-
-                var userResult = await _userManager.UpdateAsync(user);
-
-                if (userResult.Succeeded)
+                var userRole = new UserRole
                 {
-                    string userIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()!;
-                    _logger.LogInformation("User IP Address: {UserIpAddress}", userIpAddress);
-                    return RedirectToAction("Roles", new { id = viewModel.Id });
-                }
+                    UserId = user.Id,
+                    RoleId = (await _roleManager.Roles.FirstOrDefaultAsync(r => r.Name == viewModel.RoleName))!.Id,
+                    OrganizationId = viewModel.OrganizationId,
+                    SchoolId = viewModel.SchoolId,
+                    ActivityId = viewModel.ActivityId,
+                };
+                await _userRoleRepo.UpdateAsync(userRole);
+
+                string userIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()!;
+                _logger.LogInformation("User IP Address: {UserIpAddress}", userIpAddress);
+                return RedirectToAction("Roles", new { id = viewModel.Id });
+
             }
             return BadRequest();
         }

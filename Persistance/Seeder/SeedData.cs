@@ -14,7 +14,7 @@ public static class SeedData
         await SeasonSeeder.SeedAsync(dbContext);
         await ClassroomSeeder.SeedAsync(dbContext);
         await RoleSeeder.SeedAsync(roleManager);
-        await UserSeeder.SeedAsync(userManager);
-        //await ActivitySeeder.SeedAsync(dbContext);
+        await UserSeeder.SeedAsync(userManager, dbContext);
+        await ActivitySeeder.SeedAsync(dbContext);
     }
 }

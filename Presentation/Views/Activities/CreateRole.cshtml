@@ -1,0 +1,40 @@
+﻿@using VModels.ViewModels.Activities;
+@model CreateActivityRoleViewModel
+
+@{
+    ViewData["Title"] = "CreateRole";
+}
+
+<h1>Create Role</h1>
+
+<h4>Email : @Model.ActivityTitle</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateRole">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="ActivityId" hidden/>
+            <input asp-for="SchoolId" hidden/>
+            <input asp-for="OrganizationId" hidden/>
+            <div class="form-group">
+                <label asp-for="RoleName" class="control-label"> Role Name</label>
+                <input asp-for="RoleName" class="form-control" />
+                <span asp-validation-for="RoleName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Roles" asp-route-id="@Model.ActivityId">Back to Roles</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

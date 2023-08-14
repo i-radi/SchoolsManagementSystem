@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
 using Persistance.IRepos;
+using VModels.ViewModels.Activities;
+using VModels.ViewModels.Users;
 
 namespace Presentation.Controllers.MVC
 {
@@ -9,11 +12,19 @@ namespace Presentation.Controllers.MVC
     {
         private readonly IActivityRepo _activityRepo;
         private readonly ISchoolRepo _schoolRepo;
+        private readonly RoleManager<Role> _roleManager;
+        private readonly ApplicationDBContext _dBContext;
 
-        public ActivitiesController(IActivityRepo activityRepo, ISchoolRepo schoolRepo)
+        public ActivitiesController(
+            IActivityRepo activityRepo,
+            ISchoolRepo schoolRepo,
+            RoleManager<Role> roleManager,
+            ApplicationDBContext dBContext)
         {
             _activityRepo = activityRepo;
             _schoolRepo = schoolRepo;
+            _roleManager = roleManager;
+            _dBContext = dBContext;
         }
 
         // GET: Activities
@@ -154,5 +165,78 @@ namespace Presentation.Controllers.MVC
         {
             return (_activityRepo.GetTableNoTracking().ToList().Any(e => e.Id == id));
         }
+
+        //// GET: Activities/Roles/5
+        //public async Task<IActionResult> Roles(int id)
+        //{
+        //    var roles = new List<string>();
+        //    var activity = await _activityRepo.GetByIdAsync(id);
+
+        //    if (activity is not null)
+        //    {
+        //        roles = await _dBContext.Roles.Where(r => r.ActivityId == id).Select(r => r.Name).ToListAsync();
+        //    }
+
+        //    ViewBag.ActivityId = id;
+        //    return View(roles);
+        //}
+
+        //// GET: Activities/DeleteRole
+        //public async Task<IActionResult> DeleteRole(int activityId, string roleName)
+        //{
+
+        //    var activity = await _activityRepo.GetByIdAsync(activityId);
+        //    if (activity == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var role = await _dBContext.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
+        //    var result = await _roleManager.DeleteAsync(role!);
+
+        //    if (result.Succeeded)
+        //    {
+        //        return RedirectToAction("Roles", new { id = activityId });
+        //    }
+        //    return NotFound();
+        //}
+
+        //// GET: Activities/CreateRole/
+        //public async Task<IActionResult> CreateRole(int activityId)
+        //{
+        //    var activity = await _activityRepo.GetByIdAsync(activityId);
+        //    var viewModel = new CreateActivityRoleViewModel
+        //    {
+        //        ActivityTitle = activity.Title,
+        //        ActivityId = activity.Id ,
+        //        SchoolId = activity.SchoolId,
+        //        OrganizationId = activity.School!.OrganizationId
+
+        //    };
+
+        //    return View(viewModel);
+        //}
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> CreateRole(CreateActivityRoleViewModel viewModel)
+        //{
+        //    var activity = await _activityRepo.GetByIdAsync(viewModel.ActivityId);
+        //    if (activity is not null)
+        //    {
+        //        var result = await _roleManager.CreateAsync(new Role()
+        //        {
+        //            Name = viewModel.RoleName,
+        //            OrganizationId= viewModel.OrganizationId,
+        //            SchoolId= viewModel.SchoolId,
+        //            ActivityId= activity.Id ,
+        //        });
+
+        //        if (result.Succeeded)
+        //        {
+        //            return RedirectToAction("Roles", new { id = viewModel.ActivityId });
+        //        }
+        //    }
+        //    return BadRequest();
+        //}
     }
 }

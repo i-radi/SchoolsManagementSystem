@@ -23,5 +23,5 @@ public class Activity
     [ForeignKey(nameof(SchoolId))]
     public virtual School? School { get; set; }
 
-    public virtual ICollection<Role> Roles { get; set; } = new HashSet<Role>();
+    public virtual ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
 }
