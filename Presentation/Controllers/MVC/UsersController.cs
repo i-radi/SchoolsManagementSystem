@@ -50,8 +50,7 @@ namespace Presentation.Controllers.MVC
         // GET: Users
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string searchName = "", string searchRole = "")
         {
-            IQueryable<User> usersQuery = _userManager.Users
-                    .Include(u => u.Organization);
+            IQueryable<User> usersQuery = _userManager.Users;
 
             if (!string.IsNullOrEmpty(searchName))
             {
@@ -84,7 +83,6 @@ namespace Presentation.Controllers.MVC
             }
 
             var modelItem = await _userManager.Users
-            .Include(u => u.Organization)
             .FirstOrDefaultAsync(u => u.Id == id);
 
             var result = _mapper.Map<GetUserDto>(modelItem);
@@ -106,7 +104,6 @@ namespace Presentation.Controllers.MVC
             }
 
             var modelItem = await _userManager.Users
-            .Include(u => u.Organization)
             .FirstOrDefaultAsync(u => u.Id == id);
 
             var result = _mapper.Map<GetUserDto>(modelItem);

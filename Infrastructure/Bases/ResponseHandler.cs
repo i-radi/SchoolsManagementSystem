@@ -2,7 +2,7 @@
 
 public static class ResponseHandler
 {
-    public static Response<T> Deleted<T>(string Message = null)
+    public static Response<T> Deleted<T>(string? Message = null)
     {
         return new Response<T>()
         {
@@ -11,7 +11,7 @@ public static class ResponseHandler
             Message = Message == null ? "Deleted Successfully" : Message
         };
     }
-    public static Response<T> Success<T>(T entity, object Meta = null)
+    public static Response<T> Success<T>(T entity, object? Meta = null)
     {
         return new Response<T>()
         {
@@ -22,7 +22,7 @@ public static class ResponseHandler
             Meta = Meta
         };
     }
-    public static Response<T> Unauthorized<T>(string Message = null)
+    public static Response<T> Unauthorized<T>(string? Message = null)
     {
         return new Response<T>()
         {
@@ -31,7 +31,7 @@ public static class ResponseHandler
             Message = Message == null ? "You are not Authorized To Access This Resources" : Message
         };
     }
-    public static Response<T> BadRequest<T>(string Message = null)
+    public static Response<T> BadRequest<T>(string? Message = null)
     {
         return new Response<T>()
         {
@@ -40,7 +40,7 @@ public static class ResponseHandler
             Message = Message == null ? "Request Can't be Understand" : Message
         };
     }
-    public static Response<T> UnprocessableEntity<T>(string Message = null)
+    public static Response<T> UnprocessableEntity<T>(string? Message = null)
     {
         return new Response<T>()
         {
@@ -49,7 +49,7 @@ public static class ResponseHandler
             Message = Message == null ? "There are Validation Errors Or Syntax Errors" : Message
         };
     }
-    public static Response<T> NotFound<T>(string message = null)
+    public static Response<T> NotFound<T>(string? message = null)
     {
         return new Response<T>()
         {
@@ -58,7 +58,7 @@ public static class ResponseHandler
             Message = message == null ? "Not Found" : message
         };
     }
-    public static Response<T> Created<T>(T entity, object Meta = null)
+    public static Response<T> Created<T>(T entity, object? Meta = null)
     {
         return new Response<T>()
         {

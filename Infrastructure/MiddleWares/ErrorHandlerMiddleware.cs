@@ -45,7 +45,7 @@ public class ErrorHandlerMiddleware
             {
                 var userName = context.User.FindFirst(ClaimTypes.Name)?.Value;
                 var userRole = context.User.FindFirst(ClaimTypes.Role)?.Value;
-                var message = $"{error.Message.ToString()}</br>" +
+                var message = $"{error!.Message.ToString()}</br>" +
                     $" Time : {DateTime.Now.ToShortTimeString()}</br>" +
                     $" User Email : {userName}</br> User Role : {userRole}</br>" +
                     $" Response Model : {JsonSerializer.Serialize(responseModel)}";

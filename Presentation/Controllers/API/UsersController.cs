@@ -87,7 +87,7 @@ public class UsersController : ControllerBase
     {
         var modelItems = PaginatedList<User>
             .Create(await _userManager.Users
-            .Include(u => u.Organization)
+            .Include(u => u.UserRoles)
             .ToListAsync(), pageNumber, pageSize);
 
         var result = _mapper.Map<IEnumerable<GetUserDto>>(modelItems);
@@ -103,7 +103,7 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> GetById([FromHeader] int schoolId, int id)
     {
         var modelItem = await _userManager.Users
-            .Include(u => u.Organization)
+            .Include(u => u.UserRoles)
             .FirstOrDefaultAsync(u => u.Id == id);
 
         var result = _mapper.Map<GetUserDto>(modelItem);

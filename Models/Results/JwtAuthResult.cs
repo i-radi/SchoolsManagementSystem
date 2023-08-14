@@ -3,7 +3,8 @@
 public class JwtAuthResult
 {
     public string Email { get; set; } = string.Empty;
-    public List<string> Roles { get; set; } = new List<string>();
+    public bool IsSuperAdmin { get; set; }
+    public List<RoleResult> Roles { get; set; } = new List<RoleResult>();
     public bool IsAuthenticated { get; set; }
     public string AccessToken { get; set; } = string.Empty;
     public DateTime AccessTokenExpiryDate { get; set; }

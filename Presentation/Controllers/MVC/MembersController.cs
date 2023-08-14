@@ -54,7 +54,7 @@ namespace Presentation.Controllers.MVC
         public IActionResult Index(int schoolId, string search = "")
         {
             var users = _userManager.Users
-                .Include(u => u.Organization)
+                .Include(u => u.UserRoles)
                 .Include(u => u.UserClasses)
                 .ThenInclude(uc => uc.ClassRoom)
                 .Include(u => u.UserClasses)
@@ -65,15 +65,15 @@ namespace Presentation.Controllers.MVC
 
             if (schoolId > 0)
             {
-                users = users.Where(u => u.SchoolId == schoolId);
+                users = users.Where(u => u.UserRoles.Any(u => u.SchoolId == schoolId));
             }
 
             if (!string.IsNullOrEmpty(search))
             {
                 users = users.Where(u => u.Name.Contains(search)
-                | u.UserClasses.Any(ur => ur.Season.To.ToString().Contains(search))
-                | u.UserClasses.Any(ur => ur.ClassRoom.Name.Contains(search))
-                | u.UserClasses.Any(ur => ur.UserType.Name.Contains(search)));
+                | u.UserClasses.Any(ur => ur.Season!.To.ToString().Contains(search))
+                | u.UserClasses.Any(ur => ur.ClassRoom!.Name.Contains(search))
+                | u.UserClasses.Any(ur => ur.UserType!.Name.Contains(search)));
             }
 
             return View(users.ToList());
@@ -87,7 +87,7 @@ namespace Presentation.Controllers.MVC
                 return NotFound();
             }
 
-            var user = await _userManager.Users.Include(u => u.Organization).FirstOrDefaultAsync(u => u.Id == id.Value);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id.Value);
             if (user == null)
             {
                 return NotFound();
@@ -114,14 +114,12 @@ namespace Presentation.Controllers.MVC
                 UserName = user.Email,
                 Email = user.Email,
                 Name = user.Name,
-                SchoolId = user.SchoolId,
-                OrganizationId = user.OrganizationId,
                 PlainPassword = "123456",
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
             };
             await _userManager.CreateAsync(newUser, newUser.PlainPassword);
-            return RedirectToAction(nameof(Index), new { schoolId = newUser.SchoolId });
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Members/Edit/5
@@ -132,12 +130,12 @@ namespace Presentation.Controllers.MVC
                 return NotFound();
             }
 
-            var user = await _userManager.Users.Include(u => u.Organization).FirstOrDefaultAsync(u => u.Id == id.Value);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id.Value);
             if (user == null)
             {
                 return NotFound();
             }
-            ViewData["OrganizationId"] = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name", user.OrganizationId);
+            ViewData["OrganizationId"] = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name");
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
             return View(user);
         }
@@ -151,19 +149,17 @@ namespace Presentation.Controllers.MVC
             {
                 return NotFound();
             }
-            var updatedUser = await _userManager.Users.Include(u => u.Organization).FirstOrDefaultAsync(u => u.Id == id);
+            var updatedUser = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (updatedUser is not null)
             {
                 updatedUser.UserName = user.Email;
                 updatedUser.Email = user.Email;
                 updatedUser.Name = user.Name;
-                updatedUser.SchoolId = user.SchoolId;
-                updatedUser.OrganizationId = user.OrganizationId;
 
                 try
                 {
                     await _userManager.UpdateAsync(updatedUser);
-                    return RedirectToAction(nameof(Index), new { schoolId = updatedUser.SchoolId });
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
@@ -184,7 +180,7 @@ namespace Presentation.Controllers.MVC
                 return NotFound();
             }
 
-            var user = await _userManager.Users.Include(u => u.Organization).FirstOrDefaultAsync(u => u.Id == id.Value);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id.Value);
             if (user == null)
             {
                 return NotFound();
@@ -198,18 +194,18 @@ namespace Presentation.Controllers.MVC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var user = await _userManager.Users.Include(u => u.Organization).FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (user != null)
             {
                 await _userManager.DeleteAsync(user);
             }
-            return RedirectToAction(nameof(Index), new { schoolId = user?.SchoolId });
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Members/Assign
         public async Task<IActionResult> Assign(int id)
         {
-            var user = await _userManager.Users.Include(u => u.Organization).FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
             {
                 return NotFound();
@@ -218,11 +214,7 @@ namespace Presentation.Controllers.MVC
             var seasons = _seasonRepo.GetTableNoTracking().ToList();
 
             var usertypes = _userTypeRepo.GetTableNoTracking().ToList();
-            if (user.SchoolId is not null && user.SchoolId > 0)
-            {
-                classrooms = classrooms.Where(c => c.Grade!.SchoolId == user.SchoolId).ToList();
-                seasons = seasons.Where(c => c.SchoolId == user.SchoolId).ToList();
-            }
+
             ViewData["UserId"] = new SelectList(new List<User> { user }, "Id", "Name");
             ViewData["ClassRoomId"] = new SelectList(classrooms, "Id", "Name");
             ViewData["UserTypeId"] = new SelectList(usertypes, "Id", "Name");
@@ -237,8 +229,7 @@ namespace Presentation.Controllers.MVC
         {
             addUserClass.Id = 0;
             await _userClassRepo.AddAsync(addUserClass);
-            var schoolId = (await _userManager.Users.FirstOrDefaultAsync(u => u.Id == addUserClass.UserId))?.SchoolId;
-            return RedirectToAction(nameof(Index), new { schoolId = schoolId });
+            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult GetSchools(int organizationId)

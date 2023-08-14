@@ -15,6 +15,7 @@ public class AuthService : IAuthService
     private readonly JwtSettings _jwtSettings;
     private readonly UserManager<User> _userManager;
     private readonly ApplicationDBContext _applicationDBContext;
+    private readonly IUserRoleRepo _userRoleRepo;
     private readonly IMapper _mapper;
     #endregion
 
@@ -22,11 +23,13 @@ public class AuthService : IAuthService
     public AuthService(JwtSettings jwtSettings,
         UserManager<User> userManager,
         ApplicationDBContext applicationDBContext,
+        IUserRoleRepo userRoleRepo,
         IMapper mapper)
     {
         _jwtSettings = jwtSettings;
         _userManager = userManager;
         _applicationDBContext = applicationDBContext;
+        _userRoleRepo = userRoleRepo;
         _mapper = mapper;
     }
     #endregion
@@ -41,7 +44,7 @@ public class AuthService : IAuthService
         user.UserName = dto.Email;
 
         var result = await _userManager.CreateAsync(user, dto.Password);
-        await _userManager.AddToRoleAsync(user, dto.Role);
+
 
         if (!result.Succeeded)
         {
@@ -52,6 +55,14 @@ public class AuthService : IAuthService
 
             return ResponseHandler.BadRequest<string>(errors);
         }
+        await _userRoleRepo.AddAsync(new()
+        {
+            UserId = (await _userManager.FindByEmailAsync(dto.Email))!.Id,
+            RoleId = dto.Role.roleId,
+            OrganizationId = dto.Role.organizationId,
+            SchoolId = dto.Role.schoolId,
+            ActivityId = dto.Role.activityId
+        });
 
         return ResponseHandler.Success<string>($"{dto.Email} created successfully");
     }
@@ -72,6 +83,11 @@ public class AuthService : IAuthService
 
     private async Task<JwtAuthResult> GetJWTToken(User user, Guid refreshToken = new Guid())
     {
+        var userroles = await _userRoleRepo
+            .GetTableNoTracking()
+            .Include(ur => ur.Role)
+            .Where(ur => ur.UserId == user.Id)
+            .ToListAsync();
         var (accessToken, expireDate) = await GenerateJWTToken(user);
 
         var response = new JwtAuthResult
@@ -82,8 +98,18 @@ public class AuthService : IAuthService
             RefreshTokenExpiryDate = DateTime.Now.AddDays(_jwtSettings.RefreshTokenExpireDate),
             IsAuthenticated = true,
             Email = user.Email ?? string.Empty,
-            Roles = (await _userManager.GetRolesAsync(user!)).ToList()
+            IsSuperAdmin = userroles.Any(r => r.Role!.Name == "SuperAdmin"),
         };
+        foreach (var role in userroles)
+        {
+            response.Roles.Add(new()
+            {
+                Name = role.Role!.Name!,
+                Organization = (await _applicationDBContext.Organizations.FirstOrDefaultAsync(o => o.Id == role.OrganizationId))?.Name!,
+                School = (await _applicationDBContext.Schools.FirstOrDefaultAsync(o => o.Id == role.SchoolId))?.Name!,
+                Activity = (await _applicationDBContext.Activities.FirstOrDefaultAsync(o => o.Id == role.ActivityId))?.Title!,
+            });
+        }
 
         user.AccessToken = response.AccessToken;
         user.RefreshToken = response.RefreshToken;
@@ -111,10 +137,10 @@ public class AuthService : IAuthService
 
     private async Task<List<Claim>> GetClaims(User user)
     {
-        var roles = await _userManager.GetRolesAsync(user);
+        var roles = (await _userManager.GetRolesAsync(user)).Distinct();
         var claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name,user.UserName!),
+                new Claim(ClaimTypes.Name,user.Name!),
                 new Claim(ClaimTypes.NameIdentifier,user.UserName!),
                 new Claim(ClaimTypes.Email,user.Email!),
                 new Claim(nameof(UserClaimModel.PhoneNumber), user.PhoneNumber??string.Empty),

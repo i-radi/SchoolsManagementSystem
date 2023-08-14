@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using VModels.DTOS.Auth;
 
 namespace VModels.DTOS;
 
@@ -15,7 +16,5 @@ public class RegisterDto
     [Required]
     public string Password { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
-    public string Role { get; set; } = string.Empty;
-    public int? OrganizationId { get; set; }
-    public int? SchoolId { get; set; }
+    public RoleDto Role { get; set; } = new();
 }
