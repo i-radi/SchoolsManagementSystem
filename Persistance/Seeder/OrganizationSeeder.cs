@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-
-namespace Persistance.Seeder;
+﻿namespace Persistance.Seeder;
 
 public static class OrganizationSeeder
 {

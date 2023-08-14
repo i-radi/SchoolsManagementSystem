@@ -1,6 +1,4 @@
-﻿using Models.Entities;
-
-namespace Persistance.Seeder;
+﻿namespace Persistance.Seeder;
 
 public static class ClassroomSeeder
 {

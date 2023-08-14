@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Persistance.Seeder;
+﻿namespace Persistance.Seeder;
 
 public static class ActivitySeeder
 {

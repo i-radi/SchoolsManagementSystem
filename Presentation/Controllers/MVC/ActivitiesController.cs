@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
 using Persistance.IRepos;
-using VModels.ViewModels.Activities;
-using VModels.ViewModels.Users;
 
 namespace Presentation.Controllers.MVC
 {
@@ -70,7 +68,7 @@ namespace Presentation.Controllers.MVC
         {
             if (ModelState.IsValid)
             {
-                var schoolName  = (await _schoolRepo.GetByIdAsync(activity.SchoolId)).Name;
+                var schoolName = (await _schoolRepo.GetByIdAsync(activity.SchoolId)).Name;
                 await _activityRepo.AddAsync(activity);
                 return RedirectToAction(nameof(Index));
             }

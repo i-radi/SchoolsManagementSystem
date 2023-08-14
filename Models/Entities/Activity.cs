@@ -5,10 +5,10 @@ public class Activity
 {
     public Activity()
     {
-        
+
     }
 
-    public Activity(string title,int schoolId)
+    public Activity(string title, int schoolId)
     {
         Title = title;
         SchoolId = schoolId;

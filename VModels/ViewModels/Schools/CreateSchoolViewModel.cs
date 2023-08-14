@@ -1,7 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Mvc.Rendering;
-
-namespace VModels.ViewModels;
+﻿namespace VModels.ViewModels;
 
 public class CreateSchoolViewModel
 {

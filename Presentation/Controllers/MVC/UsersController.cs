@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Persistance.IRepos;
 using System.Data;
-using VModels.ViewModels.Users;
+using VModels.ViewModels;
 
 namespace Presentation.Controllers.MVC
 {

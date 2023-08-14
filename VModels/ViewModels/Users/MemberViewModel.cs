@@ -1,4 +1,4 @@
-﻿namespace VModels.ViewModels.Users;
+﻿namespace VModels.ViewModels;
 
 public class MemberViewModel
 {

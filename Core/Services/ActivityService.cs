@@ -1,7 +1,7 @@
 ﻿namespace Core.Services;
 
 public class ActivityService : IActivityService
-{ 
+{
     private readonly IActivityRepo _activitiesRepo;
     private readonly IMapper _mapper;
 
@@ -18,7 +18,7 @@ public class ActivityService : IActivityService
         if (schoolId > 0)
         {
             modelItems = modelItems.Include(c => c.School)
-                .Where(cr => cr.SchoolId  == schoolId);
+                .Where(cr => cr.SchoolId == schoolId);
         }
         else
         {

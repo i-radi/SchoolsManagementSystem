@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-
-namespace VModels.ViewModels.Users;
+﻿namespace VModels.ViewModels;
 
 public class GetRoleViewModel
 {

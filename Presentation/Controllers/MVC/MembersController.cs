@@ -216,7 +216,7 @@ namespace Presentation.Controllers.MVC
             }
             var classrooms = _classRoomRepo.GetTableNoTracking().Include(c => c.Grade).ToList();
             var seasons = _seasonRepo.GetTableNoTracking().ToList();
-                
+
             var usertypes = _userTypeRepo.GetTableNoTracking().ToList();
             if (user.SchoolId is not null && user.SchoolId > 0)
             {
@@ -247,8 +247,8 @@ namespace Presentation.Controllers.MVC
 
             var schoolData = schools.Select(s => new
             {
-                value = s.Id,     
-                text = s.Name    
+                value = s.Id,
+                text = s.Name
             });
 
             return Json(schoolData);

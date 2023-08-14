@@ -1,5 +1,4 @@
-﻿using Core.IServices;
-using Core.Services;
+﻿using Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
 
