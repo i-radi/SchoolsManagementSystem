@@ -18,11 +18,11 @@ public class ActivityService : IActivityService
         if (schoolId > 0)
         {
             modelItems = modelItems.Include(c => c.School)
-                .Include(c => c.Role).Where(cr => cr.SchoolId  == schoolId);
+                .Where(cr => cr.SchoolId  == schoolId);
         }
         else
         {
-            modelItems = modelItems.Include(c => c.School).Include(c => c.Role);
+            modelItems = modelItems.Include(c => c.School);
         }
 
         var result = PaginatedList<GetActivityDto>.Create(_mapper.Map<List<GetActivityDto>>(modelItems), pageNumber, pageSize);
@@ -41,7 +41,6 @@ public class ActivityService : IActivityService
     public async Task<Response<GetActivityDto>> Add(AddActivityDto dto)
     {
         var modelItem = _mapper.Map<Activity>(dto);
-        modelItem.Role = new Models.Entities.Identity.Role { Name = dto.RoleName, NormalizedName = dto.RoleName.ToUpper() };
 
         var model = await _activitiesRepo.AddAsync(modelItem);
 
@@ -51,8 +50,6 @@ public class ActivityService : IActivityService
     public async Task<Response<bool>> Update(UpdateActivityDto dto)
     {
         var modelItem = await _activitiesRepo.GetByIdAsync(dto.Id);
-        modelItem.Role!.Name = dto.RoleName;
-        modelItem.Role!.NormalizedName = dto.RoleName.ToUpper();
 
         if (modelItem is null)
             return ResponseHandler.NotFound<bool>();

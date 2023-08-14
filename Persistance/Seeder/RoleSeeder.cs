@@ -16,11 +16,28 @@ public static class RoleSeeder
             });
             await _roleManager.CreateAsync(new Role()
             {
-                Name = "OrganizationAdmin"
+                Name = "OrganizationAdmin",
+                OrganizationId = 1
             });
             await _roleManager.CreateAsync(new Role()
             {
-                Name = "SchoolAdmin"
+                Name = "SchoolAdmin",
+                OrganizationId = 1,
+                SchoolId = 1
+            });
+            await _roleManager.CreateAsync(new Role()
+            {
+                Name = "FullAccessActivity",
+                OrganizationId = 1,
+                SchoolId = 1,
+                Activity = new Activity("First Activity", 1)
+            });
+            await _roleManager.CreateAsync(new Role()
+            {
+                Name = "ReadAccessActivity",
+                OrganizationId = 1,
+                SchoolId = 1,
+                ActivityId = 1
             });
         }
     }

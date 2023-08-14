@@ -59,15 +59,10 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
-    await OrganizationSeeder.SeedAsync(dbContext);
-    await SchoolSeeder.SeedAsync(dbContext);
-    await UserTypeSeeder.SeedAsync(dbContext);
-    await RoleSeeder.SeedAsync(roleManager);
-    await UserSeeder.SeedAsync(userManager);
-    await ActivitySeeder.SeedAsync(dbContext);
+    await SeedData.SeedAsync(dbContext, userManager, roleManager);
 }
 
 #endregion

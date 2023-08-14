@@ -3,6 +3,17 @@
 namespace Models.Entities;
 public class Activity
 {
+    public Activity()
+    {
+        
+    }
+
+    public Activity(string title,int schoolId)
+    {
+        Title = title;
+        SchoolId = schoolId;
+    }
+
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
@@ -12,7 +23,5 @@ public class Activity
     [ForeignKey(nameof(SchoolId))]
     public virtual School? School { get; set; }
 
-    public int RoleId { get; set; }
-    [ForeignKey(nameof(RoleId))]
-    public virtual Role? Role { get; set; }
+    public virtual ICollection<Role> Roles { get; set; } = new HashSet<Role>();
 }

@@ -1,4 +1,6 @@
-﻿namespace Persistance.Seeder;
+﻿using System.Runtime.CompilerServices;
+
+namespace Persistance.Seeder;
 
 public static class ActivitySeeder
 {
@@ -9,26 +11,8 @@ public static class ActivitySeeder
         {
             var activities = new List<Activity>
             {
-                new Activity
-                {
-                     Title = "First Activity",
-                     SchoolId = 1,
-                     Role = new Models.Entities.Identity.Role
-                     {
-                         Name = "FirstActivity@Cairo1School",
-                         NormalizedName = "FirstActivity@Cairo1School".ToUpper(),
-                     }
-                },
-                new Activity
-                {
-                     Title = "Second Activity",
-                     SchoolId = 1,
-                     Role = new Models.Entities.Identity.Role
-                     {
-                         Name = "SecondActivity@Cairo1School",
-                         NormalizedName = "SecondActivity@Cairo1School".ToUpper(),
-                     }
-                }
+                new Activity("First Activity", 1),
+                new Activity("Second Activity", 1)
             };
 
             await dbContext.AddRangeAsync(activities);

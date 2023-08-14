@@ -19,7 +19,6 @@ public class ActivityRepo : GenericRepoAsync<Activity>, IActivityRepo
 #pragma warning disable CS8603
         return await _dbContext.Set<Activity>()
             .Include(c => c.School)
-            .Include(c => c.Role)
             .FirstOrDefaultAsync(c => c.Id == id);
     }
     #endregion

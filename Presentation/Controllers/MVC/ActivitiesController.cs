@@ -60,11 +60,6 @@ namespace Presentation.Controllers.MVC
             if (ModelState.IsValid)
             {
                 var schoolName  = (await _schoolRepo.GetByIdAsync(activity.SchoolId)).Name;
-                activity.Role = new Role
-                {
-                    Name = (activity.Title + "@" + schoolName).Replace(" ", String.Empty),
-                    NormalizedName = (activity.Title + "@" + schoolName).Replace(" ", String.Empty).ToUpper()
-                };
                 await _activityRepo.AddAsync(activity);
                 return RedirectToAction(nameof(Index));
             }
@@ -105,7 +100,6 @@ namespace Presentation.Controllers.MVC
             {
                 try
                 {
-                    activity.RoleId =  _activityRepo.GetTableNoTracking().FirstOrDefault(a => a.Id == activity.Id)!.RoleId;
                     await _activityRepo.UpdateAsync(activity);
                 }
                 catch (DbUpdateConcurrencyException)
