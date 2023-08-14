@@ -45,6 +45,16 @@
                     }
                 </select>
             </div>
+            <div class="form-group" id="activities-list" style="display: none;">
+                <label for="ActivityId">Activity</label>
+                <select id="ActivityId" name="ActivityId" class="form-control">
+                    <option value="">-- Select Activity --</option>
+                    @foreach (var listItem in Model.ActivityOptions!)
+                    {
+                        <option value="@listItem.Value">@listItem.Text</option>
+                    }
+                </select>
+            </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -68,17 +78,23 @@
         var selectedRole = $('#RoleName').val();
         var organizationsListDiv = $('#organizations-list');
         var schoolsListDiv = $('#schools-list');
+        var activitiesListDiv = $('#activities-list');
 
 
+        if (selectedRole === 'OrganizationAdmin') {
+            organizationsListDiv.show();
+        } else {
+            organizationsListDiv.hide();
+        }
         if (selectedRole === 'SchoolAdmin') {
             schoolsListDiv.show();
         } else {
             schoolsListDiv.hide();
         }
-        if (selectedRole === 'OrganizationAdmin') {
-            organizationsListDiv.show();
+        if (selectedRole !== 'SuperAdmin' && selectedRole !== 'OrganizationAdmin' && selectedRole !== 'SchoolAdmin') {
+            activitiesListDiv.show();
         } else {
-            organizationsListDiv.hide();
+            activitiesListDiv.hide();
         }
     }
 

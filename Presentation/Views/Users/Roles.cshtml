@@ -1,4 +1,5 @@
-﻿@model IEnumerable<string>
+﻿@using VModels.ViewModels.Users;
+@model IEnumerable<GetRoleViewModel>
 
 @{
     ViewData["Title"] = "Roles";
@@ -14,6 +15,9 @@
     <thead>
         <tr>
             <th> Role</th>
+            <th> Organization</th>
+            <th> School</th>
+            <th> Activity</th>
             <th></th>
         </tr>
     </thead>
@@ -22,10 +26,19 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item)
+                    @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    <a asp-action="DeleteRole" asp-route-userId="@ViewBag.UserId" asp-route-roleName="@item">Delete Role</a>
+                    @Html.DisplayFor(modelItem => item.Organization)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.School)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Activity)
+                </td>
+                <td>
+                    <a asp-action="DeleteRole" asp-route-userId="@ViewBag.UserId" asp-route-roleName="@item.Name">Delete Role</a>
                 </td>
             </tr>
         }

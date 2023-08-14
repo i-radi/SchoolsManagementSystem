@@ -16,7 +16,7 @@
         @Html.TextBox("searchName", ViewBag.CurrentFilter as string, new { placeholder = "Search by name" })
         
         @Html.Label("Role:")
-        @Html.TextBox("searchRole", ViewBag.CurrentRoleFilter as string, new { placeholder = "Search by role" })
+        @Html.DropDownList("searchRole", ViewBag.RolesList as SelectList, "All Roles", new { placeholder = "Search by role" })
 
         <input type="submit" value="Search" />
     </p>
@@ -37,9 +37,9 @@
             <th>
                 Email
             </th>
-            <th>
+@*             <th>
                 Organization
-            </th>
+            </th> *@
             <th></th>
         </tr>
     </thead>
@@ -58,9 +58,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Email)
             </td>
-            <td>
+@*             <td>
                 @Html.DisplayFor(modelItem => item.Organization)
-            </td>
+            </td> *@
             <td>
                 <a href="/users/Roles/@item.Id">Manage Roles</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
