@@ -1,9 +1,14 @@
 ﻿using AutoMapper;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
 using Persistance.IRepos;
+using QRCoder;
+using System.Drawing;
+using System.Drawing.Imaging;
+using VModels.ViewModels;
 
 namespace Presentation.Controllers.MVC
 {
@@ -21,6 +26,8 @@ namespace Presentation.Controllers.MVC
         private readonly IUserClassRepo _userClassRepo;
         private readonly IAuthService _authService;
         private readonly IMapper _mapper;
+        private readonly ApplicationDBContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public MembersController(
             ILogger<MembersController> logger,
@@ -34,7 +41,9 @@ namespace Presentation.Controllers.MVC
             IClassRoomRepo classRoomRepo,
             IUserClassRepo userClassRepo,
             IAuthService authService,
-            IMapper mapper)
+            IMapper mapper,
+            ApplicationDBContext context,
+            IWebHostEnvironment webHostEnvironment)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -48,6 +57,8 @@ namespace Presentation.Controllers.MVC
             _signInManager = signInManager;
             _authService = authService;
             _mapper = mapper;
+            _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Members
@@ -107,7 +118,7 @@ namespace Presentation.Controllers.MVC
         // POST: Members/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(User user)
+        public async Task<IActionResult> Create(UserFormViewModel user)
         {
             var newUser = new User
             {
@@ -118,6 +129,11 @@ namespace Presentation.Controllers.MVC
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
             };
+            if (user.ProfilePicture is not null)
+            {
+                newUser.ProfilePicturePath = await Picture.Upload(user.ProfilePicture, _webHostEnvironment);
+            }
+
             await _userManager.CreateAsync(newUser, newUser.PlainPassword);
             return RedirectToAction(nameof(Index));
         }
@@ -137,13 +153,21 @@ namespace Presentation.Controllers.MVC
             }
             ViewData["OrganizationId"] = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name");
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
-            return View(user);
+
+            var viewModel = new UserFormViewModel
+            {
+                Id = id.Value,
+                Name = user.Name,
+                Email = user.Email,
+                ProfilePicturePath = user.ProfilePicturePath
+            };
+            return View(viewModel);
         }
 
         // POST: Members/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, User user)
+        public async Task<IActionResult> Edit(int id, UserFormViewModel user)
         {
             if (id != user.Id)
             {
@@ -155,7 +179,10 @@ namespace Presentation.Controllers.MVC
                 updatedUser.UserName = user.Email;
                 updatedUser.Email = user.Email;
                 updatedUser.Name = user.Name;
-
+                if (user.ProfilePicture is not null)
+                {
+                    updatedUser.ProfilePicturePath = await Picture.Upload(user.ProfilePicture, _webHostEnvironment);
+                }
                 try
                 {
                     await _userManager.UpdateAsync(updatedUser);
@@ -243,6 +270,23 @@ namespace Presentation.Controllers.MVC
             });
 
             return Json(schoolData);
+        }
+
+        public IActionResult GenerateQRCode(int userId)
+        {
+            string userData = userId.ToString();
+
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(userData, QRCodeGenerator.ECCLevel.Q);
+
+            QRCode qrCode = new QRCode(qrCodeData);
+
+            Bitmap qrCodeImage = qrCode.GetGraphic(10);
+
+            MemoryStream memoryStream = new MemoryStream();
+            qrCodeImage.Save(memoryStream, ImageFormat.Png);
+
+            return File(memoryStream.ToArray(), "image/png");
         }
     }
 }

@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Infrastructure.Services;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
 using Persistance.IRepos;
+using VModels.ViewModels;
 
 namespace Presentation.Controllers.MVC
 {
@@ -9,11 +11,13 @@ namespace Presentation.Controllers.MVC
     {
         private readonly IClassRoomRepo _classRoomRepo;
         private readonly IGradeRepo _gradeRepo;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ClassRoomsController(IClassRoomRepo classRoomRepo, IGradeRepo gradeRepo)
+        public ClassRoomsController(IClassRoomRepo classRoomRepo, IGradeRepo gradeRepo, IWebHostEnvironment webHostEnvironment)
         {
             _classRoomRepo = classRoomRepo;
             _gradeRepo = gradeRepo;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: ClassRooms
@@ -55,15 +59,21 @@ namespace Presentation.Controllers.MVC
         // POST: ClassRooms/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,GradeId")] ClassRoom classRoom)
+        public async Task<IActionResult> Create(ClassroomFormViewModel viewmodel)
         {
-            if (ModelState.IsValid)
+            var classroom = new ClassRoom
             {
-                await _classRoomRepo.AddAsync(classRoom);
-                return RedirectToAction(nameof(Index));
+                Name = viewmodel.Name,
+                GradeId = viewmodel.GradeId
+            };
+
+            if (viewmodel.Picture is not null)
+            {
+                classroom.PicturePath = await Picture.Upload(viewmodel.Picture, _webHostEnvironment);
             }
-            ViewData["GradeId"] = new SelectList(_gradeRepo.GetTableAsTracking().ToList(), "Id", "Name", classRoom.GradeId);
-            return View(classRoom);
+
+            await _classRoomRepo.AddAsync(classroom);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: ClassRooms/Edit/5
@@ -80,7 +90,15 @@ namespace Presentation.Controllers.MVC
                 return NotFound();
             }
             ViewData["GradeId"] = new SelectList(_gradeRepo.GetTableAsTracking().ToList(), "Id", "Name", classRoom.GradeId);
-            return View(classRoom);
+
+            var viewModel = new ClassroomFormViewModel
+            {
+                Id = id.Value,
+                Name = classRoom.Name,
+                GradeId = classRoom.GradeId,
+                PicturePath = classRoom.PicturePath
+            };
+            return View(viewModel);
         }
 
         // POST: ClassRooms/Edit/5
@@ -88,31 +106,30 @@ namespace Presentation.Controllers.MVC
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,GradeId")] ClassRoom classRoom)
+        public async Task<IActionResult> Edit(int id, ClassroomFormViewModel classRoom)
         {
             if (id != classRoom.Id)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            var updatedClassroom = await _classRoomRepo.GetByIdAsync(id);
+            if (updatedClassroom is not null)
             {
+                updatedClassroom.Name = classRoom.Name;
+                updatedClassroom.GradeId = classRoom.GradeId;
+                if (classRoom.Picture is not null)
+                {
+                    updatedClassroom.PicturePath = await Picture.Upload(classRoom.Picture, _webHostEnvironment);
+                }
                 try
                 {
-                    await _classRoomRepo.UpdateAsync(classRoom);
+                    await _classRoomRepo.UpdateAsync(updatedClassroom);
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!ClassRoomExists(classRoom.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw new Exception(ex.Message);
                 }
-                return RedirectToAction(nameof(Index));
             }
             ViewData["GradeId"] = new SelectList(_gradeRepo.GetTableAsTracking().ToList(), "Id", "Name", classRoom.GradeId);
             return View(classRoom);

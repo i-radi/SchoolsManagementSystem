@@ -1,4 +1,5 @@
-﻿@model Models.Entities.Identity.User
+﻿@using VModels.ViewModels;
+@model UserFormViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -10,7 +11,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
@@ -22,6 +23,18 @@
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="ProfilePicture" class="control-label"></label>
+                <input type="file" asp-for="ProfilePicture" class="form-control" accept=".jpg, .jpeg, .png" id="profilePictureInput">
+                <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+            </div>
+            @if (!string.IsNullOrEmpty(Model.ProfilePicturePath))
+            {
+            <dt class="col-sm-3">Profile Picture</dt>
+            <dd class="col-sm-9">
+                <img id="imagePreview" src="~/uploads/@Model.ProfilePicturePath" alt="Profile Picture Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
+            </dd>
+            }
             <div class="form-group">
                 <input type="submit" value="Edit" class="btn btn-primary" />
             </div>
@@ -36,3 +49,27 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#profilePictureInput').change(function () {
+            var input = this;
+            var preview = $('#imagePreview');
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    preview.attr('src', e.target.result);
+                    preview.show();
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.hide();
+                preview.attr('src', '');
+            }
+        });
+    });
+</script>

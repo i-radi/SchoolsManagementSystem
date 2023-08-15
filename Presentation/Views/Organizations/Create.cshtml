@@ -1,4 +1,4 @@
-﻿@model GetOrganizationDto
+﻿@model OrganizationFormViewModel
 
 
 @{
@@ -11,12 +11,21 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Picture" class="control-label"></label>
+                <input type="file" asp-for="Picture" class="form-control" accept=".jpg, .jpeg, .png" id="profilePictureInput">
+                <span asp-validation-for="Picture" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label"> ProfilePicture </label>
+                <img id="imagePreview" src="#" alt="Profile Picture Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px; display:none;">
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
@@ -11,12 +12,15 @@ namespace Presentation.Controllers.MVC
     {
         private readonly ISchoolRepo _schoolsRepo;
         private readonly IOrganizationRepo _organizationRepo;
+        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IMapper _mapper;
 
-        public SchoolsController(ISchoolRepo schoolsRepo, IOrganizationRepo organizationRepo, IMapper mapper)
+
+        public SchoolsController(ISchoolRepo schoolsRepo, IOrganizationRepo organizationRepo, IWebHostEnvironment webHostEnvironment, IMapper mapper)
         {
             _schoolsRepo = schoolsRepo;
             _organizationRepo = organizationRepo;
+            _webHostEnvironment = webHostEnvironment;
             _mapper = mapper;
         }
 
@@ -78,7 +82,10 @@ namespace Presentation.Controllers.MVC
                     Description = viewModel.Description,
                     OrganizationId = viewModel.OrganizationId
                 };
-
+                if (viewModel.Picture is not null)
+                {
+                    school.PicturePath = await Picture.Upload(viewModel.Picture, _webHostEnvironment);
+                }
 
                 await _schoolsRepo.AddAsync(school);
                 return RedirectToAction(nameof(Index));
@@ -103,6 +110,7 @@ namespace Presentation.Controllers.MVC
                 Name = modelItem.Name,
                 Description = modelItem.Description,
                 OrganizationId = modelItem.OrganizationId,
+                PicturePath = modelItem.PicturePath,
                 OrganizationOptions = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name", modelItem.OrganizationId)
             };
 
@@ -129,6 +137,7 @@ namespace Presentation.Controllers.MVC
                 modelItem.Name = viewModel.Name;
                 modelItem.Description = viewModel.Description;
                 modelItem.OrganizationId = viewModel.OrganizationId;
+                modelItem.PicturePath = viewModel.PicturePath;
 
                 var model = _schoolsRepo.UpdateAsync(modelItem);
                 return RedirectToAction(nameof(Index));

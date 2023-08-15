@@ -12,21 +12,23 @@ public class UsersController : ControllerBase
     private readonly UserManager<User> _userManager;
     private readonly IAuthService _authService;
     private readonly IMapper _mapper;
+    private readonly string _imagesBaseURL;
 
     public UsersController(
         SignInManager<User> signInManager,
         UserManager<User> userManager,
         IAuthService authService,
-        IMapper mapper)
+        IMapper mapper,
+        IWebHostEnvironment webHostEnvironment)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _authService = authService;
         _mapper = mapper;
+        _imagesBaseURL = Path.Combine(webHostEnvironment.WebRootPath, "uploads");
     }
 
     [HttpPost("register")]
-    //[Authorize(Policy = "Admin")]
     public async Task<IActionResult> RegisterAsync(RegisterDto dto)
     {
         if (!ModelState.IsValid)
@@ -66,7 +68,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("revoke-token")]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "SuperAdmin")]
 
     public async Task<IActionResult> RevokeTokenAsync(string username)
     {
@@ -82,7 +84,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "SuperAdmin")]
     public async Task<IActionResult> GetAll([FromHeader] int schoolId, int pageNumber = 1, int pageSize = 10)
     {
         var modelItems = PaginatedList<User>
@@ -90,24 +92,32 @@ public class UsersController : ControllerBase
             .Include(u => u.UserRoles)
             .ToListAsync(), pageNumber, pageSize);
 
-        var result = _mapper.Map<IEnumerable<GetUserDto>>(modelItems);
-        foreach (var userDto in result.Select((value, i) => new { i, value }))
+        foreach (var user in modelItems)
         {
-            userDto.value.Role = (await _userManager.GetRolesAsync(modelItems[userDto.i])).FirstOrDefault()!;
+            if (!string.IsNullOrEmpty(user.ProfilePicturePath))
+            {
+                user.ProfilePicturePath = Path.Combine(_imagesBaseURL, user.ProfilePicturePath);
+            }
         }
+
+        var result = _mapper.Map<IEnumerable<GetUserDto>>(modelItems);
+
         return Ok(ResponseHandler.Success(result));
     }
 
     [HttpGet("{id}")]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "SuperAdmin")]
     public async Task<IActionResult> GetById([FromHeader] int schoolId, int id)
     {
         var modelItem = await _userManager.Users
             .Include(u => u.UserRoles)
             .FirstOrDefaultAsync(u => u.Id == id);
+        if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
+        {
+            modelItem.ProfilePicturePath = Path.Combine(_imagesBaseURL, modelItem.ProfilePicturePath);
+        }
 
         var result = _mapper.Map<GetUserDto>(modelItem);
-        result.Role = (await _userManager.GetRolesAsync(modelItem!)).FirstOrDefault()!;
         return Ok(ResponseHandler.Success(result));
     }
 }

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Infrastructure.Services;
 using Models.Entities;
 using Persistance.IRepos;
+using VModels.ViewModels;
 
 namespace Presentation.Controllers.MVC
 {
@@ -8,11 +10,13 @@ namespace Presentation.Controllers.MVC
     {
         private readonly IOrganizationRepo _organizationRepo;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public OrganizationsController(IOrganizationRepo organizationRepo, IMapper mapper)
+        public OrganizationsController(IOrganizationRepo organizationRepo, IMapper mapper, IWebHostEnvironment webHostEnvironment)
         {
             _organizationRepo = organizationRepo;
             _mapper = mapper;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Organizations
@@ -57,15 +61,18 @@ namespace Presentation.Controllers.MVC
         // POST: Organizations/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] GetOrganizationDto organization)
+        public async Task<IActionResult> Create(OrganizationFormViewModel viewmodel)
         {
-            if (ModelState.IsValid)
+            var organization = new Organization
             {
-                var modelItem = _mapper.Map<Organization>(organization);
-                var model = await _organizationRepo.AddAsync(modelItem);
-                return RedirectToAction(nameof(Index));
+                Name = viewmodel.Name,
+            };
+            if (viewmodel.Picture is not null)
+            {
+                organization.PicturePath = await Picture.Upload(viewmodel.Picture, _webHostEnvironment);
             }
-            return View(organization);
+            var model = await _organizationRepo.AddAsync(organization);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Organizations/Edit/5
@@ -77,36 +84,45 @@ namespace Presentation.Controllers.MVC
             }
 
             var modelItem = await _organizationRepo.GetByIdAsync(id.Value);
-            var dto = _mapper.Map<GetOrganizationDto>(modelItem);
-            if (dto == null)
+            if (modelItem == null)
             {
                 return NotFound();
             }
-
-            return View(dto);
+            var viewModel = new OrganizationFormViewModel
+            {
+                Id = id.Value,
+                Name = modelItem.Name,
+                PicturePath = modelItem.PicturePath
+            };
+            return View(viewModel);
         }
 
         // POST: Organizations/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] GetOrganizationDto organization)
+        public async Task<IActionResult> Edit(int id, OrganizationFormViewModel organization)
         {
             if (id != organization.Id)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            var updatedOrganization = await _organizationRepo.GetByIdAsync(id);
+            if (updatedOrganization is not null)
             {
-                var modelItem = await _organizationRepo.GetByIdAsync(organization.Id);
-
-                if (modelItem is null)
-                    return NotFound();
-
-                _mapper.Map(organization, modelItem);
-
-                var model = _organizationRepo.UpdateAsync(modelItem);
-                return RedirectToAction(nameof(Index));
+                updatedOrganization.Name = organization.Name;
+                if (organization.Picture is not null)
+                {
+                    updatedOrganization.PicturePath = await Picture.Upload(organization.Picture, _webHostEnvironment);
+                }
+                try
+                {
+                    await _organizationRepo.UpdateAsync(updatedOrganization);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
             }
             return View(organization);
         }

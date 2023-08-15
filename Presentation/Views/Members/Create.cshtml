@@ -1,4 +1,5 @@
-﻿@model Models.Entities.Identity.User
+﻿@using VModels.ViewModels;
+@model UserFormViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -10,7 +11,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
@@ -23,8 +24,18 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="ProfilePicture" class="control-label"></label>
+                <input type="file" asp-for="ProfilePicture" class="form-control" accept=".jpg, .jpeg, .png" id="profilePictureInput">
+                <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label"> ProfilePicture </label>
+                <img id="imagePreview" src="#" alt="Profile Picture Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px; display:none;">
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
+
         </form>
     </div>
 </div>
@@ -34,29 +45,9 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>	
-<script>
-    $(document).ready(function () {
-        var $schoolSelect = $("#schoolSelect");
 
-        $("#organizationSelect").on("change", function () {
-            var selectedOrganizationId = $(this).val();
-
-            $.ajax({
-                url: "/Members/GetSchools", 
-                type: "GET",
-                data: { organizationId: selectedOrganizationId },
-                success: function (data) {
-                    $schoolSelect.empty();
-                    $.each(data, function (index, school) {
-                        $schoolSelect.append($("<option></option>")
-                            .attr("value", school.value)
-                            .text(school.text));
-                    });
-                }
-            });
-        });
-    });
-</script>
+<script src="~/js/site.js"></script>

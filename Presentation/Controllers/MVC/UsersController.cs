@@ -90,7 +90,6 @@ namespace Presentation.Controllers.MVC
             {
                 return NotFound();
             }
-            result.Role = (await _userManager.GetRolesAsync(modelItem!)).FirstOrDefault()!;
 
             return View(result);
         }
@@ -111,7 +110,6 @@ namespace Presentation.Controllers.MVC
             {
                 return NotFound();
             }
-            result.Role = (await _userManager.GetRolesAsync(modelItem!)).FirstOrDefault()!;
 
             return View(result);
         }

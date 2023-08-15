@@ -1,4 +1,4 @@
-﻿@model Models.Entities.ClassRoom
+﻿@model ClassroomFormViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -20,6 +20,15 @@
             <div class="form-group">
                 <label asp-for="GradeId" class="control-label">Grade</label>
                 <select asp-for="GradeId" class ="form-control" asp-items="ViewBag.GradeId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Picture" class="control-label"></label>
+                <input type="file" asp-for="Picture" class="form-control" accept=".jpg, .jpeg, .png" id="profilePictureInput">
+                <span asp-validation-for="Picture" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label"> ProfilePicture </label>
+                <img id="imagePreview" src="#" alt="Profile Picture Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px; display:none;">
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -35,3 +44,4 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+<script src="~/js/site.js"></script>
