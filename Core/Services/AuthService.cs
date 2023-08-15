@@ -105,8 +105,11 @@ public class AuthService : IAuthService
             response.Roles.Add(new()
             {
                 Name = role.Role!.Name!,
+                OrganizationId = role.OrganizationId,
                 Organization = (await _applicationDBContext.Organizations.FirstOrDefaultAsync(o => o.Id == role.OrganizationId))?.Name!,
+                SchoolId = role.SchoolId,
                 School = (await _applicationDBContext.Schools.FirstOrDefaultAsync(o => o.Id == role.SchoolId))?.Name!,
+                ActivityId = role.ActivityId,
                 Activity = (await _applicationDBContext.Activities.FirstOrDefaultAsync(o => o.Id == role.ActivityId))?.Title!,
             });
         }
