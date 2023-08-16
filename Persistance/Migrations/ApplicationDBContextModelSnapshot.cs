@@ -118,18 +118,172 @@ namespace Persistance.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("SchoolId")
-                        .HasColumnType("int");
+                    b.Property<bool>("ForStudents")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("Title")
+                    b.Property<bool>("ForTeachers")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SchoolId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SchoolId");
 
                     b.ToTable("Activities");
+                });
+
+            modelBuilder.Entity("Models.Entities.ActivityClassroom", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ClassroomId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
+
+                    b.HasIndex("ClassroomId");
+
+                    b.ToTable("ActivityClassrooms");
+                });
+
+            modelBuilder.Entity("Models.Entities.ActivityInstance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ForDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsLocked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
+
+                    b.ToTable("ActivityInstances");
+                });
+
+            modelBuilder.Entity("Models.Entities.ActivityInstanceSeason", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityInstanceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SeasonId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityInstanceId");
+
+                    b.HasIndex("SeasonId");
+
+                    b.ToTable("ActivityInstanceSeasons");
+                });
+
+            modelBuilder.Entity("Models.Entities.ActivityInstanceUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityInstanceId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityInstanceId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ActivityInstanceUsers");
+                });
+
+            modelBuilder.Entity("Models.Entities.ActivityTime", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Day")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FromTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ToTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
+
+                    b.ToTable("ActivityTimes");
                 });
 
             modelBuilder.Entity("Models.Entities.ClassRoom", b =>
@@ -522,6 +676,85 @@ namespace Persistance.Migrations
                     b.Navigation("School");
                 });
 
+            modelBuilder.Entity("Models.Entities.ActivityClassroom", b =>
+                {
+                    b.HasOne("Models.Entities.Activity", "Activity")
+                        .WithMany("ActivityClasses")
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Models.Entities.ClassRoom", "Classroom")
+                        .WithMany("ActivityClassrooms")
+                        .HasForeignKey("ClassroomId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+
+                    b.Navigation("Classroom");
+                });
+
+            modelBuilder.Entity("Models.Entities.ActivityInstance", b =>
+                {
+                    b.HasOne("Models.Entities.Activity", "Activity")
+                        .WithMany("ActivityInstances")
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+                });
+
+            modelBuilder.Entity("Models.Entities.ActivityInstanceSeason", b =>
+                {
+                    b.HasOne("Models.Entities.ActivityInstance", "ActivityInstance")
+                        .WithMany("ActivitySeasons")
+                        .HasForeignKey("ActivityInstanceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Models.Entities.Season", "Season")
+                        .WithMany("ActivityInstanceSeasons")
+                        .HasForeignKey("SeasonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ActivityInstance");
+
+                    b.Navigation("Season");
+                });
+
+            modelBuilder.Entity("Models.Entities.ActivityInstanceUser", b =>
+                {
+                    b.HasOne("Models.Entities.ActivityInstance", "ActivityInstance")
+                        .WithMany("ActivityInstanceUsers")
+                        .HasForeignKey("ActivityInstanceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Models.Entities.Identity.User", "User")
+                        .WithMany("ActivityInstanceUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ActivityInstance");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Models.Entities.ActivityTime", b =>
+                {
+                    b.HasOne("Models.Entities.Activity", "Activity")
+                        .WithMany("ActivityTimes")
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+                });
+
             modelBuilder.Entity("Models.Entities.ClassRoom", b =>
                 {
                     b.HasOne("Models.Entities.Grade", "Grade")
@@ -635,11 +868,26 @@ namespace Persistance.Migrations
 
             modelBuilder.Entity("Models.Entities.Activity", b =>
                 {
+                    b.Navigation("ActivityClasses");
+
+                    b.Navigation("ActivityInstances");
+
+                    b.Navigation("ActivityTimes");
+
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("Models.Entities.ActivityInstance", b =>
+                {
+                    b.Navigation("ActivityInstanceUsers");
+
+                    b.Navigation("ActivitySeasons");
                 });
 
             modelBuilder.Entity("Models.Entities.ClassRoom", b =>
                 {
+                    b.Navigation("ActivityClassrooms");
+
                     b.Navigation("UserClasses");
                 });
 
@@ -655,6 +903,8 @@ namespace Persistance.Migrations
 
             modelBuilder.Entity("Models.Entities.Identity.User", b =>
                 {
+                    b.Navigation("ActivityInstanceUsers");
+
                     b.Navigation("UserClasses");
 
                     b.Navigation("UserRoles");
@@ -676,6 +926,8 @@ namespace Persistance.Migrations
 
             modelBuilder.Entity("Models.Entities.Season", b =>
                 {
+                    b.Navigation("ActivityInstanceSeasons");
+
                     b.Navigation("UserClasses");
                 });
 

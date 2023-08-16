@@ -1,4 +1,6 @@
-﻿namespace Core.Services;
+﻿using Models.Entities;
+
+namespace Core.Services;
 
 public class ActivityService : IActivityService
 {

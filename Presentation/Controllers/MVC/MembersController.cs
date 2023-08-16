@@ -135,6 +135,10 @@ namespace Presentation.Controllers.MVC
             }
 
             await _userManager.CreateAsync(newUser, newUser.PlainPassword);
+
+            var createdUser = _userManager.FindByEmailAsync(newUser.Email);
+            QR.Generate(createdUser.Result!.Id, _webHostEnvironment);
+
             return RedirectToAction(nameof(Index));
         }
 

@@ -13,4 +13,5 @@ public class ClassRoom
     [ForeignKey(nameof(GradeId))]
     public virtual Grade? Grade { get; set; }
     public virtual ICollection<UserClass> UserClasses { get; set; } = new HashSet<UserClass>();
+    public virtual ICollection<ActivityClassroom> ActivityClassrooms { get; set; } = new HashSet<ActivityClassroom>();
 }

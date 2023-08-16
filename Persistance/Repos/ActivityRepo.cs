@@ -1,4 +1,6 @@
-﻿namespace Persistance.Repos;
+﻿using Models.Entities;
+
+namespace Persistance.Repos;
 
 public class ActivityRepo : GenericRepoAsync<Activity>, IActivityRepo
 {

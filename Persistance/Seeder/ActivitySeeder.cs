@@ -1,4 +1,6 @@
-﻿namespace Persistance.Seeder;
+﻿using Models.Entities;
+
+namespace Persistance.Seeder;
 
 public static class ActivitySeeder
 {

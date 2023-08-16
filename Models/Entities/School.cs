@@ -1,4 +1,6 @@
-﻿namespace Models.Entities;
+﻿using Models.Entities;
+
+namespace Models.Entities;
 
 public class School
 {

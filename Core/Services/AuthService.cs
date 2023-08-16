@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Infrastructure.Services;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Models.Entities.Identity;
 using Persistance.Context;
@@ -17,6 +19,7 @@ public class AuthService : IAuthService
     private readonly ApplicationDBContext _applicationDBContext;
     private readonly IUserRoleRepo _userRoleRepo;
     private readonly IMapper _mapper;
+    private readonly IWebHostEnvironment _webHostEnvironment;
     #endregion
 
     #region Constructors
@@ -24,13 +27,15 @@ public class AuthService : IAuthService
         UserManager<User> userManager,
         ApplicationDBContext applicationDBContext,
         IUserRoleRepo userRoleRepo,
-        IMapper mapper)
+        IMapper mapper,
+        IWebHostEnvironment webHostEnvironment)
     {
         _jwtSettings = jwtSettings;
         _userManager = userManager;
         _applicationDBContext = applicationDBContext;
         _userRoleRepo = userRoleRepo;
         _mapper = mapper;
+        _webHostEnvironment = webHostEnvironment;
     }
     #endregion
 
@@ -44,6 +49,9 @@ public class AuthService : IAuthService
         user.UserName = dto.Email;
 
         var result = await _userManager.CreateAsync(user, dto.Password);
+
+        var createdUser = _userManager.FindByEmailAsync(user.Email!);
+        QR.Generate(createdUser.Result!.Id, _webHostEnvironment);
 
 
         if (!result.Succeeded)
@@ -110,7 +118,7 @@ public class AuthService : IAuthService
                 SchoolId = role.SchoolId,
                 School = (await _applicationDBContext.Schools.FirstOrDefaultAsync(o => o.Id == role.SchoolId))?.Name!,
                 ActivityId = role.ActivityId,
-                Activity = (await _applicationDBContext.Activities.FirstOrDefaultAsync(o => o.Id == role.ActivityId))?.Title!,
+                Activity = (await _applicationDBContext.Activities.FirstOrDefaultAsync(o => o.Id == role.ActivityId))?.Name!,
             });
         }
 

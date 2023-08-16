@@ -12,4 +12,5 @@ public class Season
     [ForeignKey(nameof(SchoolId))]
     public virtual School? School { get; set; }
     public virtual ICollection<UserClass> UserClasses { get; set; } = new HashSet<UserClass>();
+    public virtual ICollection<ActivityInstanceSeason> ActivityInstanceSeasons { get; set; } = new HashSet<ActivityInstanceSeason>();
 }

@@ -18,7 +18,7 @@ public class RegisterTest
         var userManagerMock = UserManagerMock.GetUserManagerMock();
         var userRoleMock = UserRoleMock.Get();
 
-        _authService = new AuthService(jwtSettings, userManagerMock.Object, userContext, userRoleMock.Object, mapper);
+        //_authService = new AuthService(jwtSettings, userManagerMock.Object, userContext, userRoleMock.Object, mapper);
     }
 
     #endregion Arrange

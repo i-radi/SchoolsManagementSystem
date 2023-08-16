@@ -26,7 +26,7 @@
                 }
                 <dt class="col-sm-3">QR Code</dt>
                 <dd class="col-sm-9">
-                    <img src="@Url.Action("GenerateQRCode", "Members", new { userId = Model.Id })" alt="QR Code">
+                    <img src="~/qrcodes/@(Model.Id).png" alt="QR Code">
                 </dd>
             </dl>
         </div>

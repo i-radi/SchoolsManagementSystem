@@ -144,7 +144,7 @@ namespace Presentation.Controllers.MVC
                 viewmodels.Add(new GetRoleViewModel
                 {
                     Name = userRole.Role?.Name ?? "",
-                    Activity = userRole.Activity?.Title ?? "",
+                    Activity = userRole.Activity?.Name ?? "",
                     Organization = userRole.OrganizationId is not null ?
                     (await _organizationRepo.GetByIdAsync(userRole.OrganizationId.Value)).Name : "",
                     School = userRole.SchoolId is not null ?
@@ -197,7 +197,7 @@ namespace Presentation.Controllers.MVC
                 .Select(o => new { SchoolId = o.Id, o.Name }).ToListAsync();
 
             var activities = await _activityRepo.GetTableNoTracking()
-                .Select(o => new { ActivityId = o.Id, Name = o.Title }).ToListAsync();
+                .Select(o => new { ActivityId = o.Id, Name = o.Name }).ToListAsync();
 
             var createRoleViewModel = new CreateRoleViewModel
             {
