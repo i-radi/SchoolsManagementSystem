@@ -1,6 +1,4 @@
-﻿using Models.Entities;
-
-namespace Infrastructure.Mapping;
+﻿namespace Infrastructure.Mapping;
 
 public partial class ActivityProfile
 {

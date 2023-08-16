@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Models.Entities;
 using Models.Entities.Identity;
 using System.Reflection;
 

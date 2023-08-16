@@ -1,7 +1,4 @@
-﻿using Models.Entities.Identity;
-using System;
-
-namespace Models.Entities;
+﻿namespace Models.Entities;
 
 public class ActivityInstance
 {

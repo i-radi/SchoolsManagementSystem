@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
 using Persistance.IRepos;
@@ -10,42 +9,33 @@ namespace Presentation.Controllers.MVC
     {
         private readonly IActivityRepo _activityRepo;
         private readonly ISchoolRepo _schoolRepo;
-        private readonly RoleManager<Role> _roleManager;
-        private readonly ApplicationDBContext _dBContext;
 
         public ActivitiesController(
             IActivityRepo activityRepo,
-            ISchoolRepo schoolRepo,
-            RoleManager<Role> roleManager,
-            ApplicationDBContext dBContext)
+            ISchoolRepo schoolRepo)
         {
             _activityRepo = activityRepo;
             _schoolRepo = schoolRepo;
-            _roleManager = roleManager;
-            _dBContext = dBContext;
         }
 
         // GET: Activities
-        public async Task<IActionResult> Index(int schoolId)
+        public async Task<IActionResult> Index()
         {
-            var models = _activityRepo.GetTableNoTracking().Include(c => c.School).AsQueryable();
-            if (schoolId > 0)
-            {
-                models = models.Where(c => c.SchoolId == schoolId);
-            }
-
-            return View(await models.ToListAsync());
+            var applicationDBContext = _activityRepo.GetTableNoTracking().Include(a => a.School);
+            return View(await applicationDBContext.ToListAsync());
         }
 
         // GET: Activities/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (id == null || _activityRepo.GetTableNoTracking() == null)
             {
                 return NotFound();
             }
 
-            var activity = await _activityRepo.GetByIdAsync(id.Value);
+            var activity = await _activityRepo.GetTableNoTracking()
+                .Include(a => a.School)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (activity == null)
             {
                 return NotFound();
@@ -57,29 +47,28 @@ namespace Presentation.Controllers.MVC
         // GET: Activities/Create
         public IActionResult Create()
         {
-            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableAsTracking().ToList(), "Id", "Name");
+            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
             return View();
         }
 
         // POST: Activities/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,SchoolId")] Activity activity)
+        public async Task<IActionResult> Create([Bind("Id,Name,IsAvailable,Order,Location,ForStudents,ForTeachers,SchoolId")] Activity activity)
         {
             if (ModelState.IsValid)
             {
-                var schoolName = (await _schoolRepo.GetByIdAsync(activity.SchoolId)).Name;
                 await _activityRepo.AddAsync(activity);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableAsTracking().ToList(), "Id", "Name", activity.SchoolId);
+            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", activity.SchoolId);
             return View(activity);
         }
 
         // GET: Activities/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            if (id == null || _activityRepo.GetTableNoTracking().ToList() == null)
             {
                 return NotFound();
             }
@@ -89,16 +78,14 @@ namespace Presentation.Controllers.MVC
             {
                 return NotFound();
             }
-            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableAsTracking().ToList(), "Id", "Name", activity.SchoolId);
+            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", activity.SchoolId);
             return View(activity);
         }
 
         // POST: Activities/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,SchoolId")] Activity activity)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,IsAvailable,Order,Location,ForStudents,ForTeachers,SchoolId")] Activity activity)
         {
             if (id != activity.Id)
             {
@@ -124,14 +111,14 @@ namespace Presentation.Controllers.MVC
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableAsTracking().ToList(), "Id", "Name", activity.SchoolId);
+            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", activity.SchoolId);
             return View(activity);
         }
 
         // GET: Activities/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (id == null || _schoolRepo.GetTableNoTracking().ToList() == null)
             {
                 return NotFound();
             }
@@ -150,6 +137,10 @@ namespace Presentation.Controllers.MVC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (_activityRepo.GetTableNoTracking().ToList() == null)
+            {
+                return Problem("Entity set 'ApplicationDBContext.Activities'  is null.");
+            }
             var activity = await _activityRepo.GetByIdAsync(id);
             if (activity != null)
             {
@@ -161,80 +152,7 @@ namespace Presentation.Controllers.MVC
 
         private bool ActivityExists(int id)
         {
-            return (_activityRepo.GetTableNoTracking().ToList().Any(e => e.Id == id));
+            return (_activityRepo.GetTableNoTracking()?.Any(e => e.Id == id)).GetValueOrDefault();
         }
-
-        //// GET: Activities/Roles/5
-        //public async Task<IActionResult> Roles(int id)
-        //{
-        //    var roles = new List<string>();
-        //    var activity = await _activityRepo.GetByIdAsync(id);
-
-        //    if (activity is not null)
-        //    {
-        //        roles = await _dBContext.Roles.Where(r => r.ActivityId == id).Select(r => r.Name).ToListAsync();
-        //    }
-
-        //    ViewBag.ActivityId = id;
-        //    return View(roles);
-        //}
-
-        //// GET: Activities/DeleteRole
-        //public async Task<IActionResult> DeleteRole(int activityId, string roleName)
-        //{
-
-        //    var activity = await _activityRepo.GetByIdAsync(activityId);
-        //    if (activity == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    var role = await _dBContext.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
-        //    var result = await _roleManager.DeleteAsync(role!);
-
-        //    if (result.Succeeded)
-        //    {
-        //        return RedirectToAction("Roles", new { id = activityId });
-        //    }
-        //    return NotFound();
-        //}
-
-        //// GET: Activities/CreateRole/
-        //public async Task<IActionResult> CreateRole(int activityId)
-        //{
-        //    var activity = await _activityRepo.GetByIdAsync(activityId);
-        //    var viewModel = new CreateActivityRoleViewModel
-        //    {
-        //        ActivityTitle = activity.Title,
-        //        ActivityId = activity.Id ,
-        //        SchoolId = activity.SchoolId,
-        //        OrganizationId = activity.School!.OrganizationId
-
-        //    };
-
-        //    return View(viewModel);
-        //}
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> CreateRole(CreateActivityRoleViewModel viewModel)
-        //{
-        //    var activity = await _activityRepo.GetByIdAsync(viewModel.ActivityId);
-        //    if (activity is not null)
-        //    {
-        //        var result = await _roleManager.CreateAsync(new Role()
-        //        {
-        //            Name = viewModel.RoleName,
-        //            OrganizationId= viewModel.OrganizationId,
-        //            SchoolId= viewModel.SchoolId,
-        //            ActivityId= activity.Id ,
-        //        });
-
-        //        if (result.Succeeded)
-        //        {
-        //            return RedirectToAction("Roles", new { id = viewModel.ActivityId });
-        //        }
-        //    }
-        //    return BadRequest();
-        //}
     }
 }

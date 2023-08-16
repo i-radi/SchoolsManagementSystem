@@ -1,6 +1,4 @@
-﻿using Models.Entities;
-
-namespace Persistance.Repos;
+﻿namespace Persistance.Repos;
 
 public class ActivityInstanceUserRepo : GenericRepoAsync<ActivityInstanceUser>, IActivityInstanceUserRepo
 {

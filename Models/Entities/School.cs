@@ -1,6 +1,4 @@
-﻿using Models.Entities;
-
-namespace Models.Entities;
+﻿namespace Models.Entities;
 
 public class School
 {

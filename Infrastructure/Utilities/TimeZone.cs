@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Infrastructure.Utilities;
+﻿namespace Infrastructure.Utilities;
 
 public static class TimeZone
 {
@@ -9,7 +7,7 @@ public static class TimeZone
         TimeZoneInfo egyptTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
 
         DateTime timeInEgypt = TimeZoneInfo.ConvertTimeFromUtc(dateTime, egyptTimeZone);
-        
+
         return timeInEgypt;
     }
 }
