@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Models.Entities.ActivityTime>
+﻿@model IEnumerable<Models.Entities.ActivityInstanceUser>
 
 @{
     ViewData["Title"] = "Index";
@@ -7,25 +7,25 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Add New Time</a>
+    <a asp-action="Create">Assign New User</a>
+</p>
+<p>
+    <a asp-action="Index" asp-controller="ActivityInstances" asp-route-id="@Model.FirstOrDefault()?.ActivityInstanceId">Back to Activity Intance</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Activity)
+                @Html.DisplayNameFor(model => model.ActivityInstance)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Day)
+                @Html.DisplayNameFor(model => model.User)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FromTime)
+                @Html.DisplayNameFor(model => model.Note)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ToTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Body)
+                @Html.DisplayNameFor(model => model.CreatedDate)
             </th>
             <th></th>
         </tr>
@@ -34,19 +34,16 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Activity.Name)
+                @Html.DisplayFor(modelItem => item.ActivityInstance.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Day)
+                @Html.DisplayFor(modelItem => item.User.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FromTime)
+                @Html.DisplayFor(modelItem => item.Note)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ToTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Body)
+                @Html.DisplayFor(modelItem => item.CreatedDate)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

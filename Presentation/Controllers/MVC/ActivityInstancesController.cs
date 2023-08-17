@@ -19,12 +19,17 @@ namespace Presentation.Controllers.MVC
         }
 
         // GET: ActivityInstances
-        public async Task<IActionResult> Index(int? activityId)
+        public async Task<IActionResult> Index(int? activityId, int? id)
         {
             var models = _activityInstanceRepo.GetTableNoTracking().Include(a => a.Activity).AsQueryable();
             if (activityId is not null)
             {
                 models = models.Where(a => a.ActivityId == activityId.Value);
+            }
+            if (id is not null)
+            {
+                var activityInstance = await _activityInstanceRepo.GetByIdAsync(id.Value);
+                models = models.Where(a => a.ActivityId == activityInstance.ActivityId);
             }
             return View(await models.ToListAsync());
         }

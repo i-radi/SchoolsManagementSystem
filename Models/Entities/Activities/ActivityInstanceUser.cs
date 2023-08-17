@@ -14,5 +14,5 @@ public class ActivityInstanceUser
     [ForeignKey(nameof(UserId))]
     public virtual User? User { get; set; }
     public string Note { get; set; } = string.Empty;
-    public DateTime CreatedDate { get; set; }
+    public DateTime CreatedDate { get; set; } = DateTime.Now;
 }
