@@ -12,6 +12,8 @@ public class ActivityInstance
     public DateTime CreatedDate { get; set; }
     public DateTime ForDate { get; set; }
     public bool IsLocked { get; set; }
+    public int SeasonId { get; set; }
+    [ForeignKey(nameof(SeasonId))]
+    public virtual Season? Season { get; set; }
     public virtual ICollection<ActivityInstanceUser> ActivityInstanceUsers { get; set; } = new HashSet<ActivityInstanceUser>();
-    public virtual ICollection<ActivityInstanceSeason> ActivitySeasons { get; set; } = new HashSet<ActivityInstanceSeason>();
 }

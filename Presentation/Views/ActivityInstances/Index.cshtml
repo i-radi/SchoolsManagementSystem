@@ -27,6 +27,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.IsLocked)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Season)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -50,7 +53,9 @@
                     @Html.DisplayFor(modelItem => item.IsLocked)
                 </td>
                 <td>
-                    <a asp-action="Index" asp-controller="ActivityInstanceSeasons" asp-route-instanceId="@item.Id">Manage Seasons</a> |
+                    @Html.DisplayFor(modelItem => item.Season.Name)
+                </td>
+                <td>
                     <a asp-action="Index" asp-controller="ActivityInstanceUsers" asp-route-instanceId="@item.Id">Manage Users</a> |
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

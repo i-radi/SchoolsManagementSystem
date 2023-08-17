@@ -249,7 +249,7 @@ namespace Presentation.Controllers.MVC
             ViewData["UserId"] = new SelectList(new List<User> { user }, "Id", "Name");
             ViewData["ClassRoomId"] = new SelectList(classrooms, "Id", "Name");
             ViewData["UserTypeId"] = new SelectList(usertypes, "Id", "Name");
-            ViewData["SeasonId"] = new SelectList(seasons, "Id", "To");
+            ViewData["SeasonId"] = new SelectList(seasons, "Id", "Name");
             return View(new UserClass { UserId = user.Id });
         }
 

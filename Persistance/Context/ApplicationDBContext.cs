@@ -30,7 +30,6 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
     public virtual DbSet<Activity> Activities => Set<Activity>();
     public virtual DbSet<ActivityClassroom> ActivityClassrooms => Set<ActivityClassroom>();
     public virtual DbSet<ActivityInstance> ActivityInstances => Set<ActivityInstance>();
-    public virtual DbSet<ActivityInstanceSeason> ActivityInstanceSeasons => Set<ActivityInstanceSeason>();
     public virtual DbSet<ActivityInstanceUser> ActivityInstanceUsers => Set<ActivityInstanceUser>();
     public virtual DbSet<ActivityTime> ActivityTimes => Set<ActivityTime>();
     #endregion
@@ -40,9 +39,9 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        modelBuilder.Entity<ActivityInstanceSeason>()
+        modelBuilder.Entity<ActivityInstance>()
         .HasOne(a => a.Season)
-        .WithMany(a => a.ActivityInstanceSeasons)
+        .WithMany(a => a.ActivityInstances)
         .HasForeignKey(a => a.SeasonId)
         .OnDelete(DeleteBehavior.Restrict);
 

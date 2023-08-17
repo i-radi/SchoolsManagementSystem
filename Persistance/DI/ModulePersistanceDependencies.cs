@@ -20,7 +20,6 @@ public static class ModulePersistanceDependencies
         services.AddScoped<IActivityClassroomRepo, ActivityClassroomRepo>();
         services.AddScoped<IActivityInstanceRepo, ActivityInstanceRepo>();
         services.AddScoped<IActivityInstanceUserRepo, ActivityInstanceUserRepo>();
-        services.AddScoped<IActivityInstanceSeasonRepo, ActivityInstanceSeasonRepo>();
         services.AddScoped(typeof(IGenericRepoAsync<>), typeof(GenericRepoAsync<>));
         return services;
     }

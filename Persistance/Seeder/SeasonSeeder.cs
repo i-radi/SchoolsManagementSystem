@@ -11,6 +11,7 @@ public static class SeasonSeeder
             {
                 new Season
                 {
+                    Name = "Season 1",
                     From = DateTime.Now.AddMonths(-6),
                     To = DateTime.Now,
                     IsCurrent = true,
@@ -18,6 +19,7 @@ public static class SeasonSeeder
                 },
                 new Season
                 {
+                    Name = "Season 2",
                     From = DateTime.Now.AddMonths(-12),
                     To = DateTime.Now.AddMonths(-6),
                     IsCurrent = false,
@@ -25,6 +27,7 @@ public static class SeasonSeeder
                 },
                 new Season
                 {
+                    Name = "Season 3",
                     From = DateTime.Now.AddMonths(-18),
                     To = DateTime.Now.AddMonths(-12),
                     IsCurrent = false,

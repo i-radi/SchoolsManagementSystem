@@ -9,19 +9,25 @@ namespace Presentation.Controllers.MVC
     {
         private readonly IActivityInstanceRepo _activityInstanceRepo;
         private readonly IActivityRepo _activityRepo;
+        private readonly ISeasonRepo _seasonRepo;
 
         public ActivityInstancesController(
             IActivityInstanceRepo activityInstanceRepo,
-            IActivityRepo activityRepo)
+            IActivityRepo activityRepo,
+            ISeasonRepo seasonRepo)
         {
             _activityInstanceRepo = activityInstanceRepo;
             _activityRepo = activityRepo;
+            _seasonRepo = seasonRepo;
         }
 
         // GET: ActivityInstances
         public async Task<IActionResult> Index(int? activityId, int? id)
         {
-            var models = _activityInstanceRepo.GetTableNoTracking().Include(a => a.Activity).AsQueryable();
+            var models = _activityInstanceRepo.GetTableNoTracking()
+                .Include(a => a.Activity)
+                .Include(a => a.Season)
+                .AsQueryable();
             if (activityId is not null)
             {
                 models = models.Where(a => a.ActivityId == activityId.Value);
@@ -44,6 +50,7 @@ namespace Presentation.Controllers.MVC
 
             var activityInstance = await _activityInstanceRepo.GetTableNoTracking()
                 .Include(a => a.Activity)
+                .Include(a => a.Season)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (activityInstance == null)
             {
@@ -57,13 +64,14 @@ namespace Presentation.Controllers.MVC
         public IActionResult Create()
         {
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name");
+            ViewData["SeasonId"] = new SelectList(_seasonRepo.GetTableNoTracking().ToList(), "Id", "Name");
             return View();
         }
 
         // POST: ActivityInstances/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ActivityId,Name,CreatedDate,ForDate,IsLocked")] ActivityInstance activityInstance)
+        public async Task<IActionResult> Create([Bind("Id,ActivityId,SeasonId,Name,CreatedDate,ForDate,IsLocked")] ActivityInstance activityInstance)
         {
             if (ModelState.IsValid)
             {
@@ -71,6 +79,7 @@ namespace Presentation.Controllers.MVC
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstance.ActivityId);
+            ViewData["SeasonId"] = new SelectList(_seasonRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstance.SeasonId);
             return View(activityInstance);
         }
 
@@ -88,13 +97,14 @@ namespace Presentation.Controllers.MVC
                 return NotFound();
             }
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstance.ActivityId);
+            ViewData["SeasonId"] = new SelectList(_seasonRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstance.SeasonId);
             return View(activityInstance);
         }
 
         // POST: ActivityInstances/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ActivityId,Name,CreatedDate,ForDate,IsLocked")] ActivityInstance activityInstance)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ActivityId,SeasonId,Name,CreatedDate,ForDate,IsLocked")] ActivityInstance activityInstance)
         {
             if (id != activityInstance.Id)
             {
@@ -121,6 +131,7 @@ namespace Presentation.Controllers.MVC
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstance.ActivityId);
+            ViewData["SeasonId"] = new SelectList(_seasonRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstance.SeasonId);
             return View(activityInstance);
         }
 
@@ -134,6 +145,7 @@ namespace Presentation.Controllers.MVC
 
             var activityInstance = await _activityInstanceRepo.GetTableNoTracking()
                 .Include(a => a.Activity)
+                .Include(a => a.Season)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (activityInstance == null)
             {

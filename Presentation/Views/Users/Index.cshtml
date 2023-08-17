@@ -10,11 +10,11 @@
     <a asp-action="Create" asp-controller="Members">Create New User</a>
 </p>
 
-@using (Html.BeginForm("Index", "Users", FormMethod.Get))
+@using (Html.BeginForm("Index", "Users", FormMethod.Get, new { id = "searchForm" }))
 {
     <p>
         @Html.TextBox("searchName", ViewBag.CurrentFilter as string, new { placeholder = "Search by name" })
-        
+
         @Html.Label("Role:")
         @Html.DropDownList("searchRole", ViewBag.RolesList as SelectList, "All Roles", new { placeholder = "Search by role" })
 
@@ -37,37 +37,32 @@
             <th>
                 Email
             </th>
-@*             <th>
-                Organization
-            </th> *@
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PhoneNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-@*             <td>
-                @Html.DisplayFor(modelItem => item.Organization)
-            </td> *@
-            <td>
-                <a href="/users/Roles/@item.Id">Manage Roles</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhoneNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    <a href="/users/Roles/@item.Id">Manage Roles</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 
@@ -91,3 +86,14 @@
         <a class="page-link" href="@Url.Action("Index", new { page = Model.TotalPages })">Last</a>
     </li>
 </ul>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#searchRole").change(function () {
+            $("#searchForm").submit();
+        });
+    });
+</script>
