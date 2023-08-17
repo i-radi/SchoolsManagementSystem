@@ -9,8 +9,24 @@ public static class ActivitySeeder
         {
             var activities = new List<Activity>
             {
-                new Activity("First Activity", 1),
-                new Activity("Second Activity", 1)
+                new Activity
+                { 
+                     Name = "First Activity",
+                     SchoolId = 1,
+                     Order=3,
+                     ForStudents = true,
+                     IsAvailable = true,
+                     Location = "st. 1"
+                },
+                new Activity
+                {
+                     Name = "Second Activity",
+                     SchoolId = 1,
+                     Order=1,
+                     ForTeachers = true,
+                     IsAvailable = true,
+                     Location = "st. 1"
+                }
             };
 
             await dbContext.AddRangeAsync(activities);

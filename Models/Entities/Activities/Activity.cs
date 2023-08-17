@@ -3,17 +3,6 @@
 namespace Models.Entities;
 public class Activity
 {
-    public Activity()
-    {
-
-    }
-
-    public Activity(string title, int schoolId)
-    {
-        Name = title;
-        SchoolId = schoolId;
-    }
-
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
