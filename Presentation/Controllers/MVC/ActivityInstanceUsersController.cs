@@ -1,31 +1,37 @@
-﻿namespace Presentation.Controllers.MVC
+﻿using Models.Entities;
+
+namespace Presentation.Controllers.MVC
 {
     public class ActivityInstanceUsersController : Controller
     {
         private readonly IActivityInstanceUserRepo _activityInstanceUserRepo;
         private readonly IActivityInstanceRepo _activityInstanceRepo;
         private readonly ApplicationDBContext _context;
+        private readonly IMapper _mapper;
 
         public ActivityInstanceUsersController(
             IActivityInstanceUserRepo activityInstanceUserRepo,
             IActivityInstanceRepo activityInstanceRepo,
-            ApplicationDBContext context)
+            ApplicationDBContext context,
+            IMapper mapper)
         {
             _activityInstanceUserRepo = activityInstanceUserRepo;
             _activityInstanceRepo = activityInstanceRepo;
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: ActivityInstanceUsers
         public async Task<IActionResult> Index(int? instanceId)
         {
-            var applicationDBContext = _context.ActivityInstanceUsers.Include(a => a.ActivityInstance).Include(a => a.User).AsQueryable();
+            var models = _context.ActivityInstanceUsers.Include(a => a.ActivityInstance).Include(a => a.User).AsQueryable();
             if (instanceId is not null)
             {
-                applicationDBContext = applicationDBContext
+                models = models
                     .Where(u => u.ActivityInstanceId == instanceId);
             }
-            return View(await applicationDBContext.ToListAsync());
+            var viewmodels = _mapper.Map<List<ActivityInstanceUserViewModel>>(await models.ToListAsync());
+            return View(viewmodels);
         }
 
         // GET: ActivityInstanceUsers/Details/5
@@ -44,8 +50,8 @@
             {
                 return NotFound();
             }
-
-            return View(activityInstanceUser);
+            var activityInstanceUserVM = _mapper.Map<ActivityInstanceUserViewModel>(activityInstanceUser);
+            return View(activityInstanceUserVM);
         }
 
         // GET: ActivityInstanceUsers/Create
@@ -59,17 +65,18 @@
         // POST: ActivityInstanceUsers/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ActivityInstanceId,UserId,Note,CreatedDate")] ActivityInstanceUser activityInstanceUser)
+        public async Task<IActionResult> Create(ActivityInstanceUserViewModel activityInstanceUserVM)
         {
             if (ModelState.IsValid)
             {
+                var activityInstanceUser = _mapper.Map<ActivityInstanceUser>(activityInstanceUserVM);
                 _context.Add(activityInstanceUser);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ActivityInstanceId"] = new SelectList(_context.ActivityInstances, "Id", "Name", activityInstanceUser.ActivityInstanceId);
-            ViewData["UserId"] = new SelectList(_context.User, "Id", "Name", activityInstanceUser.UserId);
-            return View(activityInstanceUser);
+            ViewData["ActivityInstanceId"] = new SelectList(_context.ActivityInstances, "Id", "Name", activityInstanceUserVM.ActivityInstanceId);
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "Name", activityInstanceUserVM.UserId);
+            return View(activityInstanceUserVM);
         }
 
         // GET: ActivityInstanceUsers/Edit/5
@@ -87,15 +94,16 @@
             }
             ViewData["ActivityInstanceId"] = new SelectList(_context.ActivityInstances, "Id", "Name", activityInstanceUser.ActivityInstanceId);
             ViewData["UserId"] = new SelectList(_context.User, "Id", "Name", activityInstanceUser.UserId);
-            return View(activityInstanceUser);
+            var activityInstanceUserVM = _mapper.Map<ActivityInstanceUser>(activityInstanceUser);
+            return View(activityInstanceUserVM);
         }
 
         // POST: ActivityInstanceUsers/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ActivityInstanceId,UserId,Note,CreatedDate")] ActivityInstanceUser activityInstanceUser)
+        public async Task<IActionResult> Edit(int id,ActivityInstanceUserViewModel activityInstanceUserVM)
         {
-            if (id != activityInstanceUser.Id)
+            if (id != activityInstanceUserVM.Id)
             {
                 return NotFound();
             }
@@ -104,12 +112,13 @@
             {
                 try
                 {
+                    var activityInstanceUser = _mapper.Map<ActivityInstanceUser>(activityInstanceUserVM);
                     _context.Update(activityInstanceUser);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ActivityInstanceUserExists(activityInstanceUser.Id))
+                    if (!ActivityInstanceUserExists(activityInstanceUserVM.Id))
                     {
                         return NotFound();
                     }
@@ -120,9 +129,9 @@
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ActivityInstanceId"] = new SelectList(_context.ActivityInstances, "Id", "Name", activityInstanceUser.ActivityInstanceId);
-            ViewData["UserId"] = new SelectList(_context.User, "Id", "Name", activityInstanceUser.UserId);
-            return View(activityInstanceUser);
+            ViewData["ActivityInstanceId"] = new SelectList(_context.ActivityInstances, "Id", "Name", activityInstanceUserVM.ActivityInstanceId);
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "Name", activityInstanceUserVM.UserId);
+            return View(activityInstanceUserVM);
         }
 
         // GET: ActivityInstanceUsers/Delete/5
@@ -142,7 +151,8 @@
                 return NotFound();
             }
 
-            return View(activityInstanceUser);
+            var activityInstanceUserVM = _mapper.Map<ActivityInstanceUserViewModel>(activityInstanceUser);
+            return View(activityInstanceUserVM);
         }
 
         // POST: ActivityInstanceUsers/Delete/5

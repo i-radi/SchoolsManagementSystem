@@ -5,12 +5,18 @@
         private readonly IClassRoomRepo _classRoomRepo;
         private readonly IGradeRepo _gradeRepo;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IMapper _mapper;
 
-        public ClassRoomsController(IClassRoomRepo classRoomRepo, IGradeRepo gradeRepo, IWebHostEnvironment webHostEnvironment)
+        public ClassRoomsController(
+            IClassRoomRepo classRoomRepo,
+            IGradeRepo gradeRepo,
+            IWebHostEnvironment webHostEnvironment,
+            IMapper mapper)
         {
             _classRoomRepo = classRoomRepo;
             _gradeRepo = gradeRepo;
             _webHostEnvironment = webHostEnvironment;
+            _mapper = mapper;
         }
 
         // GET: ClassRooms
@@ -22,7 +28,8 @@
                 classrooms = classrooms.Where(c => c.GradeId == gradeId);
             }
 
-            return View(await classrooms.ToListAsync());
+            var gradesVM = _mapper.Map<List<ClassRoomViewModel>>(await classrooms.ToListAsync());
+            return View(gradesVM);
         }
 
         // GET: ClassRooms/Details/5
@@ -39,7 +46,8 @@
                 return NotFound();
             }
 
-            return View(classRoom);
+            var classroomVM = _mapper.Map<ClassRoomViewModel>(classRoom);
+            return View(classroomVM);
         }
 
         // GET: ClassRooms/Create
@@ -95,24 +103,22 @@
         }
 
         // POST: ClassRooms/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ClassroomFormViewModel classRoom)
+        public async Task<IActionResult> Edit(int id, ClassroomFormViewModel classRoomVM)
         {
-            if (id != classRoom.Id)
+            if (id != classRoomVM.Id)
             {
                 return NotFound();
             }
             var updatedClassroom = await _classRoomRepo.GetByIdAsync(id);
             if (updatedClassroom is not null)
             {
-                updatedClassroom.Name = classRoom.Name;
-                updatedClassroom.GradeId = classRoom.GradeId;
-                if (classRoom.Picture is not null)
+                updatedClassroom.Name = classRoomVM.Name;
+                updatedClassroom.GradeId = classRoomVM.GradeId;
+                if (classRoomVM.Picture is not null)
                 {
-                    updatedClassroom.PicturePath = await Picture.Upload(classRoom.Picture, _webHostEnvironment);
+                    updatedClassroom.PicturePath = await Picture.Upload(classRoomVM.Picture, _webHostEnvironment);
                 }
                 try
                 {
@@ -124,8 +130,8 @@
                     throw new Exception(ex.Message);
                 }
             }
-            ViewData["GradeId"] = new SelectList(_gradeRepo.GetTableAsTracking().ToList(), "Id", "Name", classRoom.GradeId);
-            return View(classRoom);
+            ViewData["GradeId"] = new SelectList(_gradeRepo.GetTableAsTracking().ToList(), "Id", "Name", classRoomVM.GradeId);
+            return View(classRoomVM);
         }
 
         // GET: ClassRooms/Delete/5
@@ -141,8 +147,9 @@
             {
                 return NotFound();
             }
+            var classroomVM = _mapper.Map<ClassRoomViewModel>(classRoom);
 
-            return View(classRoom);
+            return View(classroomVM);
         }
 
         // POST: ClassRooms/Delete/5

@@ -1,19 +1,24 @@
-﻿namespace Presentation.Controllers.MVC
+﻿using Models.Entities;
+
+namespace Presentation.Controllers.MVC
 {
     public class ActivityInstancesController : Controller
     {
         private readonly IActivityInstanceRepo _activityInstanceRepo;
         private readonly IActivityRepo _activityRepo;
         private readonly ISeasonRepo _seasonRepo;
+        private readonly IMapper _mapper;
 
         public ActivityInstancesController(
             IActivityInstanceRepo activityInstanceRepo,
             IActivityRepo activityRepo,
-            ISeasonRepo seasonRepo)
+            ISeasonRepo seasonRepo,
+            IMapper mapper)
         {
             _activityInstanceRepo = activityInstanceRepo;
             _activityRepo = activityRepo;
             _seasonRepo = seasonRepo;
+            _mapper = mapper;
         }
 
         // GET: ActivityInstances
@@ -32,7 +37,8 @@
                 var activityInstance = await _activityInstanceRepo.GetByIdAsync(id.Value);
                 models = models.Where(a => a.ActivityId == activityInstance.ActivityId);
             }
-            return View(await models.ToListAsync());
+            var viewmodels = _mapper.Map<List<ActivityInstanceViewModel>>(await models.ToListAsync());
+            return View(viewmodels);
         }
 
         // GET: ActivityInstances/Details/5
@@ -52,7 +58,8 @@
                 return NotFound();
             }
 
-            return View(activityInstance);
+            var activityInstanceVM = _mapper.Map<ActivityInstanceViewModel>(activityInstance);
+            return View(activityInstanceVM);
         }
 
         // GET: ActivityInstances/Create
@@ -66,16 +73,17 @@
         // POST: ActivityInstances/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ActivityId,SeasonId,Name,CreatedDate,ForDate,IsLocked")] ActivityInstance activityInstance)
+        public async Task<IActionResult> Create(ActivityInstanceViewModel activityInstanceVM)
         {
             if (ModelState.IsValid)
             {
+                var activityInstance = _mapper.Map<ActivityInstance>(activityInstanceVM);
                 await _activityInstanceRepo.AddAsync(activityInstance);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstance.ActivityId);
-            ViewData["SeasonId"] = new SelectList(_seasonRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstance.SeasonId);
-            return View(activityInstance);
+            ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstanceVM.ActivityId);
+            ViewData["SeasonId"] = new SelectList(_seasonRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstanceVM.SeasonId);
+            return View(activityInstanceVM);
         }
 
         // GET: ActivityInstances/Edit/5
@@ -93,15 +101,16 @@
             }
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstance.ActivityId);
             ViewData["SeasonId"] = new SelectList(_seasonRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstance.SeasonId);
-            return View(activityInstance);
+            var activityInstanceVM = _mapper.Map<ActivityInstance>(activityInstance);
+            return View(activityInstanceVM);
         }
 
         // POST: ActivityInstances/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ActivityId,SeasonId,Name,CreatedDate,ForDate,IsLocked")] ActivityInstance activityInstance)
+        public async Task<IActionResult> Edit(int id,ActivityInstanceViewModel activityInstanceVM)
         {
-            if (id != activityInstance.Id)
+            if (id != activityInstanceVM.Id)
             {
                 return NotFound();
             }
@@ -110,11 +119,12 @@
             {
                 try
                 {
+                    var activityInstance = _mapper.Map<ActivityInstance>(activityInstanceVM);
                     await _activityInstanceRepo.UpdateAsync(activityInstance);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ActivityInstanceExists(activityInstance.Id))
+                    if (!ActivityInstanceExists(activityInstanceVM.Id))
                     {
                         return NotFound();
                     }
@@ -125,9 +135,9 @@
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstance.ActivityId);
-            ViewData["SeasonId"] = new SelectList(_seasonRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstance.SeasonId);
-            return View(activityInstance);
+            ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstanceVM.ActivityId);
+            ViewData["SeasonId"] = new SelectList(_seasonRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstanceVM.SeasonId);
+            return View(activityInstanceVM);
         }
 
         // GET: ActivityInstances/Delete/5
@@ -147,7 +157,8 @@
                 return NotFound();
             }
 
-            return View(activityInstance);
+            var activityInstanceVM = _mapper.Map<ActivityInstanceViewModel>(activityInstance);
+            return View(activityInstanceVM);
         }
 
         // POST: ActivityInstances/Delete/5

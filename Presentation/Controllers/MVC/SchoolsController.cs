@@ -27,7 +27,7 @@
             {
                 modelItems = modelItems.Where(s => s.OrganizationId == organizationId);
             }
-            var result = PaginatedList<GetSchoolDto>.Create(_mapper.Map<List<GetSchoolDto>>(modelItems), page, pageSize);
+            var result = PaginatedList<SchoolViewModel>.Create(_mapper.Map<List<SchoolViewModel>>(modelItems), page, pageSize);
 
             return View(result);
         }
@@ -41,7 +41,7 @@
             }
 
             var modelItem = await _schoolsRepo.GetByIdAsync(id.Value);
-            var dto = _mapper.Map<GetSchoolDto>(modelItem);
+            var dto = _mapper.Map<SchoolViewModel>(modelItem);
             if (dto == null)
             {
                 return NotFound();
@@ -146,13 +146,13 @@
             }
 
             var modelItem = await _schoolsRepo.GetByIdAsync(id.Value);
-            var dto = _mapper.Map<GetSchoolDto>(modelItem);
-            if (dto == null)
+            var VM = _mapper.Map<SchoolViewModel>(modelItem);
+            if (VM == null)
             {
                 return NotFound();
             }
 
-            return View(dto);
+            return View(VM);
         }
 
         // POST: Schools/Delete/5

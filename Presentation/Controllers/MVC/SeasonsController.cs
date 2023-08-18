@@ -1,14 +1,21 @@
-﻿namespace Presentation.Controllers.MVC
+﻿using Models.Entities;
+
+namespace Presentation.Controllers.MVC
 {
     public class SeasonsController : Controller
     {
         private readonly ISeasonRepo _seasonRepo;
         private readonly ISchoolRepo _schoolRepo;
+        private readonly IMapper _mapper;
 
-        public SeasonsController(ISeasonRepo seasonRepo, ISchoolRepo schoolRepo)
+        public SeasonsController(
+            ISeasonRepo seasonRepo,
+            ISchoolRepo schoolRepo,
+            IMapper mapper)
         {
             _seasonRepo = seasonRepo;
             _schoolRepo = schoolRepo;
+            _mapper = mapper;
         }
 
         // GET: Seasons
@@ -19,7 +26,8 @@
             {
                 seasons = seasons.Where(s => s.SchoolId == schoolId);
             }
-            return View(await seasons.ToListAsync());
+            var seasonsVM = _mapper.Map<List<SeasonViewModel>>(await seasons.ToListAsync());
+            return View(seasonsVM);
         }
 
         // GET: Seasons/Details/5
@@ -36,6 +44,7 @@
                 return NotFound();
             }
 
+            var seasonVM = _mapper.Map<SeasonViewModel>(season);
             return View(season);
         }
 
@@ -49,15 +58,16 @@
         // POST: Seasons/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,From,To,IsCurrent,SchoolId")] Season season)
+        public async Task<IActionResult> Create(SeasonViewModel seasonVM)
         {
             if (ModelState.IsValid)
             {
+                var season = _mapper.Map<Season>(seasonVM);
                 await _seasonRepo.AddAsync(season);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", season.SchoolId);
-            return View(season);
+            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", seasonVM.SchoolId);
+            return View(seasonVM);
         }
 
         // GET: Seasons/Edit/5
@@ -74,17 +84,16 @@
                 return NotFound();
             }
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", season.SchoolId);
-            return View(season);
+            var seasonVM = _mapper.Map<SeasonViewModel>(season);
+            return View(seasonVM);
         }
 
         // POST: Seasons/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,From,To,IsCurrent,SchoolId")] Season season)
+        public async Task<IActionResult> Edit(int id, SeasonViewModel seasonVM)
         {
-            if (id != season.Id)
+            if (id != seasonVM.Id)
             {
                 return NotFound();
             }
@@ -93,11 +102,12 @@
             {
                 try
                 {
+                    var season = _mapper.Map<Season>(seasonVM);
                     await _seasonRepo.UpdateAsync(season);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SeasonExists(season.Id))
+                    if (!SeasonExists(seasonVM.Id))
                     {
                         return NotFound();
                     }
@@ -108,8 +118,8 @@
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", season.SchoolId);
-            return View(season);
+            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", seasonVM.SchoolId);
+            return View(seasonVM);
         }
 
         // GET: Seasons/Delete/5
@@ -125,8 +135,9 @@
             {
                 return NotFound();
             }
+            var seasonVM = _mapper.Map<SeasonViewModel>(season);
 
-            return View(season);
+            return View(seasonVM);
         }
 
         // POST: Seasons/Delete/5

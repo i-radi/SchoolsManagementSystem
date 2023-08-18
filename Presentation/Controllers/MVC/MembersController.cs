@@ -1,4 +1,5 @@
-﻿using QRCoder;
+﻿using Models.Entities.Identity;
+using QRCoder;
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -78,8 +79,8 @@ namespace Presentation.Controllers.MVC
                 | u.UserClasses.Any(ur => ur.ClassRoom!.Name.Contains(search))
                 | u.UserClasses.Any(ur => ur.UserType!.Name.Contains(search)));
             }
-
-            return View(users.ToList());
+            var usersVM = _mapper.Map<List<UserViewModel>>(users.ToList());
+            return View(usersVM);
         }
 
         // GET: Members/Details/5
@@ -96,7 +97,8 @@ namespace Presentation.Controllers.MVC
                 return NotFound();
             }
 
-            return View(user);
+            var userVM = _mapper.Map<UserViewModel>(user);
+            return View(userVM);
         }
 
         // GET: Members/Create
@@ -167,21 +169,21 @@ namespace Presentation.Controllers.MVC
         // POST: Members/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, UserFormViewModel user)
+        public async Task<IActionResult> Edit(int id, UserFormViewModel userVM)
         {
-            if (id != user.Id)
+            if (id != userVM.Id)
             {
                 return NotFound();
             }
             var updatedUser = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (updatedUser is not null)
             {
-                updatedUser.UserName = user.Email;
-                updatedUser.Email = user.Email;
-                updatedUser.Name = user.Name;
-                if (user.ProfilePicture is not null)
+                updatedUser.UserName = userVM.Email;
+                updatedUser.Email = userVM.Email;
+                updatedUser.Name = userVM.Name;
+                if (userVM.ProfilePicture is not null)
                 {
-                    updatedUser.ProfilePicturePath = await Picture.Upload(user.ProfilePicture, _webHostEnvironment);
+                    updatedUser.ProfilePicturePath = await Picture.Upload(userVM.ProfilePicture, _webHostEnvironment);
                 }
                 try
                 {
@@ -195,7 +197,7 @@ namespace Presentation.Controllers.MVC
             }
             ViewData["OrganizationId"] = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name");
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
-            return View(user);
+            return View(userVM);
 
         }
 
@@ -212,8 +214,9 @@ namespace Presentation.Controllers.MVC
             {
                 return NotFound();
             }
+            var userVM = _mapper.Map<UserViewModel>(user);
 
-            return View(user);
+            return View(userVM);
         }
 
         // POST: Members/Delete/5
@@ -246,16 +249,17 @@ namespace Presentation.Controllers.MVC
             ViewData["ClassRoomId"] = new SelectList(classrooms, "Id", "Name");
             ViewData["UserTypeId"] = new SelectList(usertypes, "Id", "Name");
             ViewData["SeasonId"] = new SelectList(seasons, "Id", "Name");
-            return View(new UserClass { UserId = user.Id });
+            return View(new UserClassViewModel { UserId = user.Id });
         }
 
         // POST: Members/Assign
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Assign(UserClass addUserClass)
+        public async Task<IActionResult> Assign(UserClassViewModel userClassVM)
         {
-            addUserClass.Id = 0;
-            await _userClassRepo.AddAsync(addUserClass);
+            userClassVM.Id = 0;
+            var userClass = _mapper.Map<UserClass>(userClassVM);
+            await _userClassRepo.AddAsync(userClass);
             return RedirectToAction(nameof(Index));
         }
 
@@ -270,23 +274,6 @@ namespace Presentation.Controllers.MVC
             });
 
             return Json(schoolData);
-        }
-
-        public IActionResult GenerateQRCode(int userId)
-        {
-            string userData = userId.ToString();
-
-            QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode(userData, QRCodeGenerator.ECCLevel.Q);
-
-            QRCode qrCode = new QRCode(qrCodeData);
-
-            Bitmap qrCodeImage = qrCode.GetGraphic(10);
-
-            MemoryStream memoryStream = new MemoryStream();
-            qrCodeImage.Save(memoryStream, ImageFormat.Png);
-
-            return File(memoryStream.ToArray(), "image/png");
         }
     }
 }

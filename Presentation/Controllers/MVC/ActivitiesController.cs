@@ -4,20 +4,24 @@
     {
         private readonly IActivityRepo _activityRepo;
         private readonly ISchoolRepo _schoolRepo;
+        private readonly IMapper _mapper;
 
         public ActivitiesController(
             IActivityRepo activityRepo,
-            ISchoolRepo schoolRepo)
+            ISchoolRepo schoolRepo,
+            IMapper mapper)
         {
             _activityRepo = activityRepo;
             _schoolRepo = schoolRepo;
+            _mapper = mapper;
         }
 
         // GET: Activities
         public async Task<IActionResult> Index()
         {
-            var applicationDBContext = _activityRepo.GetTableNoTracking().Include(a => a.School);
-            return View(await applicationDBContext.ToListAsync());
+            var models = await _activityRepo.GetTableNoTracking().Include(a => a.School).ToListAsync();
+            var viewmodels = _mapper.Map<List<ActivityViewModel>>(models);
+            return View(viewmodels);
         }
 
         // GET: Activities/Details/5
@@ -35,8 +39,9 @@
             {
                 return NotFound();
             }
+            var viewmodel = _mapper.Map<ActivityViewModel>(activity);
 
-            return View(activity);
+            return View(viewmodel);
         }
 
         // GET: Activities/Create
@@ -49,15 +54,16 @@
         // POST: Activities/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,IsAvailable,Order,Location,ForStudents,ForTeachers,SchoolId")] Activity activity)
+        public async Task<IActionResult> Create(ActivityViewModel activityVM)
         {
             if (ModelState.IsValid)
             {
+                var activity = _mapper.Map<Activity>(activityVM);
                 await _activityRepo.AddAsync(activity);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", activity.SchoolId);
-            return View(activity);
+            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", activityVM.SchoolId);
+            return View(activityVM);
         }
 
         // GET: Activities/Edit/5
@@ -74,15 +80,16 @@
                 return NotFound();
             }
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", activity.SchoolId);
-            return View(activity);
+            var activityVM = _mapper.Map<ActivityViewModel>(activity);
+            return View(activityVM);
         }
 
         // POST: Activities/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,IsAvailable,Order,Location,ForStudents,ForTeachers,SchoolId")] Activity activity)
+        public async Task<IActionResult> Edit(int id, ActivityViewModel activityVM)
         {
-            if (id != activity.Id)
+            if (id != activityVM.Id)
             {
                 return NotFound();
             }
@@ -91,11 +98,12 @@
             {
                 try
                 {
+                var activity = _mapper.Map<Activity>(activityVM);
                     await _activityRepo.UpdateAsync(activity);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ActivityExists(activity.Id))
+                    if (!ActivityExists(activityVM.Id))
                     {
                         return NotFound();
                     }
@@ -106,8 +114,8 @@
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", activity.SchoolId);
-            return View(activity);
+            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", activityVM.SchoolId);
+            return View(activityVM);
         }
 
         // GET: Activities/Delete/5
@@ -124,7 +132,8 @@
                 return NotFound();
             }
 
-            return View(activity);
+            var viewmodel = _mapper.Map<ActivityViewModel>(activity);
+            return View(viewmodel);
         }
 
         // POST: Activities/Delete/5

@@ -58,7 +58,7 @@
 
             var modelItems = PaginatedList<User>.Create(usersQuery, page, pageSize);
 
-            var result = PaginatedList<GetUserDto>.Create(_mapper.Map<List<GetUserDto>>(modelItems), page, pageSize);
+            var result = PaginatedList<UserViewModel>.Create(_mapper.Map<List<UserViewModel>>(modelItems), page, pageSize);
 
             var roles = await _roleManager.Roles.ToListAsync();
             ViewBag.RolesList = new SelectList(roles, "Name", "Name");
@@ -77,7 +77,7 @@
             var modelItem = await _userManager.Users
             .FirstOrDefaultAsync(u => u.Id == id);
 
-            var result = _mapper.Map<GetUserDto>(modelItem);
+            var result = _mapper.Map<UserViewModel>(modelItem);
             if (result == null)
             {
                 return NotFound();
@@ -97,7 +97,7 @@
             var modelItem = await _userManager.Users
             .FirstOrDefaultAsync(u => u.Id == id);
 
-            var result = _mapper.Map<GetUserDto>(modelItem);
+            var result = _mapper.Map<UserViewModel>(modelItem);
             if (result == null)
             {
                 return NotFound();

@@ -1,16 +1,21 @@
-﻿namespace Presentation.Controllers.MVC
+﻿using Models.Entities;
+
+namespace Presentation.Controllers.MVC
 {
     public class ActivityTimesController : Controller
     {
         private readonly IActivityTimeRepo _activityTimeRepo;
         private readonly IActivityRepo _activityRepo;
+        private readonly IMapper _mapper;
 
         public ActivityTimesController(
             IActivityTimeRepo activityTimeRepo,
-            IActivityRepo activityRepo)
+            IActivityRepo activityRepo,
+            IMapper mapper)
         {
             _activityTimeRepo = activityTimeRepo;
             _activityRepo = activityRepo;
+            _mapper = mapper;
         }
 
         // GET: ActivityTimes
@@ -21,7 +26,8 @@
             {
                 models = models.Where(a => a.ActivityId == activityId.Value);
             }
-            return View(await models.ToListAsync());
+            var viewmodels = _mapper.Map<List<ActivityTimeViewModel>>(await models.ToListAsync());
+            return View(viewmodels);
         }
 
         // GET: ActivityTimes/Details/5
@@ -40,7 +46,8 @@
                 return NotFound();
             }
 
-            return View(activityTime);
+            var activityTimeVM = _mapper.Map<ActivityTimeViewModel>(activityTime);
+            return View(activityTimeVM);
         }
 
         // GET: ActivityTimes/Create
@@ -53,15 +60,16 @@
         // POST: ActivityTimes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ActivityId,Day,FromTime,ToTime,Body")] ActivityTime activityTime)
+        public async Task<IActionResult> Create(ActivityTimeViewModel activityTimeVM)
         {
             if (ModelState.IsValid)
             {
+                var activityTime = _mapper.Map<ActivityTime>(activityTimeVM);
                 await _activityTimeRepo.AddAsync(activityTime);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityTime.ActivityId);
-            return View(activityTime);
+            ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityTimeVM.ActivityId);
+            return View(activityTimeVM);
         }
 
         // GET: ActivityTimes/Edit/5
@@ -78,15 +86,16 @@
                 return NotFound();
             }
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityTime.ActivityId);
-            return View(activityTime);
+            var activityTimeVM = _mapper.Map<ActivityTime>(activityTime);
+            return View(activityTimeVM);
         }
 
         // POST: ActivityTimes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ActivityId,Day,FromTime,ToTime,Body")] ActivityTime activityTime)
+        public async Task<IActionResult> Edit(int id,ActivityTimeViewModel activityTimeVM)
         {
-            if (id != activityTime.Id)
+            if (id != activityTimeVM.Id)
             {
                 return NotFound();
             }
@@ -95,11 +104,12 @@
             {
                 try
                 {
+                    var activityTime = _mapper.Map<ActivityTime>(activityTimeVM);
                     await _activityTimeRepo.UpdateAsync(activityTime);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ActivityTimeExists(activityTime.Id))
+                    if (!ActivityTimeExists(activityTimeVM.Id))
                     {
                         return NotFound();
                     }
@@ -110,8 +120,8 @@
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityTime.ActivityId);
-            return View(activityTime);
+            ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityTimeVM.ActivityId);
+            return View(activityTimeVM);
         }
 
         // GET: ActivityTimes/Delete/5
@@ -130,7 +140,8 @@
                 return NotFound();
             }
 
-            return View(activityTime);
+            var activityTimeVM = _mapper.Map<ActivityTimeViewModel>(activityTime); 
+            return View(activityTimeVM);
         }
 
         // POST: ActivityTimes/Delete/5

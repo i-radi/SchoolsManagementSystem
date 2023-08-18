@@ -1,16 +1,24 @@
-﻿namespace Presentation.Controllers.MVC
+﻿using Models.Entities;
+
+namespace Presentation.Controllers.MVC
 {
     public class ActivityClassroomsController : Controller
     {
         private readonly IActivityClassroomRepo _activityClassroomRepo;
         private readonly IActivityRepo _activityRepo;
         private readonly IClassRoomRepo _classRoomRepo;
+        private readonly IMapper _mapper;
 
-        public ActivityClassroomsController(IActivityClassroomRepo activityClassroomRepo, IActivityRepo activityRepo, IClassRoomRepo classRoomRepo)
+        public ActivityClassroomsController(
+            IActivityClassroomRepo activityClassroomRepo,
+            IActivityRepo activityRepo,
+            IClassRoomRepo classRoomRepo,
+            IMapper mapper)
         {
             _activityClassroomRepo = activityClassroomRepo;
             _activityRepo = activityRepo;
             _classRoomRepo = classRoomRepo;
+            _mapper = mapper;
         }
 
         // GET: ActivityClassrooms
@@ -21,7 +29,9 @@
             {
                 models = models.Where(a => a.ActivityId == activityId.Value);
             }
-            return View(await models.ToListAsync());
+
+            var viewmodels = _mapper.Map<List<ActivityClassroomViewModel>>(await models.ToListAsync());
+            return View(viewmodels);
         }
 
         // GET: ActivityClassrooms/Details/5
@@ -40,8 +50,8 @@
             {
                 return NotFound();
             }
-
-            return View(activityClassroom);
+            var activityClassroomVM = _mapper.Map<ActivityClassroomViewModel>(activityClassroom);
+            return View(activityClassroomVM);
         }
 
         // GET: ActivityClassrooms/Create
@@ -55,16 +65,17 @@
         // POST: ActivityClassrooms/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ActivityId,ClassroomId")] ActivityClassroom activityClassroom)
+        public async Task<IActionResult> Create(ActivityClassroomViewModel activityClassroomVM)
         {
             if (ModelState.IsValid)
             {
+                var activityClassroom = _mapper.Map<ActivityClassroom>(activityClassroomVM);
                 await _activityClassroomRepo.AddAsync(activityClassroom);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroom.ActivityId);
-            ViewData["ClassroomId"] = new SelectList(_classRoomRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroom.ClassroomId);
-            return View(activityClassroom);
+            ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroomVM.ActivityId);
+            ViewData["ClassroomId"] = new SelectList(_classRoomRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroomVM.ClassroomId);
+            return View(activityClassroomVM);
         }
 
         // GET: ActivityClassrooms/Edit/5
@@ -82,15 +93,16 @@
             }
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroom.ActivityId);
             ViewData["ClassroomId"] = new SelectList(_classRoomRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroom.ClassroomId);
-            return View(activityClassroom);
+            var activityClassroomVM = _mapper.Map<ActivityClassroom>(activityClassroom);
+            return View(activityClassroomVM);
         }
 
         // POST: ActivityClassrooms/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ActivityId,ClassroomId")] ActivityClassroom activityClassroom)
+        public async Task<IActionResult> Edit(int id,ActivityClassroomViewModel activityClassroomVM)
         {
-            if (id != activityClassroom.Id)
+            if (id != activityClassroomVM.Id)
             {
                 return NotFound();
             }
@@ -99,11 +111,13 @@
             {
                 try
                 {
+                    var activityClassroom = _mapper.Map<ActivityClassroom>(activityClassroomVM);
+
                     await _activityClassroomRepo.AddAsync(activityClassroom);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ActivityClassroomExists(activityClassroom.Id))
+                    if (!ActivityClassroomExists(activityClassroomVM.Id))
                     {
                         return NotFound();
                     }
@@ -114,9 +128,9 @@
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroom.ActivityId);
-            ViewData["ClassroomId"] = new SelectList(_classRoomRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroom.ClassroomId);
-            return View(activityClassroom);
+            ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroomVM.ActivityId);
+            ViewData["ClassroomId"] = new SelectList(_classRoomRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroomVM.ClassroomId);
+            return View(activityClassroomVM);
         }
 
         // GET: ActivityClassrooms/Delete/5
@@ -135,8 +149,9 @@
             {
                 return NotFound();
             }
+            var activityClassroomVM = _mapper.Map<ActivityClassroomViewModel>(activityClassroom);
 
-            return View(activityClassroom);
+            return View(activityClassroomVM);
         }
 
         // POST: ActivityClassrooms/Delete/5

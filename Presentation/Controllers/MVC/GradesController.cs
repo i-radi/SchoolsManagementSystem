@@ -1,14 +1,21 @@
-﻿namespace Presentation.Controllers.MVC
+﻿using Models.Entities;
+
+namespace Presentation.Controllers.MVC
 {
     public class GradesController : Controller
     {
         private readonly IGradeRepo _gradeRepo;
         private readonly ISchoolRepo _schoolRepo;
+        private readonly IMapper _mapper;
 
-        public GradesController(IGradeRepo gradeRepo, ISchoolRepo schoolRepo)
+        public GradesController(
+            IGradeRepo gradeRepo,
+            ISchoolRepo schoolRepo,
+            IMapper mapper)
         {
             _gradeRepo = gradeRepo;
             _schoolRepo = schoolRepo;
+            _mapper = mapper;
         }
 
         // GET: Grades
@@ -19,7 +26,8 @@
             {
                 grades = grades.Where(g => g.SchoolId == schoolId);
             }
-            return View(await grades.ToListAsync());
+            var gradesVM = _mapper.Map<List<GradeViewModel>>(await grades.ToListAsync());
+            return View(gradesVM);
         }
 
         // GET: Grades/Details/5
@@ -36,7 +44,8 @@
                 return NotFound();
             }
 
-            return View(grade);
+            var gradeVM = _mapper.Map<GradeViewModel>(grade);
+            return View(gradeVM);
         }
 
         // GET: Grades/Create
@@ -49,15 +58,17 @@
         // POST: Grades/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,SchoolId")] Grade grade)
+        public async Task<IActionResult> Create(GradeViewModel gradeVM)
         {
             if (ModelState.IsValid)
             {
+                var grade = _mapper.Map<Grade>(gradeVM);
+
                 await _gradeRepo.AddAsync(grade);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", grade.SchoolId);
-            return View(grade);
+            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", gradeVM.SchoolId);
+            return View(gradeVM);
         }
 
         // GET: Grades/Edit/5
@@ -74,15 +85,16 @@
                 return NotFound();
             }
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", grade.SchoolId);
-            return View(grade);
+            var gradeVM = _mapper.Map<GradeViewModel>(grade);
+            return View(gradeVM);
         }
 
         // POST: Grades/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,SchoolId")] Grade grade)
+        public async Task<IActionResult> Edit(int id, GradeViewModel gradeVM)
         {
-            if (id != grade.Id)
+            if (id != gradeVM.Id)
             {
                 return NotFound();
             }
@@ -91,11 +103,12 @@
             {
                 try
                 {
+                    var grade = _mapper.Map<Grade>(gradeVM);
                     await _gradeRepo.UpdateAsync(grade);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!GradeExists(grade.Id))
+                    if (!GradeExists(gradeVM.Id))
                     {
                         return NotFound();
                     }
@@ -106,8 +119,8 @@
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", grade.SchoolId);
-            return View(grade);
+            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name", gradeVM.SchoolId);
+            return View(gradeVM);
         }
 
         // GET: Grades/Delete/5
@@ -124,7 +137,8 @@
                 return NotFound();
             }
 
-            return View(grade);
+            var gradeVM = _mapper.Map<GradeViewModel>(grade);
+            return View(gradeVM);
         }
 
         // POST: Grades/Delete/5

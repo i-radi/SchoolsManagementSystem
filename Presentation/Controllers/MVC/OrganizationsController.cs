@@ -23,7 +23,7 @@
                 modelItems = modelItems.Where(u => u.Name.Contains(searchName));
             }
 
-            var result = PaginatedList<GetOrganizationDto>.Create(_mapper.Map<List<GetOrganizationDto>>(modelItems), page, pageSize);
+            var result = PaginatedList<OrganizationViewModel>.Create(_mapper.Map<List<OrganizationViewModel>>(modelItems), page, pageSize);
 
             return View(result);
         }
@@ -37,7 +37,7 @@
             }
 
             var modelItem = await _organizationRepo.GetByIdAsync(id.Value);
-            var dto = _mapper.Map<GetOrganizationDto>(modelItem);
+            var dto = _mapper.Map<OrganizationViewModel>(modelItem);
             if (dto == null)
             {
                 return NotFound();
@@ -130,7 +130,7 @@
             }
 
             var modelItem = await _organizationRepo.GetByIdAsync(id.Value);
-            var dto = _mapper.Map<GetOrganizationDto>(modelItem);
+            var dto = _mapper.Map<OrganizationViewModel>(modelItem);
             if (dto == null)
             {
                 return NotFound();
