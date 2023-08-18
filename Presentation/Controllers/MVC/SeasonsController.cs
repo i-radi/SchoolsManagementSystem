@@ -45,7 +45,7 @@ namespace Presentation.Controllers.MVC
             }
 
             var seasonVM = _mapper.Map<SeasonViewModel>(season);
-            return View(season);
+            return View(seasonVM);
         }
 
         // GET: Seasons/Create

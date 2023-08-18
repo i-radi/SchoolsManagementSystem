@@ -86,7 +86,7 @@ namespace Presentation.Controllers.MVC
                 return NotFound();
             }
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityTime.ActivityId);
-            var activityTimeVM = _mapper.Map<ActivityTime>(activityTime);
+            var activityTimeVM = _mapper.Map<ActivityTimeViewModel>(activityTime);
             return View(activityTimeVM);
         }
 

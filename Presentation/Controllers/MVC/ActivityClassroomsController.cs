@@ -93,7 +93,7 @@ namespace Presentation.Controllers.MVC
             }
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroom.ActivityId);
             ViewData["ClassroomId"] = new SelectList(_classRoomRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroom.ClassroomId);
-            var activityClassroomVM = _mapper.Map<ActivityClassroom>(activityClassroom);
+            var activityClassroomVM = _mapper.Map<ActivityClassroomViewModel>(activityClassroom);
             return View(activityClassroomVM);
         }
 

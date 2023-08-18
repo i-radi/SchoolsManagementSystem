@@ -59,7 +59,7 @@ namespace Presentation.Controllers.MVC
         {
             ViewData["ActivityInstanceId"] = new SelectList(_context.ActivityInstances, "Id", "Name");
             ViewData["UserId"] = new SelectList(_context.User, "Id", "Name");
-            return View(new ActivityInstanceUser());
+            return View(new ActivityInstanceUserViewModel());
         }
 
         // POST: ActivityInstanceUsers/Create
@@ -94,7 +94,7 @@ namespace Presentation.Controllers.MVC
             }
             ViewData["ActivityInstanceId"] = new SelectList(_context.ActivityInstances, "Id", "Name", activityInstanceUser.ActivityInstanceId);
             ViewData["UserId"] = new SelectList(_context.User, "Id", "Name", activityInstanceUser.UserId);
-            var activityInstanceUserVM = _mapper.Map<ActivityInstanceUser>(activityInstanceUser);
+            var activityInstanceUserVM = _mapper.Map<ActivityInstanceUserViewModel>(activityInstanceUser);
             return View(activityInstanceUserVM);
         }
 

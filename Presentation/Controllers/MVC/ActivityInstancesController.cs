@@ -101,7 +101,7 @@ namespace Presentation.Controllers.MVC
             }
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstance.ActivityId);
             ViewData["SeasonId"] = new SelectList(_seasonRepo.GetTableNoTracking().ToList(), "Id", "Name", activityInstance.SeasonId);
-            var activityInstanceVM = _mapper.Map<ActivityInstance>(activityInstance);
+            var activityInstanceVM = _mapper.Map<ActivityInstanceViewModel>(activityInstance);
             return View(activityInstanceVM);
         }
 
