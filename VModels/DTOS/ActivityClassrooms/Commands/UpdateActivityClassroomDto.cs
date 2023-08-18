@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace VModels.DTOS;
+﻿namespace VModels.DTOS;
 
 public class UpdateActivityClassroomDto
 {

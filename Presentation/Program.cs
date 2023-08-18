@@ -1,6 +1,4 @@
 using Infrastructure.MiddleWares;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Persistance.Seeder;
 
 var builder = WebApplication.CreateBuilder(args);

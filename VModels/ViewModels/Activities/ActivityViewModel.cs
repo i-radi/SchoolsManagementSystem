@@ -1,6 +1,4 @@
-﻿using Models.Entities.Identity;
-
-namespace VModels.ViewModels;
+﻿namespace VModels.ViewModels;
 public class ActivityViewModel
 {
     public int Id { get; set; }

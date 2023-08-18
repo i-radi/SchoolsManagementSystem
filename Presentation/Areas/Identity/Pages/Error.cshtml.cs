@@ -3,7 +3,6 @@
 #nullable disable
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Diagnostics;
 
 namespace Presentation.Areas.Identity.Pages
 {
@@ -33,7 +32,7 @@ namespace Presentation.Areas.Identity.Pages
         /// </summary>
         public void OnGet()
         {
-            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+            RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier;
         }
     }
 }

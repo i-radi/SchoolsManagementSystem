@@ -1,8 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-
-namespace Presentation.Controllers.API;
+﻿namespace Presentation.Controllers.API;
 
 [Route("api/users")]
 [ApiController]

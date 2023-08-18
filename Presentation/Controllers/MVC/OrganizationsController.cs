@@ -1,10 +1,4 @@
-﻿using AutoMapper;
-using Infrastructure.Services;
-using Models.Entities;
-using Persistance.IRepos;
-using VModels.ViewModels;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
     public class OrganizationsController : Controller
     {

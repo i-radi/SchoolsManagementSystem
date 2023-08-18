@@ -1,14 +1,6 @@
-﻿using AutoMapper;
-using Infrastructure.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Models.Entities;
-using Persistance.IRepos;
-using QRCoder;
+﻿using QRCoder;
 using System.Drawing;
 using System.Drawing.Imaging;
-using VModels.ViewModels;
 
 namespace Presentation.Controllers.MVC
 {

@@ -10,7 +10,7 @@ public static class ActivitySeeder
             var activities = new List<Activity>
             {
                 new Activity
-                { 
+                {
                      Name = "First Activity",
                      SchoolId = 1,
                      Order=3,
