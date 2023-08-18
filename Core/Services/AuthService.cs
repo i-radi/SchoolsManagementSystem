@@ -47,6 +47,7 @@ public class AuthService : IAuthService
 
         var user = _mapper.Map<User>(dto);
         user.UserName = dto.Email;
+        user.ProfilePicturePath = "emptyAvatar.png";
 
         var result = await _userManager.CreateAsync(user, dto.Password);
 

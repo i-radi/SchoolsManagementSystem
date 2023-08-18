@@ -26,7 +26,7 @@
     <thead>
         <tr>
             <th>
-                Id
+
             </th>
             <th>
                 Name
@@ -45,7 +45,10 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Id)
+                    @if (!string.IsNullOrEmpty(item.ProfilePicturePath))
+                    {
+                        <img src="~/uploads/@(item.ProfilePicturePath)" alt="Profile Picture" class="img-fluid rounded" style="max-width: 50px; max-height: 50px;">
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)

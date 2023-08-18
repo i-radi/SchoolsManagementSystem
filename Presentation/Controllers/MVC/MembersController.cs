@@ -133,6 +133,10 @@ namespace Presentation.Controllers.MVC
             {
                 newUser.ProfilePicturePath = await Picture.Upload(user.ProfilePicture, _webHostEnvironment);
             }
+            else
+            {
+                newUser.ProfilePicturePath = "emptyAvatar.png";
+            }
 
             await _userManager.CreateAsync(newUser, newUser.PlainPassword);
 
