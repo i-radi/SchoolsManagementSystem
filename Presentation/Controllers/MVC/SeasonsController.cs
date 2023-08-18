@@ -54,7 +54,7 @@ namespace Presentation.Controllers.MVC
         // POST: Seasons/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,From,To,IsCurrent,SchoolId")] Season season)
+        public async Task<IActionResult> Create([Bind("Id,Name,From,To,IsCurrent,SchoolId")] Season season)
         {
             if (ModelState.IsValid)
             {
@@ -87,7 +87,7 @@ namespace Presentation.Controllers.MVC
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,From,To,IsCurrent,SchoolId")] Season season)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,From,To,IsCurrent,SchoolId")] Season season)
         {
             if (id != season.Id)
             {
