@@ -6,5 +6,7 @@ public partial class ClassRoomProfile
     {
         CreateMap<ClassRoom, GetClassRoomDto>()
             .ForMember(dest => dest.Grade, opt => opt.MapFrom(src => src.Grade!.Name));
+
+        CreateMap<ClassRoom, ClassRoomViewModel>().ReverseMap();
     }
 }

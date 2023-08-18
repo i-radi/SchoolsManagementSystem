@@ -6,5 +6,7 @@ public partial class SeasonProfile
     {
         CreateMap<Season, GetSeasonDto>()
             .ForMember(dest => dest.School, opt => opt.MapFrom(src => src.School!.Name));
+
+        CreateMap<Season, SeasonViewModel>().ReverseMap();
     }
 }

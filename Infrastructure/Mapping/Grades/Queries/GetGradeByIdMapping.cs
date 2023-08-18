@@ -6,5 +6,7 @@ public partial class GradeProfile
     {
         CreateMap<Grade, GetGradeDto>()
             .ForMember(dest => dest.School, opt => opt.MapFrom(src => src.School!.Name));
+
+        CreateMap<Grade, GradeViewModel>().ReverseMap();
     }
 }
