@@ -15,4 +15,4 @@ JWT, Refresh Token, Cookies, Fluent Validation, xUnit, MVC, API <br/>
 Serilog.
 
 ## Database Diagram
-![ERD](https://github.com/i-radi/SchoolsManagementSystem/assets/60944957/7fdeb75a-a970-4690-ac84-be2b1f1dbf8e)
+![Database Diagram](https://github.com/i-radi/SchoolsManagementSystem/assets/60944957/fc024a91-60a2-4bf7-91f7-05614bc6b9b3)
