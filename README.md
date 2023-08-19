@@ -5,7 +5,7 @@ ASP.NET 6 API Project
 .net 6 SDK, sql server
 
 ## How to run porject?
-1- change database connection string in *appsettings (Presentation Layer)*, *ApplicationDBContext (Persistance Layer)*
+1- change your database connection string in *appsettings (Presentation Layer)*
 
 2- run project using visual studio or .net cli 
 

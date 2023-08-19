@@ -1,10 +1,12 @@
-﻿namespace Persistance.Seeder;
+﻿using Microsoft.Extensions.Configuration;
+
+namespace Persistance.Seeder;
 
 public static class OrganizationSeeder
 {
-    public static async Task SeedAsync(ApplicationDBContext dbContext)
+    public static async Task SeedAsync(ApplicationDBContext dbContext, IConfiguration configuration)
     {
-        using var context = new ApplicationDBContext();
+        using var context = new ApplicationDBContext(configuration);
         context.Database.EnsureCreated();
 
         var usersCount = await dbContext.Organizations.CountAsync();

@@ -9,9 +9,10 @@ public static class ContextMock
     public static ApplicationDBContext Get()
     {
         var builder = new DbContextOptionsBuilder<ApplicationDBContext>();
+        var configurationMock = new Mock<IConfiguration>();
         builder.UseInMemoryDatabase("SMS");
         var options = builder.Options;
-        var dbContext = new ApplicationDBContext(options);
+        var dbContext = new ApplicationDBContext(options, configurationMock.Object);
         dbContext.Database.EnsureDeleted();
         dbContext.Database.EnsureCreated();
         SeedData(dbContext);

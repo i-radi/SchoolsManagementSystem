@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Models.Entities.Identity;
 using System.Reflection;
 
@@ -7,12 +8,15 @@ namespace Persistance.Context;
 
 public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>, UserRole, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
 {
+    private readonly IConfiguration _configuration;
     #region ctor
-    public ApplicationDBContext()
+    public ApplicationDBContext(IConfiguration configuration)
     {
+        _configuration = configuration;
     }
-    public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options)
+    public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options, IConfiguration configuration) : base(options)
     {
+        _configuration = configuration;
     }
     #endregion
 
@@ -64,7 +68,8 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer("Server=.;Database=SMS;Integrated Security=True ;TrustServerCertificate=True");
+            string connectionString = _configuration.GetConnectionString("ApplicationDbContextConnection")!;
+            optionsBuilder.UseSqlServer(connectionString);
         }
     }
     #endregion

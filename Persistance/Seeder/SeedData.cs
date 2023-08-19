@@ -1,13 +1,18 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Models.Entities.Identity;
 
 namespace Persistance.Seeder;
 
 public static class SeedData
 {
-    public static async Task SeedAsync(ApplicationDBContext dbContext, UserManager<User> userManager, RoleManager<Role> roleManager)
+    public static async Task SeedAsync(
+        ApplicationDBContext dbContext,
+        UserManager<User> userManager,
+        RoleManager<Role> roleManager,
+        IConfiguration configuration)
     {
-        await OrganizationSeeder.SeedAsync(dbContext);
+        await OrganizationSeeder.SeedAsync(dbContext, configuration);
         await SchoolSeeder.SeedAsync(dbContext);
         await UserTypeSeeder.SeedAsync(dbContext);
         await GradeSeeder.SeedAsync(dbContext);

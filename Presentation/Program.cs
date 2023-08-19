@@ -60,7 +60,7 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
-    await SeedData.SeedAsync(dbContext, userManager, roleManager);
+    await SeedData.SeedAsync(dbContext, userManager, roleManager,builder.Configuration);
 }
 
 #endregion
