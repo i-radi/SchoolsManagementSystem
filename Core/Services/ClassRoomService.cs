@@ -1,19 +1,19 @@
 ﻿namespace Core.Services;
 
-public class ClassRoomService : IClassRoomService
+public class ClassroomService : IClassroomService
 {
-    private readonly IClassRoomRepo _classRoomsRepo;
+    private readonly IClassroomRepo _classroomsRepo;
     private readonly IMapper _mapper;
 
-    public ClassRoomService(IClassRoomRepo classRoomsRepo, IMapper mapper)
+    public ClassroomService(IClassroomRepo classroomsRepo, IMapper mapper)
     {
-        _classRoomsRepo = classRoomsRepo;
+        _classroomsRepo = classroomsRepo;
         _mapper = mapper;
     }
 
-    public Response<List<GetClassRoomDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0)
+    public Response<List<GetClassroomDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0)
     {
-        var modelItems = _classRoomsRepo.GetTableNoTracking();
+        var modelItems = _classroomsRepo.GetTableNoTracking();
         ;
         if (schoolId > 0)
         {
@@ -24,38 +24,38 @@ public class ClassRoomService : IClassRoomService
             modelItems = modelItems.Include(c => c.Grade);
         }
 
-        var result = PaginatedList<GetClassRoomDto>.Create(_mapper.Map<List<GetClassRoomDto>>(modelItems), pageNumber, pageSize);
+        var result = PaginatedList<GetClassroomDto>.Create(_mapper.Map<List<GetClassroomDto>>(modelItems), pageNumber, pageSize);
 
-        return ResponseHandler.Success(_mapper.Map<List<GetClassRoomDto>>(result));
+        return ResponseHandler.Success(_mapper.Map<List<GetClassroomDto>>(result));
     }
 
-    public async Task<Response<GetClassRoomDto?>> GetById(int id)
+    public async Task<Response<GetClassroomDto?>> GetById(int id)
     {
-        var modelItem = await _classRoomsRepo.GetByIdAsync(id);
+        var modelItem = await _classroomsRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return ResponseHandler.Success(_mapper.Map<GetClassRoomDto>(modelItem))!;
+        return ResponseHandler.Success(_mapper.Map<GetClassroomDto>(modelItem))!;
     }
 
-    public async Task<Response<GetClassRoomDto>> Add(AddClassRoomDto dto)
+    public async Task<Response<GetClassroomDto>> Add(AddClassroomDto dto)
     {
-        var modelItem = _mapper.Map<ClassRoom>(dto);
+        var modelItem = _mapper.Map<Classroom>(dto);
 
-        var model = await _classRoomsRepo.AddAsync(modelItem);
+        var model = await _classroomsRepo.AddAsync(modelItem);
 
-        return ResponseHandler.Created(_mapper.Map<GetClassRoomDto>(modelItem));
+        return ResponseHandler.Created(_mapper.Map<GetClassroomDto>(modelItem));
     }
 
-    public async Task<Response<bool>> Update(UpdateClassRoomDto dto)
+    public async Task<Response<bool>> Update(UpdateClassroomDto dto)
     {
-        var modelItem = await _classRoomsRepo.GetByIdAsync(dto.Id);
+        var modelItem = await _classroomsRepo.GetByIdAsync(dto.Id);
 
         if (modelItem is null)
             return ResponseHandler.NotFound<bool>();
 
         _mapper.Map(dto, modelItem);
 
-        var model = _classRoomsRepo.UpdateAsync(modelItem);
+        var model = _classroomsRepo.UpdateAsync(modelItem);
 
         return ResponseHandler.Success(true);
     }
@@ -63,12 +63,12 @@ public class ClassRoomService : IClassRoomService
     public async Task<Response<bool>> Delete(int id)
     {
 
-        var dbModel = await _classRoomsRepo.GetByIdAsync(id);
+        var dbModel = await _classroomsRepo.GetByIdAsync(id);
 
         if (dbModel == null)
             return ResponseHandler.NotFound<bool>();
 
-        await _classRoomsRepo.DeleteAsync(dbModel);
+        await _classroomsRepo.DeleteAsync(dbModel);
         return ResponseHandler.Deleted<bool>();
     }
 }

@@ -1,5 +1,5 @@
 ﻿namespace Persistance.IRepos;
 
-public interface IClassRoomRepo : IGenericRepoAsync<ClassRoom>
+public interface IClassroomRepo : IGenericRepoAsync<Classroom>
 {
 }

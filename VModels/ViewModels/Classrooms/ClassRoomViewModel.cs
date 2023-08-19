@@ -1,7 +1,7 @@
 ﻿namespace VModels.ViewModels;
 
 
-public class ClassRoomViewModel
+public class ClassroomViewModel
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;

@@ -6,18 +6,18 @@ namespace Presentation.Controllers.MVC
     {
         private readonly IActivityClassroomRepo _activityClassroomRepo;
         private readonly IActivityRepo _activityRepo;
-        private readonly IClassRoomRepo _classRoomRepo;
+        private readonly IClassroomRepo _classroomRepo;
         private readonly IMapper _mapper;
 
         public ActivityClassroomsController(
             IActivityClassroomRepo activityClassroomRepo,
             IActivityRepo activityRepo,
-            IClassRoomRepo classRoomRepo,
+            IClassroomRepo classroomRepo,
             IMapper mapper)
         {
             _activityClassroomRepo = activityClassroomRepo;
             _activityRepo = activityRepo;
-            _classRoomRepo = classRoomRepo;
+            _classroomRepo = classroomRepo;
             _mapper = mapper;
         }
 
@@ -58,7 +58,7 @@ namespace Presentation.Controllers.MVC
         public IActionResult Create()
         {
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name");
-            ViewData["ClassroomId"] = new SelectList(_classRoomRepo.GetTableNoTracking().ToList(), "Id", "Name");
+            ViewData["ClassroomId"] = new SelectList(_classroomRepo.GetTableNoTracking().ToList(), "Id", "Name");
             return View();
         }
 
@@ -74,7 +74,7 @@ namespace Presentation.Controllers.MVC
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroomVM.ActivityId);
-            ViewData["ClassroomId"] = new SelectList(_classRoomRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroomVM.ClassroomId);
+            ViewData["ClassroomId"] = new SelectList(_classroomRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroomVM.ClassroomId);
             return View(activityClassroomVM);
         }
 
@@ -92,7 +92,7 @@ namespace Presentation.Controllers.MVC
                 return NotFound();
             }
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroom.ActivityId);
-            ViewData["ClassroomId"] = new SelectList(_classRoomRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroom.ClassroomId);
+            ViewData["ClassroomId"] = new SelectList(_classroomRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroom.ClassroomId);
             var activityClassroomVM = _mapper.Map<ActivityClassroomViewModel>(activityClassroom);
             return View(activityClassroomVM);
         }
@@ -129,7 +129,7 @@ namespace Presentation.Controllers.MVC
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroomVM.ActivityId);
-            ViewData["ClassroomId"] = new SelectList(_classRoomRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroomVM.ClassroomId);
+            ViewData["ClassroomId"] = new SelectList(_classroomRepo.GetTableNoTracking().ToList(), "Id", "Name", activityClassroomVM.ClassroomId);
             return View(activityClassroomVM);
         }
 

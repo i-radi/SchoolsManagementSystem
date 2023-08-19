@@ -10,5 +10,5 @@ public class ActivityClassroom
     public virtual Activity? Activity { get; set; }
     public int ClassroomId { get; set; }
     [ForeignKey(nameof(ClassroomId))]
-    public virtual ClassRoom? Classroom { get; set; }
+    public virtual Classroom? Classroom { get; set; }
 }

@@ -1,9 +1,9 @@
 ﻿namespace Infrastructure.Mapping;
 
-public partial class ClassRoomProfile
+public partial class ClassroomProfile
 {
-    public void UpdateClassRoomMapping()
+    public void UpdateClassroomMapping()
     {
-        CreateMap<UpdateClassRoomDto, ClassRoom>();
+        CreateMap<UpdateClassroomDto, Classroom>();
     }
 }

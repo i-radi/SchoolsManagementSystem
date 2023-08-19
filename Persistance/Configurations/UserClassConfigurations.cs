@@ -15,9 +15,9 @@ public class UserClassConfigurations : IEntityTypeConfiguration<UserClass>
                  .HasForeignKey(k => k.SeasonId)
                  .OnDelete(DeleteBehavior.NoAction);
 
-        builder.HasOne(u => u.ClassRoom)
+        builder.HasOne(u => u.Classroom)
          .WithMany(d => d.UserClasses)
-         .HasForeignKey(k => k.ClassRoomId)
+         .HasForeignKey(k => k.ClassroomId)
          .OnDelete(DeleteBehavior.NoAction);
     }
 }

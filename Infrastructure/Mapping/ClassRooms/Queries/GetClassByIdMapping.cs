@@ -1,12 +1,12 @@
 ﻿namespace Infrastructure.Mapping;
 
-public partial class ClassRoomProfile
+public partial class ClassroomProfile
 {
-    public void GetClassRoomByIdMapping()
+    public void GetClassroomByIdMapping()
     {
-        CreateMap<ClassRoom, GetClassRoomDto>()
+        CreateMap<Classroom, GetClassroomDto>()
             .ForMember(dest => dest.Grade, opt => opt.MapFrom(src => src.Grade!.Name));
 
-        CreateMap<ClassRoom, ClassRoomViewModel>().ReverseMap();
+        CreateMap<Classroom, ClassroomViewModel>().ReverseMap();
     }
 }

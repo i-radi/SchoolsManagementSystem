@@ -15,7 +15,7 @@ namespace Presentation.Controllers.MVC
         private readonly ISchoolRepo _schoolRepo;
         private readonly ISeasonRepo _seasonRepo;
         private readonly IUserTypeRepo _userTypeRepo;
-        private readonly IClassRoomRepo _classRoomRepo;
+        private readonly IClassroomRepo _classroomRepo;
         private readonly IUserClassRepo _userClassRepo;
         private readonly IAuthService _authService;
         private readonly IMapper _mapper;
@@ -31,7 +31,7 @@ namespace Presentation.Controllers.MVC
             ISchoolRepo schoolService,
             ISeasonRepo seasonRepo,
             IUserTypeRepo userTypeRepo,
-            IClassRoomRepo classRoomRepo,
+            IClassroomRepo classroomRepo,
             IUserClassRepo userClassRepo,
             IAuthService authService,
             IMapper mapper,
@@ -44,7 +44,7 @@ namespace Presentation.Controllers.MVC
             _schoolRepo = schoolService;
             _seasonRepo = seasonRepo;
             _userTypeRepo = userTypeRepo;
-            _classRoomRepo = classRoomRepo;
+            _classroomRepo = classroomRepo;
             _userClassRepo = userClassRepo;
             _logger = logger;
             _signInManager = signInManager;
@@ -60,7 +60,7 @@ namespace Presentation.Controllers.MVC
             var users = _userManager.Users
                 .Include(u => u.UserRoles)
                 .Include(u => u.UserClasses)
-                .ThenInclude(uc => uc.ClassRoom)
+                .ThenInclude(uc => uc.Classroom)
                 .Include(u => u.UserClasses)
                 .ThenInclude(uc => uc.Season)
                 .Include(u => u.UserClasses)
@@ -76,7 +76,7 @@ namespace Presentation.Controllers.MVC
             {
                 users = users.Where(u => u.Name.Contains(search)
                 | u.UserClasses.Any(ur => ur.Season!.To.ToString().Contains(search))
-                | u.UserClasses.Any(ur => ur.ClassRoom!.Name.Contains(search))
+                | u.UserClasses.Any(ur => ur.Classroom!.Name.Contains(search))
                 | u.UserClasses.Any(ur => ur.UserType!.Name.Contains(search)));
             }
             var usersVM = _mapper.Map<List<UserViewModel>>(users.ToList());
@@ -240,13 +240,13 @@ namespace Presentation.Controllers.MVC
             {
                 return NotFound();
             }
-            var classrooms = _classRoomRepo.GetTableNoTracking().Include(c => c.Grade).ToList();
+            var classrooms = _classroomRepo.GetTableNoTracking().Include(c => c.Grade).ToList();
             var seasons = _seasonRepo.GetTableNoTracking().ToList();
 
             var usertypes = _userTypeRepo.GetTableNoTracking().ToList();
 
             ViewData["UserId"] = new SelectList(new List<User> { user }, "Id", "Name");
-            ViewData["ClassRoomId"] = new SelectList(classrooms, "Id", "Name");
+            ViewData["ClassroomId"] = new SelectList(classrooms, "Id", "Name");
             ViewData["UserTypeId"] = new SelectList(usertypes, "Id", "Name");
             ViewData["SeasonId"] = new SelectList(seasons, "Id", "Name");
             return View(new UserClassViewModel { UserId = user.Id });

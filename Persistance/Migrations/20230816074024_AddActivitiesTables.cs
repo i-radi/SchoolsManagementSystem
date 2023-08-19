@@ -69,9 +69,9 @@ namespace Persistance.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ActivityClassrooms_ClassRooms_ClassroomId",
+                        name: "FK_ActivityClassrooms_Classrooms_ClassroomId",
                         column: x => x.ClassroomId,
-                        principalTable: "ClassRooms",
+                        principalTable: "Classrooms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                 });

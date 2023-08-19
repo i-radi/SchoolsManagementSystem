@@ -1,6 +1,6 @@
 ﻿namespace VModels.DTOS;
 
-public class UpdateClassRoomDto
+public class UpdateClassroomDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;

@@ -1,23 +1,23 @@
 ﻿namespace Persistance.Repos;
 
-public class ClassRoomRepo : GenericRepoAsync<ClassRoom>, IClassRoomRepo
+public class ClassroomRepo : GenericRepoAsync<Classroom>, IClassroomRepo
 {
     #region Fields
-    private DbSet<ClassRoom> classRooms;
+    private DbSet<Classroom> classrooms;
     #endregion
 
     #region Constructors
-    public ClassRoomRepo(ApplicationDBContext dbContext) : base(dbContext)
+    public ClassroomRepo(ApplicationDBContext dbContext) : base(dbContext)
     {
-        classRooms = dbContext.Set<ClassRoom>();
+        classrooms = dbContext.Set<Classroom>();
     }
     #endregion
 
     #region Handle Methods
-    public override async Task<ClassRoom> GetByIdAsync(int id)
+    public override async Task<Classroom> GetByIdAsync(int id)
     {
 #pragma warning disable CS8603
-        return await _dbContext.Set<ClassRoom>()
+        return await _dbContext.Set<Classroom>()
             .Include(c => c.Grade)
             .FirstOrDefaultAsync(c => c.Id == id);
     }

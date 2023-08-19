@@ -23,7 +23,7 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
     public virtual DbSet<Organization> Organizations => Set<Organization>();
     public virtual DbSet<School> Schools => Set<School>();
     public virtual DbSet<Grade> Grades => Set<Grade>();
-    public virtual DbSet<ClassRoom> ClassRooms => Set<ClassRoom>();
+    public virtual DbSet<Classroom> Classrooms => Set<Classroom>();
     public virtual DbSet<Season> Seasons => Set<Season>();
     public virtual DbSet<UserClass> UserClasses => Set<UserClass>();
     public virtual DbSet<UserType> UserTypes => Set<UserType>();

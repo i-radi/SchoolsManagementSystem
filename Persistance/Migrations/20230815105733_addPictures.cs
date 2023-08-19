@@ -37,7 +37,7 @@ namespace Persistance.Migrations
 
             migrationBuilder.AddColumn<string>(
                 name: "PicturePath",
-                table: "ClassRooms",
+                table: "Classrooms",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "");
@@ -60,7 +60,7 @@ namespace Persistance.Migrations
 
             migrationBuilder.DropColumn(
                 name: "PicturePath",
-                table: "ClassRooms");
+                table: "Classrooms");
 
             migrationBuilder.AddColumn<int>(
                 name: "SchoolId",

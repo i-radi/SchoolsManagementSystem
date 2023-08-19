@@ -127,7 +127,7 @@ namespace Persistance.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Models.Entities.ClassRoom", b =>
+            modelBuilder.Entity("Models.Entities.Classroom", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -146,7 +146,7 @@ namespace Persistance.Migrations
 
                     b.HasIndex("GradeId");
 
-                    b.ToTable("ClassRooms");
+                    b.ToTable("Classrooms");
                 });
 
             modelBuilder.Entity("Models.Entities.Grade", b =>
@@ -381,7 +381,7 @@ namespace Persistance.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("ClassRoomId")
+                    b.Property<int>("ClassroomId")
                         .HasColumnType("int");
 
                     b.Property<int>("SeasonId")
@@ -395,7 +395,7 @@ namespace Persistance.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClassRoomId");
+                    b.HasIndex("ClassroomId");
 
                     b.HasIndex("SeasonId");
 
@@ -474,10 +474,10 @@ namespace Persistance.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Models.Entities.ClassRoom", b =>
+            modelBuilder.Entity("Models.Entities.Classroom", b =>
                 {
                     b.HasOne("Models.Entities.Grade", "Grade")
-                        .WithMany("ClassRooms")
+                        .WithMany("Classrooms")
                         .HasForeignKey("GradeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -529,9 +529,9 @@ namespace Persistance.Migrations
 
             modelBuilder.Entity("Models.Entities.UserClass", b =>
                 {
-                    b.HasOne("Models.Entities.ClassRoom", "ClassRoom")
+                    b.HasOne("Models.Entities.Classroom", "Classroom")
                         .WithMany("UserClasses")
-                        .HasForeignKey("ClassRoomId")
+                        .HasForeignKey("ClassroomId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -553,7 +553,7 @@ namespace Persistance.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ClassRoom");
+                    b.Navigation("Classroom");
 
                     b.Navigation("Season");
 
@@ -562,14 +562,14 @@ namespace Persistance.Migrations
                     b.Navigation("UserType");
                 });
 
-            modelBuilder.Entity("Models.Entities.ClassRoom", b =>
+            modelBuilder.Entity("Models.Entities.Classroom", b =>
                 {
                     b.Navigation("UserClasses");
                 });
 
             modelBuilder.Entity("Models.Entities.Grade", b =>
                 {
-                    b.Navigation("ClassRooms");
+                    b.Navigation("Classrooms");
                 });
 
             modelBuilder.Entity("Models.Entities.Identity.User", b =>

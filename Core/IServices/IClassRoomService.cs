@@ -1,10 +1,10 @@
 ﻿namespace Core.IServices;
 
-public interface IClassRoomService
+public interface IClassroomService
 {
-    Response<List<GetClassRoomDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0);
-    Task<Response<GetClassRoomDto?>> GetById(int id);
-    Task<Response<GetClassRoomDto>> Add(AddClassRoomDto model);
-    Task<Response<bool>> Update(UpdateClassRoomDto model);
+    Response<List<GetClassroomDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0);
+    Task<Response<GetClassroomDto?>> GetById(int id);
+    Task<Response<GetClassroomDto>> Add(AddClassroomDto model);
+    Task<Response<bool>> Update(UpdateClassroomDto model);
     Task<Response<bool>> Delete(int id);
 }

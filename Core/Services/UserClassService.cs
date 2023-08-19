@@ -14,7 +14,7 @@ public class UserClassService : IUserClassService
     public Response<List<GetUserClassDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _userClassesRepo.GetTableNoTracking()
-            .Include(m => m.ClassRoom)
+            .Include(m => m.Classroom)
             .Include(m => m.User)
             .Include(m => m.Season)
             .Include(m => m.UserType);

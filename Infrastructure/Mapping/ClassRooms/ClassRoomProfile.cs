@@ -2,12 +2,12 @@
 
 namespace Infrastructure.Mapping;
 
-public partial class ClassRoomProfile : Profile
+public partial class ClassroomProfile : Profile
 {
-    public ClassRoomProfile()
+    public ClassroomProfile()
     {
-        GetClassRoomByIdMapping();
-        AddClassRoomMapping();
-        UpdateClassRoomMapping();
+        GetClassroomByIdMapping();
+        AddClassroomMapping();
+        UpdateClassroomMapping();
     }
 }

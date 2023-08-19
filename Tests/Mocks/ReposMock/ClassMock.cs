@@ -2,9 +2,9 @@
 
 public static class ClassMock
 {
-    public static Mock<IClassRoomRepo> Get()
+    public static Mock<IClassroomRepo> Get()
     {
-        var mock = new Mock<IClassRoomRepo>();
+        var mock = new Mock<IClassroomRepo>();
 
         // Setup the mock
 

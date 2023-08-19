@@ -7,7 +7,7 @@ public static class ModulePersistanceDependencies
 {
     public static IServiceCollection AddPersistanceDependencies(this IServiceCollection services)
     {
-        services.AddScoped<IClassRoomRepo, ClassRoomRepo>();
+        services.AddScoped<IClassroomRepo, ClassroomRepo>();
         services.AddScoped<IGradeRepo, GradeRepo>();
         services.AddScoped<IOrganizationRepo, OrganizationRepo>();
         services.AddScoped<ISchoolRepo, SchoolRepo>();

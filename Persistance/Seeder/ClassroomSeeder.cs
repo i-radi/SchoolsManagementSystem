@@ -4,22 +4,22 @@ public static class ClassroomSeeder
 {
     public static async Task SeedAsync(ApplicationDBContext dbContext)
     {
-        var usersCount = await dbContext.ClassRooms.CountAsync();
+        var usersCount = await dbContext.Classrooms.CountAsync();
         if (usersCount <= 0)
         {
-            var classrooms = new List<ClassRoom>
+            var classrooms = new List<Classroom>
             {
-                new ClassRoom
+                new Classroom
                 {
                     Name = "Class 1",
                     GradeId = 1,
                 },
-                new ClassRoom
+                new Classroom
                 {
                     Name = "Class 2",
                     GradeId = 1,
                 },
-                new ClassRoom
+                new Classroom
                 {
                     Name = "Class 3",
                     GradeId = 1,

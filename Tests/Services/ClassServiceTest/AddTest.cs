@@ -4,7 +4,7 @@ public class AddTest
 {
     #region Arrange
 
-    private readonly ClassRoomService _classesService;
+    private readonly ClassroomService _classesService;
 
     public AddTest()
     {
@@ -13,7 +13,7 @@ public class AddTest
 
         var repoMock = ClassMock.Get();
 
-        _classesService = new ClassRoomService(repoMock.Object, mapper);
+        _classesService = new ClassroomService(repoMock.Object, mapper);
     }
 
     #endregion Arrange
@@ -21,7 +21,7 @@ public class AddTest
     #region Happy Scenario
 
     [Fact]
-    public void AddClassRoom_ValidInput_ReturnsSuccess()
+    public void AddClassroom_ValidInput_ReturnsSuccess()
     {
         // Arrange
 

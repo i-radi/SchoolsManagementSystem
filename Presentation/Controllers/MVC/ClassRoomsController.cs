@@ -1,38 +1,38 @@
 ﻿namespace Presentation.Controllers.MVC
 {
-    public class ClassRoomsController : Controller
+    public class ClassroomsController : Controller
     {
-        private readonly IClassRoomRepo _classRoomRepo;
+        private readonly IClassroomRepo _classroomRepo;
         private readonly IGradeRepo _gradeRepo;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IMapper _mapper;
 
-        public ClassRoomsController(
-            IClassRoomRepo classRoomRepo,
+        public ClassroomsController(
+            IClassroomRepo classroomRepo,
             IGradeRepo gradeRepo,
             IWebHostEnvironment webHostEnvironment,
             IMapper mapper)
         {
-            _classRoomRepo = classRoomRepo;
+            _classroomRepo = classroomRepo;
             _gradeRepo = gradeRepo;
             _webHostEnvironment = webHostEnvironment;
             _mapper = mapper;
         }
 
-        // GET: ClassRooms
+        // GET: Classrooms
         public async Task<IActionResult> Index(int gradeId)
         {
-            var classrooms = _classRoomRepo.GetTableNoTracking().Include(c => c.Grade).AsQueryable();
+            var classrooms = _classroomRepo.GetTableNoTracking().Include(c => c.Grade).AsQueryable();
             if (gradeId > 0)
             {
                 classrooms = classrooms.Where(c => c.GradeId == gradeId);
             }
 
-            var gradesVM = _mapper.Map<List<ClassRoomViewModel>>(await classrooms.ToListAsync());
+            var gradesVM = _mapper.Map<List<ClassroomViewModel>>(await classrooms.ToListAsync());
             return View(gradesVM);
         }
 
-        // GET: ClassRooms/Details/5
+        // GET: Classrooms/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -40,29 +40,29 @@
                 return NotFound();
             }
 
-            var classRoom = await _classRoomRepo.GetByIdAsync(id.Value);
-            if (classRoom == null)
+            var classroom = await _classroomRepo.GetByIdAsync(id.Value);
+            if (classroom == null)
             {
                 return NotFound();
             }
 
-            var classroomVM = _mapper.Map<ClassRoomViewModel>(classRoom);
+            var classroomVM = _mapper.Map<ClassroomViewModel>(classroom);
             return View(classroomVM);
         }
 
-        // GET: ClassRooms/Create
+        // GET: Classrooms/Create
         public IActionResult Create()
         {
             ViewData["GradeId"] = new SelectList(_gradeRepo.GetTableAsTracking().ToList(), "Id", "Name");
             return View();
         }
 
-        // POST: ClassRooms/Create
+        // POST: Classrooms/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ClassroomFormViewModel viewmodel)
         {
-            var classroom = new ClassRoom
+            var classroom = new Classroom
             {
                 Name = viewmodel.Name,
                 GradeId = viewmodel.GradeId
@@ -73,11 +73,11 @@
                 classroom.PicturePath = await Picture.Upload(viewmodel.Picture, _webHostEnvironment);
             }
 
-            await _classRoomRepo.AddAsync(classroom);
+            await _classroomRepo.AddAsync(classroom);
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: ClassRooms/Edit/5
+        // GET: Classrooms/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -85,44 +85,44 @@
                 return NotFound();
             }
 
-            var classRoom = await _classRoomRepo.GetByIdAsync(id.Value);
-            if (classRoom == null)
+            var classroom = await _classroomRepo.GetByIdAsync(id.Value);
+            if (classroom == null)
             {
                 return NotFound();
             }
-            ViewData["GradeId"] = new SelectList(_gradeRepo.GetTableAsTracking().ToList(), "Id", "Name", classRoom.GradeId);
+            ViewData["GradeId"] = new SelectList(_gradeRepo.GetTableAsTracking().ToList(), "Id", "Name", classroom.GradeId);
 
             var viewModel = new ClassroomFormViewModel
             {
                 Id = id.Value,
-                Name = classRoom.Name,
-                GradeId = classRoom.GradeId,
-                PicturePath = classRoom.PicturePath
+                Name = classroom.Name,
+                GradeId = classroom.GradeId,
+                PicturePath = classroom.PicturePath
             };
             return View(viewModel);
         }
 
-        // POST: ClassRooms/Edit/5
+        // POST: Classrooms/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ClassroomFormViewModel classRoomVM)
+        public async Task<IActionResult> Edit(int id, ClassroomFormViewModel classroomVM)
         {
-            if (id != classRoomVM.Id)
+            if (id != classroomVM.Id)
             {
                 return NotFound();
             }
-            var updatedClassroom = await _classRoomRepo.GetByIdAsync(id);
+            var updatedClassroom = await _classroomRepo.GetByIdAsync(id);
             if (updatedClassroom is not null)
             {
-                updatedClassroom.Name = classRoomVM.Name;
-                updatedClassroom.GradeId = classRoomVM.GradeId;
-                if (classRoomVM.Picture is not null)
+                updatedClassroom.Name = classroomVM.Name;
+                updatedClassroom.GradeId = classroomVM.GradeId;
+                if (classroomVM.Picture is not null)
                 {
-                    updatedClassroom.PicturePath = await Picture.Upload(classRoomVM.Picture, _webHostEnvironment);
+                    updatedClassroom.PicturePath = await Picture.Upload(classroomVM.Picture, _webHostEnvironment);
                 }
                 try
                 {
-                    await _classRoomRepo.UpdateAsync(updatedClassroom);
+                    await _classroomRepo.UpdateAsync(updatedClassroom);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
@@ -130,11 +130,11 @@
                     throw new Exception(ex.Message);
                 }
             }
-            ViewData["GradeId"] = new SelectList(_gradeRepo.GetTableAsTracking().ToList(), "Id", "Name", classRoomVM.GradeId);
-            return View(classRoomVM);
+            ViewData["GradeId"] = new SelectList(_gradeRepo.GetTableAsTracking().ToList(), "Id", "Name", classroomVM.GradeId);
+            return View(classroomVM);
         }
 
-        // GET: ClassRooms/Delete/5
+        // GET: Classrooms/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -142,33 +142,33 @@
                 return NotFound();
             }
 
-            var classRoom = await _classRoomRepo.GetByIdAsync(id.Value);
-            if (classRoom == null)
+            var classroom = await _classroomRepo.GetByIdAsync(id.Value);
+            if (classroom == null)
             {
                 return NotFound();
             }
-            var classroomVM = _mapper.Map<ClassRoomViewModel>(classRoom);
+            var classroomVM = _mapper.Map<ClassroomViewModel>(classroom);
 
             return View(classroomVM);
         }
 
-        // POST: ClassRooms/Delete/5
+        // POST: Classrooms/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var classRoom = await _classRoomRepo.GetByIdAsync(id);
-            if (classRoom != null)
+            var classroom = await _classroomRepo.GetByIdAsync(id);
+            if (classroom != null)
             {
-                await _classRoomRepo.DeleteAsync(classRoom);
+                await _classroomRepo.DeleteAsync(classroom);
             }
 
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ClassRoomExists(int id)
+        private bool ClassroomExists(int id)
         {
-            return (_classRoomRepo.GetTableNoTracking().ToList().Any(e => e.Id == id));
+            return (_classroomRepo.GetTableNoTracking().ToList().Any(e => e.Id == id));
         }
     }
 }

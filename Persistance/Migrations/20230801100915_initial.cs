@@ -256,7 +256,7 @@ namespace Persistance.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ClassRooms",
+                name: "Classrooms",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -266,9 +266,9 @@ namespace Persistance.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClassRooms", x => x.Id);
+                    table.PrimaryKey("PK_Classrooms", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ClassRooms_Grades_GradeId",
+                        name: "FK_Classrooms_Grades_GradeId",
                         column: x => x.GradeId,
                         principalTable: "Grades",
                         principalColumn: "Id",
@@ -281,7 +281,7 @@ namespace Persistance.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ClassRoomId = table.Column<int>(type: "int", nullable: false),
+                    ClassroomId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     UserTypeId = table.Column<int>(type: "int", nullable: false),
                     SeasonId = table.Column<int>(type: "int", nullable: false)
@@ -290,9 +290,9 @@ namespace Persistance.Migrations
                 {
                     table.PrimaryKey("PK_UserClasses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserClasses_ClassRooms_ClassRoomId",
-                        column: x => x.ClassRoomId,
-                        principalTable: "ClassRooms",
+                        name: "FK_UserClasses_Classrooms_ClassroomId",
+                        column: x => x.ClassroomId,
+                        principalTable: "Classrooms",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserClasses_Seasons_SeasonId",
@@ -314,8 +314,8 @@ namespace Persistance.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClassRooms_GradeId",
-                table: "ClassRooms",
+                name: "IX_Classrooms_GradeId",
+                table: "Classrooms",
                 column: "GradeId");
 
             migrationBuilder.CreateIndex(
@@ -351,9 +351,9 @@ namespace Persistance.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserClasses_ClassRoomId",
+                name: "IX_UserClasses_ClassroomId",
                 table: "UserClasses",
-                column: "ClassRoomId");
+                column: "ClassroomId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserClasses_SeasonId",
@@ -419,7 +419,7 @@ namespace Persistance.Migrations
                 name: "UserTokens");
 
             migrationBuilder.DropTable(
-                name: "ClassRooms");
+                name: "Classrooms");
 
             migrationBuilder.DropTable(
                 name: "Seasons");

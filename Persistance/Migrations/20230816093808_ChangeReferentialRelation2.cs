@@ -11,14 +11,14 @@ namespace Persistance.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_ActivityClassrooms_ClassRooms_ClassroomId",
+                name: "FK_ActivityClassrooms_Classrooms_ClassroomId",
                 table: "ActivityClassrooms");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ActivityClassrooms_ClassRooms_ClassroomId",
+                name: "FK_ActivityClassrooms_Classrooms_ClassroomId",
                 table: "ActivityClassrooms",
                 column: "ClassroomId",
-                principalTable: "ClassRooms",
+                principalTable: "Classrooms",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }
@@ -27,14 +27,14 @@ namespace Persistance.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_ActivityClassrooms_ClassRooms_ClassroomId",
+                name: "FK_ActivityClassrooms_Classrooms_ClassroomId",
                 table: "ActivityClassrooms");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ActivityClassrooms_ClassRooms_ClassroomId",
+                name: "FK_ActivityClassrooms_Classrooms_ClassroomId",
                 table: "ActivityClassrooms",
                 column: "ClassroomId",
-                principalTable: "ClassRooms",
+                principalTable: "Classrooms",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
