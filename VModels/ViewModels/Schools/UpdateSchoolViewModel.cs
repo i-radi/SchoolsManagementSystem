@@ -10,5 +10,5 @@ public class UpdateSchoolViewModel
     public string PicturePath { get; set; } = string.Empty;
     public int OrganizationId { get; set; }
     public SelectList? OrganizationOptions { get; set; }
-    public IFormFile Picture { get; set; }
+    public IFormFile? Picture { get; set; }
 }
