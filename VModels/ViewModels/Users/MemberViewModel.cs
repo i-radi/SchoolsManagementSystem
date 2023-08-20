@@ -8,15 +8,15 @@ public class MemberViewModel
     public string ProfilePicturePath { get; set; } = string.Empty;
 
     public int? SchoolId { get; set; }
-    public string School { get; set; } = string.Empty;
+    public string? School { get; set; } = string.Empty;
     public int? OrganizationId { get; set; }
-    public string Organization { get; set; } = string.Empty;
-    public int ClassroomId { get; set; }
-    public string Classroom { get; set; } = string.Empty;
-    public int UserTypeId { get; set; }
-    public string UserType { get; set; } = string.Empty;
-    public int SeasonId { get; set; }
-    public string Season { get; set; } = string.Empty;
+    public string? Organization { get; set; } = string.Empty;
+    public int? ClassroomId { get; set; }
+    public string? Classroom { get; set; } = string.Empty;
+    public int? UserTypeId { get; set; }
+    public string? UserType { get; set; } = string.Empty;
+    public int? SeasonId { get; set; }
+    public string? Season { get; set; } = string.Empty;
 
 
 }
