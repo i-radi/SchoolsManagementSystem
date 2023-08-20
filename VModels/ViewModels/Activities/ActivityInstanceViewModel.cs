@@ -8,9 +8,9 @@ public class ActivityInstanceViewModel
     public int ActivityId { get; set; }
     public virtual Activity? Activity { get; set; }
     public string Name { get; set; } = string.Empty;
-    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)] 
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime CreatedDate { get; set; }
-    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)] 
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime ForDate { get; set; }
     public bool IsLocked { get; set; }
     public int SeasonId { get; set; }

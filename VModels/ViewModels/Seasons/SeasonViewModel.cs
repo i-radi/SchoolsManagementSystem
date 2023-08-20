@@ -8,7 +8,7 @@ public class SeasonViewModel
     public string Name { get; set; }
     [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime From { get; set; }
-    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)] 
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime To { get; set; }
     public bool IsCurrent { get; set; }
     public int SchoolId { get; set; }

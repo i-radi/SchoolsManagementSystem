@@ -1,6 +1,4 @@
-﻿using Models.Entities;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
     public class ActivityTimesController : Controller
     {
@@ -93,7 +91,7 @@ namespace Presentation.Controllers.MVC
         // POST: ActivityTimes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,ActivityTimeViewModel activityTimeVM)
+        public async Task<IActionResult> Edit(int id, ActivityTimeViewModel activityTimeVM)
         {
             if (id != activityTimeVM.Id)
             {
@@ -140,7 +138,7 @@ namespace Presentation.Controllers.MVC
                 return NotFound();
             }
 
-            var activityTimeVM = _mapper.Map<ActivityTimeViewModel>(activityTime); 
+            var activityTimeVM = _mapper.Map<ActivityTimeViewModel>(activityTime);
             return View(activityTimeVM);
         }
 

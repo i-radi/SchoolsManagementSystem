@@ -1,9 +1,4 @@
-﻿using Models.Entities.Identity;
-using QRCoder;
-using System.Drawing;
-using System.Drawing.Imaging;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
     public class MembersController : Controller
     {

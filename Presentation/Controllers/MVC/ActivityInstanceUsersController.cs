@@ -1,6 +1,4 @@
-﻿using Models.Entities;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
     public class ActivityInstanceUsersController : Controller
     {
@@ -62,7 +60,7 @@ namespace Presentation.Controllers.MVC
                 .Where(a => a.Id == instanceId)
                 .ToListAsync();
             ViewData["ActivityInstanceId"] = new SelectList(activityInstance, "Id", "Name");
-            
+
             var currentUserIds = await _activityInstanceUserRepo
                 .GetTableNoTracking()
                 .Where(a => a.ActivityInstanceId == instanceId)
@@ -92,7 +90,7 @@ namespace Presentation.Controllers.MVC
                 var activityInstanceUser = _mapper.Map<ActivityInstanceUser>(activityInstanceUserVM);
                 _context.Add(activityInstanceUser);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index),new {instanceId = activityInstanceUserVM.ActivityInstanceId});
+                return RedirectToAction(nameof(Index), new { instanceId = activityInstanceUserVM.ActivityInstanceId });
             }
             ViewData["ActivityInstanceId"] = new SelectList(_context.ActivityInstances, "Id", "Name", activityInstanceUserVM.ActivityInstanceId);
             ViewData["UserId"] = new SelectList(_context.User, "Id", "Name", activityInstanceUserVM.UserId);
@@ -121,7 +119,7 @@ namespace Presentation.Controllers.MVC
         // POST: ActivityInstanceUsers/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,ActivityInstanceUserViewModel activityInstanceUserVM)
+        public async Task<IActionResult> Edit(int id, ActivityInstanceUserViewModel activityInstanceUserVM)
         {
             if (id != activityInstanceUserVM.Id)
             {

@@ -98,7 +98,7 @@
             {
                 try
                 {
-                var activity = _mapper.Map<Activity>(activityVM);
+                    var activity = _mapper.Map<Activity>(activityVM);
                     await _activityRepo.UpdateAsync(activity);
                 }
                 catch (DbUpdateConcurrencyException)

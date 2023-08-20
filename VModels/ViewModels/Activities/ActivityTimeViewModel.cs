@@ -10,7 +10,7 @@ public class ActivityTimeViewModel
     public string Day { get; set; } = string.Empty;
     [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime FromTime { get; set; }
-    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)] 
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime ToTime { get; set; }
     public string? Body { get; set; } = string.Empty;
 }

@@ -1,6 +1,4 @@
-﻿using Models.Entities;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
     public class ActivityClassroomsController : Controller
     {
@@ -100,7 +98,7 @@ namespace Presentation.Controllers.MVC
         // POST: ActivityClassrooms/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,ActivityClassroomViewModel activityClassroomVM)
+        public async Task<IActionResult> Edit(int id, ActivityClassroomViewModel activityClassroomVM)
         {
             if (id != activityClassroomVM.Id)
             {
