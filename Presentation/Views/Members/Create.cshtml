@@ -25,10 +25,8 @@
             <div class="form-group">
                 <label asp-for="ProfilePicture" class="control-label"></label>
                 <input type="file" asp-for="ProfilePicture" class="form-control" accept=".jpg, .jpeg, .png" id="profilePictureInput">
-                <span asp-validation-for="ProfilePicture" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label"> ProfilePicture </label>
                 <img id="imagePreview" src="#" alt="Profile Picture Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px; display:none;">
             </div>
             <div class="form-group">
