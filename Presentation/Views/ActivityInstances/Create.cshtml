@@ -23,12 +23,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="CreatedDate" class="control-label"></label>
-                <input asp-for="CreatedDate" class="form-control" />
+                <input asp-for="CreatedDate" class="form-control" type="date" asp-format="{0:yyyy-MM-dd} />
                 <span asp-validation-for="CreatedDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ForDate" class="control-label"></label>
-                <input asp-for="ForDate" class="form-control" />
+                <input asp-for="ForDate" class="form-control" type="date" asp-format="{0:yyyy-MM-dd} />
                 <span asp-validation-for="ForDate" class="text-danger"></span>
             </div>
             <div class="form-group form-check">

@@ -23,18 +23,17 @@
             </div>
             <div class="form-group">
                 <label asp-for="FromTime" class="control-label"></label>
-                <input asp-for="FromTime" class="form-control" />
+                <input asp-for="FromTime" class="form-control" type="date" asp-format="{0:yyyy-MM-dd}" />
                 <span asp-validation-for="FromTime" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ToTime" class="control-label"></label>
-                <input asp-for="ToTime" class="form-control" />
+                <input asp-for="ToTime" class="form-control" type="date" asp-format="{0:yyyy-MM-dd}" />
                 <span asp-validation-for="ToTime" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Body" class="control-label"></label>
                 <input asp-for="Body" class="form-control" />
-                <span asp-validation-for="Body" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

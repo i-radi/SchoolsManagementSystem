@@ -11,5 +11,5 @@ public class ActivityTime
     public string Day { get; set; } = string.Empty;
     public DateTime FromTime { get; set; }
     public DateTime ToTime { get; set; }
-    public string Body { get; set; } = string.Empty;
+    public string? Body { get; set; }
 }
