@@ -1,10 +1,14 @@
-﻿namespace VModels.ViewModels;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace VModels.ViewModels;
 
 public class SeasonViewModel
 {
     public int Id { get; set; }
     public string Name { get; set; }
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime From { get; set; }
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)] 
     public DateTime To { get; set; }
     public bool IsCurrent { get; set; }
     public int SchoolId { get; set; }
