@@ -13,6 +13,6 @@ public class ActivityInstanceUser
     public int UserId { get; set; }
     [ForeignKey(nameof(UserId))]
     public virtual User? User { get; set; }
-    public string Note { get; set; } = string.Empty;
+    public string? Note { get; set; } = string.Empty;
     public DateTime CreatedDate { get; set; } = DateTime.Now;
 }

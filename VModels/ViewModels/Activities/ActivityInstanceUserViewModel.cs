@@ -9,6 +9,6 @@ public class ActivityInstanceUserViewModel
     public virtual ActivityInstance? ActivityInstance { get; set; }
     public int UserId { get; set; }
     public virtual User? User { get; set; }
-    public string Note { get; set; } = string.Empty;
+    public string? Note { get; set; } = string.Empty;
     public DateTime CreatedDate { get; set; } = DateTime.Now;
 }
