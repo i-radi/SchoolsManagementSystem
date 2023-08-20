@@ -7,7 +7,7 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Assign New User</a>
+    <a asp-action="Create" asp-route-instanceId="@ViewBag.InstanceId">Assign New User</a>
 </p>
 <p>
     <a asp-action="Index" asp-controller="ActivityInstances" asp-route-id="@Model.FirstOrDefault()?.ActivityInstanceId">Back to Activity Intance</a>

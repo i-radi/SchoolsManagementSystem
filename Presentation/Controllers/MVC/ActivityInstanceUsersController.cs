@@ -31,6 +31,7 @@ namespace Presentation.Controllers.MVC
                     .Where(u => u.ActivityInstanceId == instanceId);
             }
             var viewmodels = _mapper.Map<List<ActivityInstanceUserViewModel>>(await models.ToListAsync());
+            ViewBag.InstanceId = instanceId;
             return View(viewmodels);
         }
 
@@ -55,10 +56,29 @@ namespace Presentation.Controllers.MVC
         }
 
         // GET: ActivityInstanceUsers/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create(int instanceId)
         {
-            ViewData["ActivityInstanceId"] = new SelectList(_context.ActivityInstances, "Id", "Name");
-            ViewData["UserId"] = new SelectList(_context.User, "Id", "Name");
+            var activityInstance = await _context.ActivityInstances
+                .Where(a => a.Id == instanceId)
+                .ToListAsync();
+            ViewData["ActivityInstanceId"] = new SelectList(activityInstance, "Id", "Name");
+            
+            var currentUserIds = await _activityInstanceUserRepo
+                .GetTableNoTracking()
+                .Where(a => a.ActivityInstanceId == instanceId)
+                .Select(a => a.UserId).ToListAsync();
+            var orgId = await _context.ActivityInstances
+                .Where(a => a.Id == instanceId)
+                .Include(a => a.Activity)
+                .ThenInclude(a => a!.School)
+                .Select(a => a.Activity!.School!.OrganizationId)
+                .FirstOrDefaultAsync();
+
+            var allowedUsers = await _context.User
+                .Include(u => u.UserClasses)
+                .Where(u => (!currentUserIds.Contains(u.Id)))
+                .ToListAsync();
+            ViewData["UserId"] = new SelectList(allowedUsers, "Id", "Name");
             return View(new ActivityInstanceUserViewModel());
         }
 
@@ -72,7 +92,7 @@ namespace Presentation.Controllers.MVC
                 var activityInstanceUser = _mapper.Map<ActivityInstanceUser>(activityInstanceUserVM);
                 _context.Add(activityInstanceUser);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index),new {instanceId = activityInstanceUserVM.ActivityInstanceId});
             }
             ViewData["ActivityInstanceId"] = new SelectList(_context.ActivityInstances, "Id", "Name", activityInstanceUserVM.ActivityInstanceId);
             ViewData["UserId"] = new SelectList(_context.User, "Id", "Name", activityInstanceUserVM.UserId);
@@ -127,7 +147,7 @@ namespace Presentation.Controllers.MVC
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { instanceId = activityInstanceUserVM.ActivityInstanceId });
             }
             ViewData["ActivityInstanceId"] = new SelectList(_context.ActivityInstances, "Id", "Name", activityInstanceUserVM.ActivityInstanceId);
             ViewData["UserId"] = new SelectList(_context.User, "Id", "Name", activityInstanceUserVM.UserId);
@@ -171,7 +191,7 @@ namespace Presentation.Controllers.MVC
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { instanceId = activityInstanceUser.ActivityInstanceId });
         }
 
         private bool ActivityInstanceUserExists(int id)
