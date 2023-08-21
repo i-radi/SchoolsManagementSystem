@@ -23,6 +23,10 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="OrganizationId" class="control-label">Organization</label>
+                <select asp-for="OrganizationId" class="form-control" asp-items="ViewBag.OrganizationId"></select>
+            </div>
+            <div class="form-group">
                 <label asp-for="ProfilePicture" class="control-label"></label>
                 <input type="file" asp-for="ProfilePicture" class="form-control" accept=".jpg, .jpeg, .png" id="profilePictureInput">
             </div>

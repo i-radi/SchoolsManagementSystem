@@ -117,6 +117,7 @@
                 PlainPassword = "123456",
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
+                OrganizationId = user.OrganizationId
             };
             if (user.ProfilePicture is not null)
             {

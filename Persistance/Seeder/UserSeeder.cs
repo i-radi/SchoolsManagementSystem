@@ -35,7 +35,8 @@ public static class UserSeeder
                 PlainPassword = "123456",
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
-                ProfilePicturePath = "emptyAvatar.png"
+                ProfilePicturePath = "emptyAvatar.png",
+                OrganizationId = 1,
             };
             await _userManager.CreateAsync(cairoOrgUser, "123456");
             await context.UserRoles.AddAsync(new UserRole
@@ -53,7 +54,8 @@ public static class UserSeeder
                 PlainPassword = "123456",
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
-                ProfilePicturePath = "emptyAvatar.png"
+                ProfilePicturePath = "emptyAvatar.png",
+                OrganizationId = 2,
             };
             await _userManager.CreateAsync(alexOrgUser, "123456");
             await context.UserRoles.AddAsync(new UserRole
@@ -71,7 +73,8 @@ public static class UserSeeder
                 PlainPassword = "123456",
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
-                ProfilePicturePath = "emptyAvatar.png"
+                ProfilePicturePath = "emptyAvatar.png",
+                OrganizationId = 3,
             };
             await _userManager.CreateAsync(tantaOrgUser, "123456");
             await context.UserRoles.AddAsync(new UserRole
@@ -89,7 +92,8 @@ public static class UserSeeder
                 PlainPassword = "123456",
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
-                ProfilePicturePath = "emptyAvatar.png"
+                ProfilePicturePath = "emptyAvatar.png",
+                OrganizationId = 1,
             };
             await _userManager.CreateAsync(cairo1SchoolUser, "123456");
             await context.UserRoles.AddAsync(new UserRole
@@ -108,7 +112,8 @@ public static class UserSeeder
                 PlainPassword = "123456",
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
-                ProfilePicturePath = "emptyAvatar.png"
+                ProfilePicturePath = "emptyAvatar.png",
+                OrganizationId = 1,
             };
             await _userManager.CreateAsync(cairo2SchoolUser, "123456");
             await context.UserRoles.AddAsync(new UserRole
@@ -127,7 +132,8 @@ public static class UserSeeder
                 PlainPassword = "123456",
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
-                ProfilePicturePath = "emptyAvatar.png"
+                ProfilePicturePath = "emptyAvatar.png",
+                OrganizationId = 2,
             };
             await _userManager.CreateAsync(alex1SchoolUser, "123456");
             await context.UserRoles.AddAsync(new UserRole
@@ -146,7 +152,8 @@ public static class UserSeeder
                 PlainPassword = "123456",
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
-                ProfilePicturePath = "emptyAvatar.png"
+                ProfilePicturePath = "emptyAvatar.png",
+                OrganizationId = 2,
             };
             await _userManager.CreateAsync(alex2SchoolUser, "123456");
             await context.UserRoles.AddAsync(new UserRole
@@ -165,7 +172,8 @@ public static class UserSeeder
                 PlainPassword = "123456",
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
-                ProfilePicturePath = "emptyAvatar.png"
+                ProfilePicturePath = "emptyAvatar.png",
+                OrganizationId = 3,
             };
             await _userManager.CreateAsync(userWithoutRole, "123456");
 
