@@ -17,6 +17,10 @@ public static class ModuleCoreDependencies
         services.AddScoped<IUserClassService, UserClassService>();
         services.AddScoped<IUserTypeService, UserTypeService>();
         services.AddScoped<IActivityService, ActivityService>();
+        services.AddScoped<IActivityClassroomService, ActivityClassroomService>();
+        services.AddScoped<IActivityInstanceService, ActivityInstanceService>();
+        services.AddScoped<IActivityInstanceUserService, ActivityInstanceUserService>();
+        services.AddScoped<IActivityTimeService, ActivityTimeService>();
 
         #region Authorization
 
