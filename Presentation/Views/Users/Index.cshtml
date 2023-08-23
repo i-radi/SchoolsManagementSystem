@@ -18,7 +18,10 @@
         @Html.Label("Role:")
         @Html.DropDownList("searchRole", ViewBag.RolesList as SelectList, "All Roles", new { placeholder = "Search by role" })
 
-        <input type="submit" value="Search" />
+        @Html.Label("Organizatoin:")
+        @Html.DropDownList("searchOrg", ViewBag.OrganizationsList as SelectList, "All Organizations", new { placeholder = "Search by organization" })
+
+        <input type="submit" value="Search" hidden/>
     </p>
 }
 
@@ -32,10 +35,13 @@
                 Name
             </th>
             <th>
-                PhoneNumber
+                Email
             </th>
             <th>
-                Email
+                Organization
+            </th>
+            <th>
+                PhoneNumber
             </th>
             <th></th>
         </tr>
@@ -54,10 +60,13 @@
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.PhoneNumber)
+                    @Html.DisplayFor(modelItem => item.Email)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Email)
+                    @Html.DisplayFor(modelItem => item.Organization)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhoneNumber)
                 </td>
                 <td>
                     <a href="/users/Roles/@item.Id">Manage Roles</a> |
@@ -95,7 +104,15 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
+        $("#searchName").change(function () {
+            $("#searchForm").submit();
+        });
+
         $("#searchRole").change(function () {
+            $("#searchForm").submit();
+        });
+
+        $("#searchOrg").change(function () {
             $("#searchForm").submit();
         });
     });

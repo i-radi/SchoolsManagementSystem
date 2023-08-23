@@ -40,9 +40,9 @@
 
 
         // GET: Users
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string searchName = "", string searchRole = "")
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string searchName = "", string searchRole = "", int searchOrg = 0)
         {
-            IQueryable<User> usersQuery = _userManager.Users;
+            IQueryable<User> usersQuery = _userManager.Users.Include(u => u.Organization).AsQueryable();
 
             if (!string.IsNullOrEmpty(searchName))
             {
@@ -56,12 +56,18 @@
                 usersQuery = usersQuery.Where(u => userIds.Contains(u.Id));
             }
 
+            if (searchOrg != 0)
+            {
+                usersQuery = usersQuery.Where(u => u.OrganizationId == searchOrg);
+            }
+
             var modelItems = PaginatedList<User>.Create(usersQuery, page, pageSize);
 
             var result = PaginatedList<UserViewModel>.Create(_mapper.Map<List<UserViewModel>>(modelItems), page, pageSize);
 
             var roles = await _roleManager.Roles.ToListAsync();
             ViewBag.RolesList = new SelectList(roles, "Name", "Name");
+            ViewBag.OrganizationsList = new SelectList(_organizationRepo.GetTableNoTracking(), "Id", "Name");
 
             return View(result);
         }

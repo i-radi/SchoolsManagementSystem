@@ -7,6 +7,7 @@ public class UserViewModel
     public string Email { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
+    public string Organization { get; set; } = string.Empty;
     public string PlainPassword { get; set; } = string.Empty;
     public string ProfilePicturePath { get; set; } = string.Empty;
     public string AccessToken { get; set; } = string.Empty;
