@@ -3,6 +3,6 @@
 public class GetActivityClassroomDto
 {
     public int Id { get; set; }
-    public string Activity { get; set; } = string.Empty;
-    public string Classroom { get; set; } = string.Empty;
+    public int ActivityId { get; set; }
+    public int ClassroomId { get; set; }
 }
