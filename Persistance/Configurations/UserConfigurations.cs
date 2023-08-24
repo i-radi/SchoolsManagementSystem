@@ -10,5 +10,6 @@ public class UserConfigurations : IEntityTypeConfiguration<User>
         builder.HasKey(x => x.Id);
         builder.HasIndex(e => e.Email).IsUnique();
         builder.HasIndex(e => e.UserName).IsUnique();
+        builder.ToTable(tb => tb.HasTrigger("trg_SetParticipationNumber"));
     }
 }

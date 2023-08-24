@@ -24,7 +24,7 @@ public static class SerilogRegisteration
 #pragma warning disable CS0618 // Type or member is obsolete
         var loggerConfiguration = new LoggerConfiguration()
             .MinimumLevel.Information()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
             .Enrich.FromLogContext()
             .WriteTo.MSSqlServer(connectionString, "Logs",
                 columnOptions: GetMSSqlServerColumnOptions(),

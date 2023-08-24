@@ -11,7 +11,7 @@ public class ActivityClassroomService : IActivityClassroomService
         _mapper = mapper;
     }
 
-    public Response<List<GetActivityClassroomDto>> GetAll()
+    public Response<List<GetActivityClassroomDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _activityClassroomsRepo.GetTableNoTracking();
 

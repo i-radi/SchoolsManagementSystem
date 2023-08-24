@@ -8,7 +8,10 @@ namespace Persistance.Context;
 
 public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>, UserRole, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
 {
+    #region feilds
     private readonly IConfiguration _configuration;
+    #endregion
+
     #region ctor
     public ApplicationDBContext(IConfiguration configuration)
     {

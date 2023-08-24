@@ -111,8 +111,8 @@
         {
             var newUser = new User
             {
-                UserName = user.Email,
                 Email = user.Email,
+                UserName = user.Email.Split('@')[0],
                 Name = user.Name,
                 PlainPassword = "123456",
                 RefreshToken = Guid.NewGuid(),

@@ -46,7 +46,7 @@ public class AuthService : IAuthService
             return ResponseHandler.BadRequest<string>("Email is already registered!");
 
         var user = _mapper.Map<User>(dto);
-        user.UserName = dto.Email;
+        user.UserName = dto.Email.Split('@')[0];
         user.ProfilePicturePath = "emptyAvatar.png";
 
         var result = await _userManager.CreateAsync(user, dto.Password);

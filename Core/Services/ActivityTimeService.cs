@@ -11,7 +11,7 @@ public class ActivityTimeService : IActivityTimeService
         _mapper = mapper;
     }
 
-    public Response<List<GetActivityTimeDto>> GetAll()
+    public Response<List<GetActivityTimeDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _activityTimesRepo.GetTableNoTracking();
 

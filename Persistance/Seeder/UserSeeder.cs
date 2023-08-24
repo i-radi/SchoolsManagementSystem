@@ -12,7 +12,7 @@ public static class UserSeeder
         {
             var defaultuser = new User()
             {
-                UserName = "admin@mail.com",
+                UserName = "admin",
                 Email = "admin@mail.com",
                 Name = "El kbeer",
                 PlainPassword = "123456",
@@ -29,7 +29,7 @@ public static class UserSeeder
 
             var cairoOrgUser = new User()
             {
-                UserName = "CairoAdmin@mail.com",
+                UserName = "CairoAdmin",
                 Email = "CairoAdmin@mail.com",
                 Name = "Kbeer Cairo",
                 PlainPassword = "123456",
@@ -48,7 +48,7 @@ public static class UserSeeder
 
             var alexOrgUser = new User()
             {
-                UserName = "AlexAdmin@mail.com",
+                UserName = "AlexAdmin",
                 Email = "AlexAdmin@mail.com",
                 Name = "Kbeer Alex",
                 PlainPassword = "123456",
@@ -67,7 +67,7 @@ public static class UserSeeder
 
             var tantaOrgUser = new User()
             {
-                UserName = "TantaAdmin@mail.com",
+                UserName = "TantaAdmin",
                 Email = "TantaAdmin@mail.com",
                 Name = "Kbeer Tanta",
                 PlainPassword = "123456",
@@ -86,7 +86,7 @@ public static class UserSeeder
 
             var cairo1SchoolUser = new User()
             {
-                UserName = "cairo1@mail.com",
+                UserName = "cairo1",
                 Email = "cairo1@mail.com",
                 Name = "Cairo School 1 Admin",
                 PlainPassword = "123456",
@@ -106,7 +106,7 @@ public static class UserSeeder
 
             var cairo2SchoolUser = new User()
             {
-                UserName = "cairo2@mail.com",
+                UserName = "cairo2",
                 Email = "cairo2@mail.com",
                 Name = "Cairo School 2 Admin",
                 PlainPassword = "123456",
@@ -126,7 +126,7 @@ public static class UserSeeder
 
             var alex1SchoolUser = new User()
             {
-                UserName = "alex1@mail.com",
+                UserName = "alex1",
                 Email = "alex1@mail.com",
                 Name = "Alex School 1 Admin",
                 PlainPassword = "123456",
@@ -146,7 +146,7 @@ public static class UserSeeder
 
             var alex2SchoolUser = new User()
             {
-                UserName = "alex2@mail.com",
+                UserName = "alex2",
                 Email = "alex2@mail.com",
                 Name = "Alex School 2 Admin",
                 PlainPassword = "123456",
@@ -166,7 +166,7 @@ public static class UserSeeder
 
             var userWithoutRole = new User()
             {
-                UserName = "tanta@mail.com",
+                UserName = "tanta",
                 Email = "tanta@mail.com",
                 Name = "Tanta School  Admin",
                 PlainPassword = "123456",

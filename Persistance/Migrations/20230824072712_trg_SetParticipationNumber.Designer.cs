@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistance.Context;
 
@@ -11,9 +12,11 @@ using Persistance.Context;
 namespace Persistance.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230824072712_trg_SetParticipationNumber")]
+    partial class trg_SetParticipationNumber
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -144,7 +147,7 @@ namespace Persistance.Migrations
 
                     b.HasIndex("SchoolId");
 
-                    b.ToTable("Activities", (string)null);
+                    b.ToTable("Activities");
                 });
 
             modelBuilder.Entity("Models.Entities.ActivityClassroom", b =>
@@ -167,7 +170,7 @@ namespace Persistance.Migrations
 
                     b.HasIndex("ClassroomId");
 
-                    b.ToTable("ActivityClassrooms", (string)null);
+                    b.ToTable("ActivityClassrooms");
                 });
 
             modelBuilder.Entity("Models.Entities.ActivityInstance", b =>
@@ -203,7 +206,7 @@ namespace Persistance.Migrations
 
                     b.HasIndex("SeasonId");
 
-                    b.ToTable("ActivityInstances", (string)null);
+                    b.ToTable("ActivityInstances");
                 });
 
             modelBuilder.Entity("Models.Entities.ActivityInstanceUser", b =>
@@ -232,7 +235,7 @@ namespace Persistance.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ActivityInstanceUsers", (string)null);
+                    b.ToTable("ActivityInstanceUsers");
                 });
 
             modelBuilder.Entity("Models.Entities.ActivityTime", b =>
@@ -263,7 +266,7 @@ namespace Persistance.Migrations
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("ActivityTimes", (string)null);
+                    b.ToTable("ActivityTimes");
                 });
 
             modelBuilder.Entity("Models.Entities.Classroom", b =>
@@ -301,7 +304,7 @@ namespace Persistance.Migrations
 
                     b.HasIndex("GradeId");
 
-                    b.ToTable("Classrooms", (string)null);
+                    b.ToTable("Classrooms");
                 });
 
             modelBuilder.Entity("Models.Entities.Grade", b =>
@@ -329,7 +332,7 @@ namespace Persistance.Migrations
 
                     b.HasIndex("SchoolId");
 
-                    b.ToTable("Grades", (string)null);
+                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("Models.Entities.Identity.Role", b =>
@@ -558,7 +561,7 @@ namespace Persistance.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Organizations", (string)null);
+                    b.ToTable("Organizations");
                 });
 
             modelBuilder.Entity("Models.Entities.School", b =>
@@ -590,7 +593,7 @@ namespace Persistance.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Schools", (string)null);
+                    b.ToTable("Schools");
                 });
 
             modelBuilder.Entity("Models.Entities.Season", b =>
@@ -621,7 +624,7 @@ namespace Persistance.Migrations
 
                     b.HasIndex("SchoolId");
 
-                    b.ToTable("Seasons", (string)null);
+                    b.ToTable("Seasons");
                 });
 
             modelBuilder.Entity("Models.Entities.UserClass", b =>
@@ -654,7 +657,7 @@ namespace Persistance.Migrations
 
                     b.HasIndex("UserTypeId");
 
-                    b.ToTable("UserClasses", (string)null);
+                    b.ToTable("UserClasses");
                 });
 
             modelBuilder.Entity("Models.Entities.UserType", b =>
@@ -671,7 +674,7 @@ namespace Persistance.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserTypes", (string)null);
+                    b.ToTable("UserTypes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

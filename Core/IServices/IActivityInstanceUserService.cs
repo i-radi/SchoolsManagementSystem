@@ -2,7 +2,7 @@
 
 public interface IActivityInstanceUserService
 {
-    Response<List<GetActivityInstanceUserDto>> GetAll();
+    Response<List<GetActivityInstanceUserDto>> GetAll(int pageNumber, int pageSize);
     Task<Response<GetActivityInstanceUserDto?>> GetById(int id);
     Task<Response<GetActivityInstanceUserDto>> Add(AddActivityInstanceUserDto model);
     Task<Response<bool>> Update(UpdateActivityInstanceUserDto model);

@@ -11,7 +11,7 @@ public class ActivityInstanceUserService : IActivityInstanceUserService
         _mapper = mapper;
     }
 
-    public Response<List<GetActivityInstanceUserDto>> GetAll()
+    public Response<List<GetActivityInstanceUserDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _activityInstanceUsersRepo.GetTableNoTracking();
 
