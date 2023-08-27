@@ -19,8 +19,11 @@
         // GET: Schools
         public IActionResult Index(int page = 1, int pageSize = 10, int organizationId = 0)
         {
-            var modelItems = _schoolsRepo.GetTableNoTracking()
+            var modelItems = _schoolsRepo
+                .GetTableNoTracking()
                 .Include(s => s.Organization)
+                .OrderByDescending(c => c.Order)
+                .ThenBy(c => c.Id)
                 .AsQueryable();
 
             if (organizationId > 0)
@@ -72,6 +75,7 @@
                 {
                     Name = viewModel.Name,
                     Description = viewModel.Description,
+                    Order = viewModel.Order,
                     OrganizationId = viewModel.OrganizationId
                 };
                 if (viewModel.Picture is not null)
@@ -100,7 +104,8 @@
             {
                 Id = modelItem.Id,
                 Name = modelItem.Name,
-                Description = modelItem.Description,
+                Description = modelItem.Description!,
+                Order = modelItem.Order,
                 OrganizationId = modelItem.OrganizationId,
                 PicturePath = modelItem.PicturePath,
                 OrganizationOptions = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name", modelItem.OrganizationId)
@@ -128,6 +133,7 @@
 
                 modelItem.Name = viewModel.Name;
                 modelItem.Description = viewModel.Description;
+                modelItem.Order = viewModel.Order;
                 modelItem.OrganizationId = viewModel.OrganizationId;
                 modelItem.PicturePath = viewModel.PicturePath;
 

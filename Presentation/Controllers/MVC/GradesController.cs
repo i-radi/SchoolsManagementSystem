@@ -19,7 +19,13 @@
         // GET: Grades
         public async Task<IActionResult> Index(int schoolId)
         {
-            var grades = _gradeRepo.GetTableNoTracking().Include(g => g.School).AsQueryable();
+            var grades = _gradeRepo
+                .GetTableNoTracking()
+                .Include(g => g.School)
+                .OrderByDescending(c => c.Order)
+                .ThenBy(c => c.Id)
+                .AsQueryable();
+
             if (schoolId > 0)
             {
                 grades = grades.Where(g => g.SchoolId == schoolId);

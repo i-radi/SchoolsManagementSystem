@@ -23,6 +23,11 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Order" class="control-label"></label>
+                <input asp-for="Order" class="form-control" value="0"/>
+                <span asp-validation-for="Order" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label for="OrganizationId">Organization</label>
                 <select id="OrganizationId" name="OrganizationId" class="form-control">
                     <option value="">-- Select Organization --</option>

@@ -24,7 +24,13 @@ namespace Presentation.Controllers.MVC
         // GET: Classrooms
         public async Task<IActionResult> Index(int gradeId)
         {
-            var classrooms = _classroomRepo.GetTableNoTracking().Include(c => c.Grade).AsQueryable();
+            var classrooms = _classroomRepo
+                .GetTableNoTracking()
+                .Include(c => c.Grade)
+                .OrderByDescending(c => c.Order)
+                .ThenBy(c => c.Id)
+                .AsQueryable();
+
             if (gradeId > 0)
             {
                 classrooms = classrooms.Where(c => c.GradeId == gradeId);
