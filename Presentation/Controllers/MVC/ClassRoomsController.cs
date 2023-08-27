@@ -1,4 +1,6 @@
-﻿namespace Presentation.Controllers.MVC
+﻿using Models.Entities;
+
+namespace Presentation.Controllers.MVC
 {
     public class ClassroomsController : Controller
     {
@@ -73,6 +75,16 @@
                 classroom.PicturePath = await Picture.Upload(viewmodel.Picture, _webHostEnvironment);
             }
 
+            if (viewmodel.TeacherImage is not null)
+            {
+                classroom.TeacherImagePath = await Picture.Upload(viewmodel.TeacherImage, _webHostEnvironment);
+            }
+
+            if (viewmodel.StudentImage is not null)
+            {
+                classroom.StudentImagePath = await Picture.Upload(viewmodel.StudentImage, _webHostEnvironment);
+            }
+
             await _classroomRepo.AddAsync(classroom);
             return RedirectToAction(nameof(Index));
         }
@@ -97,7 +109,11 @@
                 Id = id.Value,
                 Name = classroom.Name,
                 GradeId = classroom.GradeId,
-                PicturePath = classroom.PicturePath
+                PicturePath = classroom.PicturePath,
+                Location = classroom.Location,
+                Order = classroom.Order,
+                StudentImagePath = classroom.StudentImagePath,
+                TeacherImagePath = classroom.TeacherImagePath,
             };
             return View(viewModel);
         }
@@ -116,9 +132,21 @@
             {
                 updatedClassroom.Name = classroomVM.Name;
                 updatedClassroom.GradeId = classroomVM.GradeId;
+                updatedClassroom.Location = classroomVM.Location;
+                updatedClassroom.Order = classroomVM.Order;
+                
                 if (classroomVM.Picture is not null)
                 {
                     updatedClassroom.PicturePath = await Picture.Upload(classroomVM.Picture, _webHostEnvironment);
+                }
+                if (classroomVM.TeacherImage is not null)
+                {
+                    updatedClassroom.TeacherImagePath = await Picture.Upload(classroomVM.TeacherImage, _webHostEnvironment);
+                }
+
+                if (classroomVM.StudentImage is not null)
+                {
+                    updatedClassroom.StudentImagePath = await Picture.Upload(classroomVM.StudentImage, _webHostEnvironment);
                 }
                 try
                 {

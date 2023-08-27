@@ -16,6 +16,12 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Location)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Location)
+        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Grade)
         </dt>
@@ -27,6 +33,20 @@
             <dt class="col-sm-3">Picture</dt>
             <dd class="col-sm-9">
                 <img src="~/uploads/@Model.PicturePath" alt="Picture" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
+            </dd>
+        }
+        @if (!string.IsNullOrEmpty(Model.TeacherImagePath))
+        {
+            <dt class="col-sm-3">Picture</dt>
+            <dd class="col-sm-9">
+                <img src="~/uploads/@Model.TeacherImagePath" alt="Picture" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
+            </dd>
+        }
+        @if (!string.IsNullOrEmpty(Model.StudentImagePath))
+        {
+            <dt class="col-sm-3">Picture</dt>
+            <dd class="col-sm-9">
+                <img src="~/uploads/@Model.StudentImagePath" alt="Picture" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
             </dd>
         }
     </dl>

@@ -19,6 +19,16 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Location" class="control-label"></label>
+                <input asp-for="Location" class="form-control" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order" class="control-label"></label>
+                <input asp-for="Order" class="form-control" />
+                <span asp-validation-for="Order" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="GradeId" class="control-label"></label>
                 <select asp-for="GradeId" class="form-control" asp-items="ViewBag.GradeId"></select>
                 <span asp-validation-for="GradeId" class="text-danger"></span>
@@ -35,9 +45,33 @@
                 <img id="imagePreview" src="~/uploads/@Model.PicturePath" alt="Profile Picture Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
             </dd>
             }
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
+        <div class="form-group">
+            <label asp-for="TeacherImage" class="control-label"></label>
+            <input type="file" asp-for="TeacherImage" class="form-control" accept=".jpg, .jpeg, .png" id="teacherImageInput">
+            <span asp-validation-for="TeacherImage" class="text-danger"></span>
+        </div>
+            @if (!string.IsNullOrEmpty(Model.TeacherImagePath))
+            {
+            <dt class="col-sm-3">Teacher Image</dt>
+            <dd class="col-sm-9">
+                <img id="teacherImagePreview" src="~/uploads/@Model.TeacherImagePath" alt="Teacher Image Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
+            </dd>
+            }
+        <div class="form-group">
+            <label asp-for="StudentImage" class="control-label"></label>
+            <input type="file" asp-for="StudentImage" class="form-control" accept=".jpg, .jpeg, .png" id="studentImageInput">
+            <span asp-validation-for="StudentImage" class="text-danger"></span>
+        </div>
+            @if (!string.IsNullOrEmpty(Model.StudentImagePath))
+            {
+            <dt class="col-sm-3">Student Image</dt>
+            <dd class="col-sm-9">
+                <img id="studentImagePreview" src="~/uploads/@Model.StudentImagePath" alt="Student Image Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
+            </dd>
+            }
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
         </form>
     </div>
 </div>
@@ -47,6 +81,8 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
 <script src="~/js/site.js"></script>
