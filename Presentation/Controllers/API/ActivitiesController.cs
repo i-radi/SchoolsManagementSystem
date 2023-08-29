@@ -14,13 +14,13 @@ public class ActivitiesController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll([FromHeader] int schoolId, int pageNumber = 1, int pageSize = 10)
+    public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_activityService.GetAll(pageNumber, pageSize, schoolId));
+        return Ok(_activityService.GetAll(pageNumber, pageSize));
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromHeader] int schoolId, int id)
+    public async Task<IActionResult> GetById(int id)
     {
         var dto = await _activityService.GetById(id);
         if (dto.Data is null)
@@ -29,13 +29,13 @@ public class ActivitiesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromHeader] int schoolId, AddActivityDto dto)
+    public async Task<IActionResult> Add(AddActivityDto dto)
     {
         return Ok(await _activityService.Add(dto));
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update([FromHeader] int schoolId, int id, UpdateActivityDto dto)
+    public async Task<IActionResult> Update(int id, UpdateActivityDto dto)
     {
         if (id != dto.Id)
         {
@@ -51,7 +51,7 @@ public class ActivitiesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Remove([FromHeader] int schoolId, int id)
+    public async Task<IActionResult> Remove(int id)
     {
         var result = await _activityService.Delete(id);
         if (!result.Data)

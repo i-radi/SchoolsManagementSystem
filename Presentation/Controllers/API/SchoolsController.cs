@@ -1,6 +1,6 @@
 ﻿namespace Presentation.Controllers.API;
 
-[Authorize]
+//[Authorize]
 [Route("api/schools")]
 [ApiController]
 public class SchoolsController : ControllerBase
@@ -19,7 +19,7 @@ public class SchoolsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromHeader] int schoolId, int id)
+    public async Task<IActionResult> GetById(int id)
     {
         var dto = await _schoolService.GetById(id);
         if (dto.Data is null)
@@ -28,14 +28,14 @@ public class SchoolsController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = "Admin")]
+    //[Authorize(Policy = "SuperAdmin")]
     public async Task<IActionResult> Add(AddSchoolDto dto)
     {
         return Ok(await _schoolService.Add(dto));
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update([FromHeader] int schoolId, int id, UpdateSchoolDto dto)
+    public async Task<IActionResult> Update(int id, UpdateSchoolDto dto)
     {
         if (id != dto.Id)
         {

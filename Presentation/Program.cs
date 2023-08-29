@@ -90,7 +90,7 @@ app.UseCors(CORS);
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseMiddleware<SchoolAuthorizationMiddleware>();
+//app.UseMiddleware<SchoolAuthorizationMiddleware>();
 
 app.UseEndpoints(endpoints =>
 {

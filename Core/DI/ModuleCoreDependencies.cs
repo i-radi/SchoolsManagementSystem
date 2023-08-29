@@ -32,7 +32,6 @@ public static class ModuleCoreDependencies
                 policy => policy.RequireClaim(ClaimTypes.Role, "SuperAdmin", "OrganizationAdmin"));
             options.AddPolicy("SchoolAdmin",
                 policy => policy.RequireClaim(ClaimTypes.Role, "SuperAdmin", "OrganizationAdmin", "SchoolAdmin"));
-
         }
         );
 

@@ -64,8 +64,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("revoke-token")]
-    [Authorize(Policy = "SuperAdmin")]
-
+    //[Authorize(Policy = "SuperAdmin")]
     public async Task<IActionResult> RevokeTokenAsync(string username)
     {
         if (!ModelState.IsValid)
@@ -80,8 +79,8 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Policy = "SuperAdmin")]
-    public async Task<IActionResult> GetAll([FromHeader] int schoolId, int pageNumber = 1, int pageSize = 10)
+    //[Authorize(Policy = "SuperAdmin")]
+    public async Task<IActionResult> GetAll(int pageNumber = 1, int pageSize = 10)
     {
         var modelItems = PaginatedList<User>
             .Create(await _userManager.Users
@@ -102,8 +101,8 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Policy = "SuperAdmin")]
-    public async Task<IActionResult> GetById([FromHeader] int schoolId, int id)
+    //[Authorize(Policy = "SuperAdmin")]
+    public async Task<IActionResult> GetById(int id)
     {
         var modelItem = await _userManager.Users
             .Include(u => u.UserRoles)
