@@ -1,4 +1,8 @@
-﻿namespace Presentation.Controllers.MVC
+﻿using Models.Entities.Identity;
+using static Azure.Core.HttpHeader;
+using static QRCoder.PayloadGenerator;
+
+namespace Presentation.Controllers.MVC
 {
     public class MembersController : Controller
     {
@@ -117,6 +121,18 @@
                 PlainPassword = "123456",
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
+                Address = user.Address,
+                Birthdate = user.Birthdate,
+                Gender = user.Gender,
+                GpsLocation = user.GpsLocation,
+                Notes = user.Notes,
+                FirstMobile = user.FirstMobile,
+                SecondMobile = user.SecondMobile,
+                FatherMobile = user.FatherMobile,
+                MentorName = user.MentorName,
+                MotherMobile = user.MotherMobile,
+                SchoolUniversityJob = user.SchoolUniversityJob,
+                NationalID = user.NationalID,
                 OrganizationId = user.OrganizationId
             };
             if (user.ProfilePicture is not null)
@@ -130,8 +146,11 @@
 
             await _userManager.CreateAsync(newUser, newUser.PlainPassword);
 
-            var createdUser = _userManager.FindByEmailAsync(newUser.Email);
-            QR.Generate(createdUser.Result!.Id, _webHostEnvironment);
+            var createdUser = await _userManager.FindByEmailAsync(newUser.Email);
+            createdUser!.ParticipationNumber = createdUser.Id;
+            createdUser!.ParticipationQRCodePath = QR.Generate(createdUser.Id, _webHostEnvironment);
+            _context.User.Update(createdUser);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
@@ -157,7 +176,19 @@
                 Id = id.Value,
                 Name = user.Name,
                 Email = user.Email,
-                ProfilePicturePath = user.ProfilePicturePath
+                ProfilePicturePath = user.ProfilePicturePath,
+                Address = user.Address,
+                Birthdate = user.Birthdate,
+                Gender = user.Gender,
+                GpsLocation = user.GpsLocation,
+                Notes = user.Notes,
+                FirstMobile = user.FirstMobile,
+                SecondMobile = user.SecondMobile,
+                FatherMobile = user.FatherMobile,
+                MentorName = user.MentorName,
+                MotherMobile = user.MotherMobile,
+                SchoolUniversityJob = user.SchoolUniversityJob,
+                NationalID = user.NationalID,
             };
             return View(viewModel);
         }
@@ -177,6 +208,18 @@
                 updatedUser.UserName = userVM.Email;
                 updatedUser.Email = userVM.Email;
                 updatedUser.Name = userVM.Name;
+                updatedUser.Address = userVM.Address;
+                updatedUser.Birthdate = userVM.Birthdate;
+                updatedUser.Gender = userVM.Gender;
+                updatedUser.GpsLocation = userVM.GpsLocation;
+                updatedUser.Notes = userVM.Notes;
+                updatedUser.FirstMobile = userVM.FirstMobile;
+                updatedUser.SecondMobile = userVM.SecondMobile;
+                updatedUser.FatherMobile = userVM.FatherMobile;
+                updatedUser.MentorName = userVM.MentorName;
+                updatedUser.MotherMobile = userVM.MotherMobile;
+                updatedUser.SchoolUniversityJob = userVM.SchoolUniversityJob;
+                updatedUser.NationalID = userVM.NationalID;
                 if (userVM.ProfilePicture is not null)
                 {
                     updatedUser.ProfilePicturePath = await Picture.Upload(userVM.ProfilePicture, _webHostEnvironment);

@@ -8,7 +8,7 @@ namespace Infrastructure.Services;
 
 public static class QR
 {
-    public static void Generate(int userId, IWebHostEnvironment webHostEnvironment)
+    public static string Generate(int userId, IWebHostEnvironment webHostEnvironment)
     {
         var qrGenerator = new QRCodeGenerator();
         var qrCodeData = qrGenerator.CreateQrCode($"{userId}", QRCodeGenerator.ECCLevel.Q);
@@ -23,5 +23,6 @@ public static class QR
         {
             qrCodeImage.Save(stream, ImageFormat.Png);
         }
+        return $"{userId}.png";
     }
 }

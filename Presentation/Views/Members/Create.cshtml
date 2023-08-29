@@ -27,6 +27,74 @@
                 <select asp-for="OrganizationId" class="form-control" asp-items="ViewBag.OrganizationId"></select>
             </div>
             <div class="form-group">
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Gender</label><br>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="Gender" id="genderMale" value="M">
+                    <label class="form-check-label" for="genderMale">Male</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="Gender" id="genderFemale" value="F">
+                    <label class="form-check-label" for="genderFemale">Female</label>
+                </div>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Birthdate" class="control-label"></label>
+                <input asp-for="Birthdate" class="form-control" type="date" asp-format="{0:yyyy-MM-dd}   />
+                <span asp-validation-for="Birthdate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SchoolUniversityJob" class="control-label"></label>
+                <input asp-for="SchoolUniversityJob" class="form-control" />
+                <span asp-validation-for="SchoolUniversityJob" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GpsLocation" class="control-label"></label>
+                <input id="GpsLocation" asp-for="GpsLocation" class="form-control" />
+                <span asp-validation-for="GpsLocation" class="text-danger"></span>
+                <button type="button" id="getLocationButton" class="btn btn-secondary">Get GPS Location</button>
+            </div>
+            <div class="form-group">
+                <label asp-for="Notes" class="control-label"></label>
+                <input asp-for="Notes" class="form-control" />
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NationalID" class="control-label"></label>
+                <input asp-for="NationalID" class="form-control" />
+                <span asp-validation-for="NationalID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MentorName" class="control-label"></label>
+                <input asp-for="MentorName" class="form-control" />
+                <span asp-validation-for="MentorName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FirstMobile" class="control-label"></label>
+                <input asp-for="FirstMobile" class="form-control" />
+                <span asp-validation-for="FirstMobile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SecondMobile" class="control-label"></label>
+                <input asp-for="SecondMobile" class="form-control" />
+                <span asp-validation-for="SecondMobile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FatherMobile" class="control-label"></label>
+                <input asp-for="FatherMobile" class="form-control" />
+                <span asp-validation-for="FatherMobile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MotherMobile" class="control-label"></label>
+                <input asp-for="MotherMobile" class="form-control" />
+                <span asp-validation-for="MotherMobile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="ProfilePicture" class="control-label"></label>
                 <input type="file" asp-for="ProfilePicture" class="form-control" accept=".jpg, .jpeg, .png" id="profilePictureInput">
             </div>
@@ -52,3 +120,23 @@
 }
 
 <script src="~/js/site.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#getLocationButton').click(function () {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var latitude = position.coords.latitude;
+                    var longitude = position.coords.longitude;
+                    var gpsLocationInput = $('#GpsLocation');
+
+                    gpsLocationInput.val(latitude + ', ' + longitude);
+                }, function (error) {
+                    console.log("Error getting location:", error);
+                });
+            } else {
+                console.log("Geolocation not available");
+            }
+        });
+    });
+</script>
