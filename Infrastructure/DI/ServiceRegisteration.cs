@@ -57,7 +57,7 @@ public static class ServiceRegisteration
         #region Swagger Gen
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Schools Management System", Version = "v1" });
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Schools Management System", Version = "v1"});
             c.EnableAnnotations();
 
             c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme

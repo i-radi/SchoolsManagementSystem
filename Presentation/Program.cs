@@ -28,7 +28,6 @@ builder.Services.AddPersistanceDependencies()
 #region API
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 #endregion
 
