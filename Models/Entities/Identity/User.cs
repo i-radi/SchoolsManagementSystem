@@ -24,9 +24,7 @@ public class User : IdentityUser<int>
     public string? AccessToken { get; set; }
     public Guid RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiryDate { get; set; }
-    public int? OrganizationId { get; set; }
-    [ForeignKey(nameof(OrganizationId))]
-    public virtual Organization? Organization { get; set; }
+    public virtual ICollection<UserOrganization> UserOrganizations { get; set; } = new HashSet<UserOrganization>();
     public virtual ICollection<UserClass> UserClasses { get; set; } = new HashSet<UserClass>();
     public virtual ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
     public virtual ICollection<ActivityInstanceUser> ActivityInstanceUsers { get; set; } = new HashSet<ActivityInstanceUser>();

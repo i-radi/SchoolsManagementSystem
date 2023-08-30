@@ -10,6 +10,7 @@ public static class ModulePersistanceDependencies
         services.AddScoped<IClassroomRepo, ClassroomRepo>();
         services.AddScoped<IGradeRepo, GradeRepo>();
         services.AddScoped<IOrganizationRepo, OrganizationRepo>();
+        services.AddScoped<IUserOrganizationRepo, UserOrganizationRepo>();
         services.AddScoped<ISchoolRepo, SchoolRepo>();
         services.AddScoped<ISeasonRepo, SeasonRepo>();
         services.AddScoped<IUserClassRepo, UserClassRepo>();

@@ -38,9 +38,6 @@
                 Email
             </th>
             <th>
-                Organization
-            </th>
-            <th>
                 PhoneNumber
             </th>
             <th></th>
@@ -63,13 +60,11 @@
                     @Html.DisplayFor(modelItem => item.Email)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Organization)
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.PhoneNumber)
                 </td>
                 <td>
                     <a href="/users/Roles/@item.Id">Manage Roles</a> |
+                    <a href="/users/Organizatrions/@item.Id">Manage Organizatrions</a> |
                     <a asp-action="Edit" asp-controller="Members" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>

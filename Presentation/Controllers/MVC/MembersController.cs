@@ -132,8 +132,7 @@ namespace Presentation.Controllers.MVC
                 MentorName = user.MentorName,
                 MotherMobile = user.MotherMobile,
                 SchoolUniversityJob = user.SchoolUniversityJob,
-                NationalID = user.NationalID,
-                OrganizationId = user.OrganizationId
+                NationalID = user.NationalID
             };
             if (user.ProfilePicture is not null)
             {

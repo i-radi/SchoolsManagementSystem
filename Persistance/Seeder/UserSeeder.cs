@@ -36,7 +36,10 @@ public static class UserSeeder
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
                 ProfilePicturePath = "emptyAvatar.png",
-                OrganizationId = 1,
+                UserOrganizations = new List<UserOrganization>
+                {
+                    new UserOrganization { UserId = 2, OrganizationId = 1 }
+                }
             };
             await _userManager.CreateAsync(cairoOrgUser, "123456");
             await context.UserRoles.AddAsync(new UserRole
@@ -55,7 +58,10 @@ public static class UserSeeder
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
                 ProfilePicturePath = "emptyAvatar.png",
-                OrganizationId = 2,
+                UserOrganizations = new List<UserOrganization>
+                {
+                    new UserOrganization { UserId = 3, OrganizationId = 2 }
+                }
             };
             await _userManager.CreateAsync(alexOrgUser, "123456");
             await context.UserRoles.AddAsync(new UserRole
@@ -74,7 +80,10 @@ public static class UserSeeder
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
                 ProfilePicturePath = "emptyAvatar.png",
-                OrganizationId = 3,
+                UserOrganizations = new List<UserOrganization>
+                {
+                    new UserOrganization { UserId = 4, OrganizationId = 3 }
+                }
             };
             await _userManager.CreateAsync(tantaOrgUser, "123456");
             await context.UserRoles.AddAsync(new UserRole
@@ -93,7 +102,10 @@ public static class UserSeeder
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
                 ProfilePicturePath = "emptyAvatar.png",
-                OrganizationId = 1,
+                UserOrganizations = new List<UserOrganization>
+                {
+                    new UserOrganization { UserId = 5, OrganizationId = 1 }
+                }
             };
             await _userManager.CreateAsync(cairo1SchoolUser, "123456");
             await context.UserRoles.AddAsync(new UserRole
@@ -113,7 +125,10 @@ public static class UserSeeder
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
                 ProfilePicturePath = "emptyAvatar.png",
-                OrganizationId = 1,
+                UserOrganizations = new List<UserOrganization>
+                {
+                    new UserOrganization { UserId = 6, OrganizationId = 1 }
+                }
             };
             await _userManager.CreateAsync(cairo2SchoolUser, "123456");
             await context.UserRoles.AddAsync(new UserRole
@@ -133,7 +148,10 @@ public static class UserSeeder
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
                 ProfilePicturePath = "emptyAvatar.png",
-                OrganizationId = 2,
+                UserOrganizations = new List<UserOrganization>
+                {
+                    new UserOrganization { UserId = 7, OrganizationId = 2 }
+                }
             };
             await _userManager.CreateAsync(alex1SchoolUser, "123456");
             await context.UserRoles.AddAsync(new UserRole
@@ -153,7 +171,10 @@ public static class UserSeeder
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
                 ProfilePicturePath = "emptyAvatar.png",
-                OrganizationId = 2,
+                UserOrganizations = new List<UserOrganization>
+                {
+                    new UserOrganization { UserId = 8, OrganizationId = 2 }
+                }
             };
             await _userManager.CreateAsync(alex2SchoolUser, "123456");
             await context.UserRoles.AddAsync(new UserRole
@@ -173,7 +194,10 @@ public static class UserSeeder
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
                 ProfilePicturePath = "emptyAvatar.png",
-                OrganizationId = 3,
+                UserOrganizations = new List<UserOrganization>
+                {
+                    new UserOrganization { UserId = 9, OrganizationId = 3 }
+                }
             };
             await _userManager.CreateAsync(userWithoutRole, "123456");
 

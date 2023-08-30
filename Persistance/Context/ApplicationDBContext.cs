@@ -28,6 +28,7 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
     public virtual DbSet<Role> Role => Set<Role>();
     public virtual DbSet<UserRole> UserRole => Set<UserRole>();
     public virtual DbSet<Organization> Organizations => Set<Organization>();
+    public virtual DbSet<UserOrganization> UserOrganizations => Set<UserOrganization>();
     public virtual DbSet<School> Schools => Set<School>();
     public virtual DbSet<Grade> Grades => Set<Grade>();
     public virtual DbSet<Classroom> Classrooms => Set<Classroom>();

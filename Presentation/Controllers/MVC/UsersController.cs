@@ -42,7 +42,10 @@
         // GET: Users
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string searchName = "", string searchRole = "", int searchOrg = 0)
         {
-            IQueryable<User> usersQuery = _userManager.Users.Include(u => u.Organization).AsQueryable();
+            IQueryable<User> usersQuery = _userManager.Users
+                .Include(u => u.UserOrganizations)
+                .ThenInclude(uo => uo.Organization)
+                .AsQueryable();
 
             if (!string.IsNullOrEmpty(searchName))
             {
@@ -58,7 +61,7 @@
 
             if (searchOrg != 0)
             {
-                usersQuery = usersQuery.Where(u => u.OrganizationId == searchOrg);
+                usersQuery = usersQuery.Where(u => u.UserOrganizations.Any(uo => uo.OrganizationId == searchOrg));
             }
 
             var modelItems = PaginatedList<User>.Create(usersQuery, page, pageSize);

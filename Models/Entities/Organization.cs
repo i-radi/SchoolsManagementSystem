@@ -11,6 +11,7 @@ public class Organization
 
     public string PicturePath { get; set; } = string.Empty;
     public virtual ICollection<School> Schools { get; set; } = new HashSet<School>();
-    public virtual ICollection<User> Users { get; set; } = new HashSet<User>();
+    public virtual ICollection<UserOrganization> UserOrganizations { get; set; } = new HashSet<UserOrganization>();
+
 
 }

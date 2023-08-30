@@ -8,7 +8,6 @@ public partial class UserProfile
     {
         CreateMap<User, GetUserDto>();
         CreateMap<User, UserViewModel>()
-            .ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src.Organization!.Name))
             .ReverseMap();
     }
 }
