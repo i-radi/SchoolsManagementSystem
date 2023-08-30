@@ -1,0 +1,33 @@
+﻿@model IEnumerable<OrganizationViewModel>
+
+@{
+    ViewData["Title"] = "UserOrganization";
+}
+
+<h1>Manage Organizations</h1>
+
+<p>
+    <a asp-action="AssignOrganization" asp-route-userId="@ViewBag.UserId">Assign New Organization</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th> Organization</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <a asp-action="DeleteOrganization" asp-route-userId="@ViewBag.UserId" asp-route-orgId="@item.Id">Delete Organization</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

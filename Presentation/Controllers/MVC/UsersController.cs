@@ -8,6 +8,7 @@
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
         private readonly IOrganizationRepo _organizationRepo;
+        private readonly IUserOrganizationRepo _userOrganizationRepo;
         private readonly IUserRoleRepo _userRoleRepo;
         private readonly ISchoolRepo _schoolRepo;
         private readonly IActivityRepo _activityRepo;
@@ -20,6 +21,7 @@
             UserManager<User> userManager,
             RoleManager<Role> roleManager,
             IOrganizationRepo organizationRepo,
+            IUserOrganizationRepo userOrganizationRepo,
             IUserRoleRepo userRoleRepo,
             ISchoolRepo schoolRepo,
             IActivityRepo activityRepo,
@@ -29,6 +31,7 @@
             _userManager = userManager;
             _roleManager = roleManager;
             _organizationRepo = organizationRepo;
+            _userOrganizationRepo = userOrganizationRepo;
             _userRoleRepo = userRoleRepo;
             _schoolRepo = schoolRepo;
             _activityRepo = activityRepo;
@@ -130,7 +133,6 @@
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Users/Roles/5
         public async Task<IActionResult> Roles(int? id)
         {
             var userRoles = await _userRoleRepo.GetTableNoTracking()
@@ -155,8 +157,6 @@
             ViewBag.UserId = id;
             return View(viewmodels);
         }
-
-        // GET: Users/DeleteRole
         public async Task<IActionResult> DeleteRole(string userId, string roleName)
         {
 
@@ -175,8 +175,6 @@
             }
             return NotFound();
         }
-
-        // GET: Users/CreateRole/
         public async Task<IActionResult> CreateRole(int userId)
         {
             var roles = (await _roleManager.Roles.Select(r => r.Name)
@@ -212,7 +210,6 @@
 
             return View(createRoleViewModel);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateRole(CreateRoleViewModel viewModel)
@@ -246,5 +243,103 @@
             }
             return BadRequest();
         }
+
+        public async Task<IActionResult> UserOrganization(int? id)
+        {
+            var userOrgs = await _userOrganizationRepo.GetTableNoTracking()
+                .Include(uo => uo.Organization)
+                .Where(uo => uo.UserId == id).ToListAsync();
+
+            var viewmodels = new List<OrganizationViewModel>();
+            foreach (var userOrg in userOrgs)
+            {
+                viewmodels.Add(new OrganizationViewModel
+                {
+                    Id = userOrg.Organization?.Id ?? 0,
+                    Name = userOrg.Organization?.Name ?? "",
+                    PicturePath = userOrg.Organization?.PicturePath ?? ""
+                });
+            }
+            ViewBag.UserId = id;
+            return View(viewmodels);
+        }
+        public async Task<IActionResult> DeleteOrganization(int userId, int orgId)
+        {
+
+            var userOrg = await _userOrganizationRepo
+                                    .GetTableNoTracking()
+                                    .Where(u => u.OrganizationId == orgId && u.UserId == userId)
+                                    .FirstOrDefaultAsync();
+            if (userOrg == null)
+            {
+                return NotFound();
+            }
+            await _userOrganizationRepo.DeleteAsync(userOrg);
+
+            return RedirectToAction("UserOrganization", new { id = userId });
+
+        }
+        public async Task<IActionResult> AssignOrganization(int userId)
+        {
+            var roles = (await _roleManager.Roles.Select(r => r.Name)
+                .ToListAsync())
+                .AsEnumerable();
+
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var userRoles = (await _userManager.GetRolesAsync(user!)).AsEnumerable();
+            var isSuperAdmin = userRoles.All(u => u == "SuperAdmin");
+            if (isSuperAdmin)
+            {
+                return View(new AssignOrganizationViewModel
+                {
+                    UserId = userId,
+                    UserName = user!.Name,
+                    OrganizationOptions = new SelectList(new List<Organization>(), "OrganizationId", "Name")
+                });
+            }
+
+            var userOrgIds = await _userOrganizationRepo
+                .GetTableNoTracking()
+                .Where(u => u.UserId == userId)
+                .Select(u => u.OrganizationId)
+                .ToListAsync();
+
+            var orgs = await _organizationRepo.GetTableNoTracking()
+                .Where(u => !userOrgIds.Contains(u.Id))
+                .Select(o => new { OrganizationId = o.Id, o.Name }).ToListAsync();
+
+            var AssignOrgViewModel = new AssignOrganizationViewModel
+            {
+                UserId = userId,
+                UserName = user!.Name,
+                OrganizationOptions = new SelectList(orgs, "OrganizationId", "Name")
+            };
+
+            return View(AssignOrgViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignOrganization(AssignOrganizationViewModel viewModel)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == viewModel.UserId);
+            if (user is not null)
+            {
+                foreach (var selectedOrgId in viewModel.SelectedOrganizationIds)
+                {
+                    var userOrg = new UserOrganization
+                    {
+                        UserId = viewModel.UserId,
+                        OrganizationId = selectedOrgId
+                    };
+                    await _userOrganizationRepo.AddAsync(userOrg);
+                }
+
+                return RedirectToAction("UserOrganization", new { id = viewModel.UserId });
+            }
+
+            return BadRequest();
+        }
+
     }
 }

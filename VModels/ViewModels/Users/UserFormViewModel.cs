@@ -22,5 +22,4 @@ public class UserFormViewModel
     public string? Notes { get; set; }
     public string? NationalID { get; set; }
     public string? ParticipationQRCodePath { get; set; }
-    public int? OrganizationId { get; set; }
 }

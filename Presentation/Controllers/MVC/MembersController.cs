@@ -103,7 +103,6 @@ namespace Presentation.Controllers.MVC
         // GET: Members/Create
         public IActionResult Create()
         {
-            ViewData["OrganizationId"] = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name");
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
             return View();
         }
@@ -167,7 +166,6 @@ namespace Presentation.Controllers.MVC
             {
                 return NotFound();
             }
-            ViewData["OrganizationId"] = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name");
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
 
             var viewModel = new UserFormViewModel
@@ -233,8 +231,6 @@ namespace Presentation.Controllers.MVC
                     throw new Exception(ex.Message);
                 }
             }
-            ViewData["OrganizationId"] = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name");
-            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
             return View(userVM);
 
         }

@@ -1,0 +1,55 @@
+﻿@model AssignOrganizationViewModel
+
+<link href="~/select2/css/select2.min.css" rel="stylesheet" />
+
+@{
+    ViewData["Title"] = "AssignOrganization";
+}
+
+<h1>Assign Organizations</h1>
+
+<h4>UserName : @Model.UserName</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AssignOrganization">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="UserId" hidden />
+            <input asp-for="UserName" hidden />
+            <div class="form-group">
+                <label for="OrganizationIds">Organizations</label>
+                <select id="OrganizationIds" name="SelectedOrganizationIds" class="form-control select2-multi" multiple>
+                    @foreach (var organization in Model.OrganizationOptions)
+                    {
+                        <option value="@organization.Value">@organization.Text</option>
+                    }
+                </select>
+                <span class="text-danger">@Html.ValidationMessageFor(m => m.SelectedOrganizationIds)</span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="UserOrganization" asp-route-id="@Model.UserId">Back to Organizations</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/select2/js/select2.min.js"></script>
+<script>
+    var $jq = jQuery.noConflict();
+
+    // Use $jq instead of $ to reference jQuery
+    $jq(document).ready(function () {
+        $jq('.select2-multi').select2();
+    });
+</script>
+
