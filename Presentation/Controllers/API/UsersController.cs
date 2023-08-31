@@ -1,4 +1,6 @@
-﻿namespace Presentation.Controllers.API;
+﻿using Microsoft.AspNetCore.Hosting;
+
+namespace Presentation.Controllers.API;
 
 [Route("api/users")]
 [ApiController]
@@ -8,6 +10,8 @@ public class UsersController : ControllerBase
     private readonly UserManager<User> _userManager;
     private readonly IAuthService _authService;
     private readonly IMapper _mapper;
+    private readonly IExportService<GetUserDto> _exportService;
+    private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly string _imagesBaseURL;
 
     public UsersController(
@@ -15,12 +19,15 @@ public class UsersController : ControllerBase
         UserManager<User> userManager,
         IAuthService authService,
         IMapper mapper,
-        IWebHostEnvironment webHostEnvironment)
+        IWebHostEnvironment webHostEnvironment,
+        IExportService<GetUserDto> exportService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _authService = authService;
         _mapper = mapper;
+        _exportService = exportService;
+        _webHostEnvironment = webHostEnvironment;
         _imagesBaseURL = Path.Combine(webHostEnvironment.WebRootPath, "uploads");
     }
 
@@ -113,6 +120,52 @@ public class UsersController : ControllerBase
         }
 
         var result = _mapper.Map<GetUserDto>(modelItem);
+        return Ok(ResponseHandler.Success(result));
+    }
+
+    [HttpGet("export-users")]
+    public async Task<IActionResult> ExportUsers(
+        int pageNumber = 1,
+        int pageSize = 10,
+        int? organizationId = null,
+        bool isFileUrlRequired = false)
+    {
+        var users = _userManager.Users
+            .Include(u => u.UserRoles)
+            .Include(u => u.UserOrganizations)
+            .AsQueryable();
+
+        if (organizationId is not null)
+        {
+            users = users.Where(u => u.UserOrganizations.Any(uo => uo.OrganizationId == organizationId));
+        }
+
+        var modelItems = PaginatedList<User>.Create(await users.ToListAsync(), pageNumber, pageSize);
+
+        foreach (var user in modelItems)
+        {
+            if (!string.IsNullOrEmpty(user.ProfilePicturePath))
+            {
+                user.ProfilePicturePath = Path.Combine(_imagesBaseURL, user.ProfilePicturePath);
+            }
+        }
+
+        var data = _mapper.Map<IEnumerable<GetUserDto>>(modelItems).ToList();
+
+        if (isFileUrlRequired)
+        {
+            var fileName = $"users_export_{Guid.NewGuid()}.xlsx";
+            var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "export attachments", fileName);
+
+            filePath = await _exportService.ExportToExcelAndSave(data, filePath);
+
+            var fileUrl = $"{Request.Scheme}://{Request.Host}/export attachments/{fileName}";
+
+            return Ok(ResponseHandler.Success(fileUrl));
+        }
+
+        var result = await _exportService.ExportToExcel(data);
+
         return Ok(ResponseHandler.Success(result));
     }
 }
