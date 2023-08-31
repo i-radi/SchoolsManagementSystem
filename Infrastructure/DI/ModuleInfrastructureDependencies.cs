@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Models.Helpers;
 using System.Reflection;
+using Newtonsoft.Json.Converters;
 
 namespace Infrastructure.DI;
 
@@ -19,9 +20,19 @@ public static class ModuleInfrastructureDependencies
         services.AddSingleton(emailSettings);
         services.AddTransient<IEmailSender, EmailSender>();
 
+        services.AddScoped<IExportService, ExportService>();
+        services.AddScoped<IExcelService, ExcelService>();
+        services.AddScoped<ICsvService, CsvService>();
+        services.AddScoped<IHtmlService, HtmlService>();
+        services.AddScoped<IJsonService, JsonService>();
+        services.AddScoped<IXmlService, XmlService>();
+        services.AddScoped<IYamlService, YamlService>();
+
+
         // Get Validators
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-        services.AddControllersWithViews().ConfigureApiBehaviorOptions(options =>
+        services.AddControllersWithViews()
+            .ConfigureApiBehaviorOptions(options =>
         {
             options.InvalidModelStateResponseFactory = c =>
             {
@@ -31,7 +42,7 @@ public static class ModuleInfrastructureDependencies
 
                 throw new ValidationException(errors);
             };
-        });
+        }); 
         services.AddRazorPages();
         services.AddMvc();
         return services;
