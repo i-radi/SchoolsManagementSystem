@@ -287,16 +287,6 @@
 
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             var userRoles = (await _userManager.GetRolesAsync(user!)).AsEnumerable();
-            var isSuperAdmin = userRoles.All(u => u == "SuperAdmin");
-            if (isSuperAdmin)
-            {
-                return View(new AssignOrganizationViewModel
-                {
-                    UserId = userId,
-                    UserName = user!.Name,
-                    OrganizationOptions = new SelectList(new List<Organization>(), "OrganizationId", "Name")
-                });
-            }
 
             var userOrgIds = await _userOrganizationRepo
                 .GetTableNoTracking()
