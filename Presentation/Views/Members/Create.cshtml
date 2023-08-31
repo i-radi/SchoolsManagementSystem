@@ -41,7 +41,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Birthdate" class="control-label"></label>
-                <input asp-for="Birthdate" class="form-control" type="date" asp-format="{0:yyyy-MM-dd}   />
+                <input asp-for="Birthdate" class="form-control" type="date" asp-format="{0:yyyy-MM-dd}    />
                 <span asp-validation-for="Birthdate" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -113,26 +113,25 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-}
 
-<script src="~/js/site.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $('#getLocationButton').click(function () {
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    var latitude = position.coords.latitude;
-                    var longitude = position.coords.longitude;
-                    var gpsLocationInput = $('#GpsLocation');
+    <script>
+        $(document).ready(function () {
+            $('#getLocationButton').click(function () {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        var latitude = position.coords.latitude;
+                        var longitude = position.coords.longitude;
+                        var gpsLocationInput = $('#GpsLocation');
 
-                    gpsLocationInput.val(latitude + ', ' + longitude);
-                }, function (error) {
-                    console.log("Error getting location:", error);
-                });
-            } else {
-                console.log("Geolocation not available");
-            }
+                        gpsLocationInput.val(latitude + ', ' + longitude);
+                    }, function (error) {
+                        console.log("Error getting location:", error);
+                    });
+                } else {
+                    console.log("Geolocation not available");
+                }
+            });
         });
-    });
-</script>
+    </script>
+
+}

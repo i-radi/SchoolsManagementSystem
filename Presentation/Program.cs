@@ -1,4 +1,5 @@
 using Infrastructure.MiddleWares;
+using Newtonsoft.Json.Converters;
 using Persistance.Seeder;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,12 @@ builder.Services.AddPersistanceDependencies()
                  .AddPersistanceServiceRegisteration(builder.Configuration)
                  .AddSerilogRegisteration(builder.Configuration, builder.Host)
                  .AddInfrastructureServiceRegisteration(builder.Configuration);
+
+builder.Services.AddControllersWithViews()
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.Converters.Add(new StringEnumConverter());
+    });
 
 #endregion
 

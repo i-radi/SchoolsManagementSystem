@@ -157,23 +157,23 @@
             ViewBag.UserId = id;
             return View(viewmodels);
         }
-        public async Task<IActionResult> DeleteRole(string userId, string roleName)
+        public async Task<IActionResult> DeleteRole(int userId, string roleName)
         {
 
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
+            var userrole = await _userRoleRepo
+                .GetTableAsTracking()
+                .Include(ur => ur.Role)
+                .Where(ur => ur.UserId == userId
+                && ur.Role!.Name == roleName)
+                .FirstOrDefaultAsync();
+
+            if (userrole == null)
             {
                 return NotFound();
             }
-            var result = await _userManager.RemoveFromRoleAsync(user, roleName);
+            await _userRoleRepo.DeleteAsync(userrole);
 
-            if (result.Succeeded)
-            {
-                string userIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()!;
-                _logger.LogInformation("User IP Address: {UserIpAddress}", userIpAddress);
-                return RedirectToAction("Roles", new { id = userId });
-            }
-            return NotFound();
+            return RedirectToAction("Roles", new { id = userId });
         }
         public async Task<IActionResult> CreateRole(int userId)
         {

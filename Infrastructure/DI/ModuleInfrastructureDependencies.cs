@@ -20,7 +20,8 @@ public static class ModuleInfrastructureDependencies
         services.AddSingleton(emailSettings);
         services.AddTransient<IEmailSender, EmailSender>();
 
-        services.AddScoped<IExportService, ExportService>();
+        services.AddScoped<IExportService<UserViewModel>, ExportService<UserViewModel>>();
+        services.AddScoped<IExportService<GetUserDto>, ExportService<GetUserDto>>();
         services.AddScoped<IExcelService, ExcelService>();
         services.AddScoped<ICsvService, CsvService>();
         services.AddScoped<IHtmlService, HtmlService>();

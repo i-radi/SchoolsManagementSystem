@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Infrastructure.Services;
 
-public class ExportService : IExportService
+public class ExportService<T> : IExportService<T>
 {
     private readonly IExcelService _excelService;
     private readonly ICsvService _csvService;
@@ -22,32 +22,37 @@ public class ExportService : IExportService
         _yamlService = yamlService;
     }
 
-    public async Task<byte[]> ExportToExcel(List<UserViewModel> registers)
+    public async Task<byte[]> ExportToExcel(List<T> registers)
     {
         return await _excelService.Write(registers);
     }
 
-    public byte[] ExportToCsv(List<UserViewModel> registers)
+    public async Task<string> ExportToExcelAndSave(List<T> registers,string path)
+    {
+        return await _excelService.WriteAndSave(registers, path);
+    }
+
+    public byte[] ExportToCsv(List<T> registers)
     {
         return _csvService.Write(registers);
     }
 
-    public byte[] ExportToHtml(List<UserViewModel> registers)
+    public byte[] ExportToHtml(List<T> registers)
     {
         return _htmlService.Write(registers);
     }
 
-    public byte[] ExportToJson(List<UserViewModel> registers)
+    public byte[] ExportToJson(List<T> registers)
     {
         return _jsonService.Write(registers);
     }
 
-    public byte[] ExportToXml(List<UserViewModel> registers)
+    public byte[] ExportToXml(List<T> registers)
     {
         return _xmlService.Write(registers);
     }
 
-    public byte[] ExportToYaml(List<UserViewModel> registers)
+    public byte[] ExportToYaml(List<T> registers)
     {
         return _yamlService.Write(registers);
     }

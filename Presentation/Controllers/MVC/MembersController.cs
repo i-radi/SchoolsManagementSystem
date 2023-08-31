@@ -1,5 +1,9 @@
-﻿using Models.Entities.Identity;
+﻿using Microsoft.EntityFrameworkCore;
+using Models.Entities.Identity;
+using Newtonsoft.Json;
+using System.Linq.Dynamic.Core;
 using static Azure.Core.HttpHeader;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static QRCoder.PayloadGenerator;
 
 namespace Presentation.Controllers.MVC
@@ -17,6 +21,7 @@ namespace Presentation.Controllers.MVC
         private readonly IClassroomRepo _classroomRepo;
         private readonly IUserClassRepo _userClassRepo;
         private readonly IAuthService _authService;
+        private readonly IExportService<UserViewModel> _exportService;
         private readonly IMapper _mapper;
         private readonly ApplicationDBContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
@@ -33,6 +38,7 @@ namespace Presentation.Controllers.MVC
             IClassroomRepo classroomRepo,
             IUserClassRepo userClassRepo,
             IAuthService authService,
+            IExportService<UserViewModel> exportService,
             IMapper mapper,
             ApplicationDBContext context,
             IWebHostEnvironment webHostEnvironment)
@@ -48,6 +54,7 @@ namespace Presentation.Controllers.MVC
             _logger = logger;
             _signInManager = signInManager;
             _authService = authService;
+            _exportService = exportService;
             _mapper = mapper;
             _context = context;
             _webHostEnvironment = webHostEnvironment;
@@ -309,5 +316,118 @@ namespace Presentation.Controllers.MVC
 
             return Json(schoolData);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> LoadTable([FromBody] DtParameters dtParameters)
+        {
+            var result = _context.Users.AsQueryable();
+
+            var searchBy = dtParameters.Search?.Value;
+            if (!string.IsNullOrEmpty(searchBy))
+            {
+                result = result.Where(r => r.Name != null && r.Name.ToUpper().Contains(searchBy.ToUpper()) ||
+                                           r.Email != null && r.
+                                           Email.ToUpper().Contains(searchBy.ToUpper()) ||
+                                           r.PhoneNumber != null && r.PhoneNumber.ToUpper().Contains(searchBy.ToUpper()) ||
+                                           r.Notes != null && r.Notes.ToUpper().Contains(searchBy.ToUpper()));
+            }
+
+            if (!string.IsNullOrEmpty(dtParameters.SortOrder))
+            {
+                result = result.OrderBy(dtParameters.SortOrder);
+            }
+
+            var filteredResultsCount = await result.CountAsync();
+            var totalResultsCount = await _context.Users.CountAsync();
+
+            var records = result.Skip(dtParameters.Start).Take(dtParameters.Length);
+
+            var usersVM = _mapper.Map<List<UserViewModel>>(records.ToList());
+
+            return Json(new DtResult<UserViewModel>
+            {
+                Draw = dtParameters.Draw,
+                RecordsTotal = totalResultsCount,
+                RecordsFiltered = filteredResultsCount,
+                Data = usersVM
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportTable([FromQuery] string format, [FromForm] string dtParametersJson)
+        {
+            var dtParameters = new DtParameters();
+            if (!string.IsNullOrEmpty(dtParametersJson))
+            {
+                dtParameters = JsonConvert.DeserializeObject<DtParameters>(dtParametersJson);
+            }
+
+            if (dtParameters != default)
+            {
+                var searchBy = dtParameters.Search?.Value;
+
+                var orderCriteria = "Id";
+                var orderAscendingDirection = true;
+
+                if (dtParameters.Order != null)
+                {
+                    orderCriteria = dtParameters.Columns[dtParameters.Order[0].Column].Data;
+                    orderAscendingDirection = dtParameters.Order[0].Dir.ToString().ToLower() == "asc";
+                }
+
+                var result = _context.Users.AsQueryable();
+
+                if (!string.IsNullOrEmpty(searchBy))
+                {
+                    result = result.Where(r => r.Name != null && r.Name.ToUpper().Contains(searchBy.ToUpper()) ||
+                                               r.Email != null && r.
+                                               Email.ToUpper().Contains(searchBy.ToUpper()) ||
+                                               r.PhoneNumber != null && r.PhoneNumber.ToUpper().Contains(searchBy.ToUpper()) ||
+                                               r.Notes != null && r.Notes.ToUpper().Contains(searchBy.ToUpper()));
+                }
+
+                result = orderAscendingDirection ? result.OrderBy(orderCriteria, DtOrderDir.Asc) : result.OrderBy(orderCriteria, DtOrderDir.Desc);
+
+                var resultUserList = await result.ToListAsync();
+                var resultList = _mapper.Map<List<UserViewModel>>(resultUserList.ToList());
+
+                switch (format)
+                {
+                    case ExportFormat.Excel:
+                        return File(
+                            await _exportService.ExportToExcel(resultList),
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            "data.xlsx");
+
+                    case ExportFormat.Csv:
+                        return File(_exportService.ExportToCsv(resultList),
+                            "application/csv",
+                            "data.csv");
+
+                    case ExportFormat.Html:
+                        return File(_exportService.ExportToHtml(resultList),
+                            "application/csv",
+                            "data.html");
+
+                    case ExportFormat.Json:
+                        return File(_exportService.ExportToJson(resultList),
+                            "application/json",
+                            "data.json");
+
+                    case ExportFormat.Xml:
+                        return File(_exportService.ExportToXml(resultList),
+                            "application/xml",
+                            "data.xml");
+
+                    case ExportFormat.Yaml:
+                        return File(_exportService.ExportToYaml(resultList),
+                            "application/yaml",
+                            "data.yaml");
+                }
+            }
+
+            return null;
+        }
+
     }
 }

@@ -1,7 +1,5 @@
 ﻿@model AssignOrganizationViewModel
 
-<link href="~/select2/css/select2.min.css" rel="stylesheet" />
-
 @{
     ViewData["Title"] = "AssignOrganization";
 }
@@ -37,19 +35,21 @@
     <a asp-action="UserOrganization" asp-route-id="@Model.UserId">Back to Organizations</a>
 </div>
 
+@section Styles{
+    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" asp-append-version="true" />
+}
+
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="~/select2/js/select2.min.js"></script>
-<script>
-    var $jq = jQuery.noConflict();
 
-    // Use $jq instead of $ to reference jQuery
-    $jq(document).ready(function () {
-        $jq('.select2-multi').select2();
-    });
-</script>
+    <script src="~/lib/select2/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.select2-multi').select2();
+        });
+    </script>
+}
 

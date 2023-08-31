@@ -72,9 +72,13 @@
     </li>
 </ul>
 
-
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 <script>
     function changePageSize(pageSize) {
         window.location.href = `Organizations?page=${@Model.PageIndex}&pageSize=${pageSize}`;
     }
 </script>
+}

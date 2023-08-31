@@ -10,6 +10,7 @@
 	  <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.10" />
 	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.10" />
 	  <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.10" />
+	  <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.10" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.10" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.10">
 		  <PrivateAssets>all</PrivateAssets>
@@ -22,6 +23,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.9" />
     <PackageReference Include="QRCoderNetCore" Version="1.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,6 +34,7 @@
 
   <ItemGroup>
     <Folder Include="Logs\August-2023\" />
+    <Folder Include="wwwroot\export attachments\" />
     <Folder Include="wwwroot\qrcodes\" />
     <Folder Include="wwwroot\uploads\" />
   </ItemGroup>

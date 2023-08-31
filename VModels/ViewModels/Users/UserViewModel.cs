@@ -19,11 +19,5 @@ public class UserViewModel
     public string GpsLocation { get; set; } = string.Empty;
     public string? Notes { get; set; }
     public string? NationalID { get; set; }
-    public string? ParticipationQRCodePath { get; set; }
-    public string PlainPassword { get; set; } = string.Empty;
     public string ProfilePicturePath { get; set; } = string.Empty;
-    public virtual ICollection<UserOrganization> UserOrganizations { get; set; } = new HashSet<UserOrganization>();
-    public virtual ICollection<UserClass> UserClasses { get; set; } = new HashSet<UserClass>();
-    public virtual ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
-    public virtual ICollection<ActivityInstanceUser> ActivityInstanceUsers { get; set; } = new HashSet<ActivityInstanceUser>();
-}
+   }

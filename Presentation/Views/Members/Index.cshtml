@@ -1,7 +1,9 @@
 ﻿@model IEnumerable<UserViewModel>
 
+
 @{
     ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>Members</h1>
@@ -9,51 +11,35 @@
 <p>
     <a asp-action="Create">Create New Member</a>
 </p>
-@using (Html.BeginForm("Index", "Members", FormMethod.Get))
-{
-    <p>
-        @Html.TextBox("search", ViewBag.CurrentFilter as string, new { placeholder = "Search by user, classroom, season, or user type" })
-        <input type="submit" value="Search" />
-    </p>
-}
-<table class="table">
-    <thead>
-        <tr>
-            <th>
 
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @if (!string.IsNullOrEmpty(item.ProfilePicturePath))
-                    {
-                        <img src="~/uploads/@(item.ProfilePicturePath)" alt="Profile Picture" class="img-fluid rounded" style="max-width: 50px; max-height: 50px;">
-                    }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    <a asp-action="Assign" asp-route-id="@item.Id">Assign Member</a> |
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<form id="export-to-file-form" method="POST" enctype="application/x-www-form-urlencoded">
+</form>
+
+<div class="row">
+    <div class="col-md-12">
+        <table id="dt-members" class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>@Html.DisplayNameFor(model => model.Name)</th>
+                    <th>@Html.DisplayNameFor(model => model.Email)</th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Styles{
+    <link rel="stylesheet" href="~/lib/datatables/css/dataTables.bootstrap4.min.css" asp-append-version="true" />
+}
+
+@section Scripts{
+    <script src="~/lib/momentjs/moment.min.js" asp-append-version="true"></script>
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js" asp-append-version="true"></script>
+    <script src="~/lib/datetime-moment/datetime-moment.js" asp-append-version="true"></script>
+    <script src="~/lib/datatables/js/dataTables.bootstrap4.js" asp-append-version="true"></script>
+    <script src="~/lib/datatables-buttons/dataTables.buttons.min.js" asp-append-version="true"></script>
+
+    <script src="~/js/app.js" asp-append-version="true"></script>
+}

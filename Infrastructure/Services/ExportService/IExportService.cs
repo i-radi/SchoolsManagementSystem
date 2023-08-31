@@ -4,18 +4,19 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Services
 {
-    public interface IExportService
+    public interface IExportService<T>
     {
-        Task<byte[]> ExportToExcel(List<UserViewModel> users);
+        Task<byte[]> ExportToExcel(List<T> users);
+        Task<string> ExportToExcelAndSave(List<T> registers, string path);
 
-        byte[] ExportToCsv(List<UserViewModel> users);
+        byte[] ExportToCsv(List<T> users);
 
-        byte[] ExportToHtml(List<UserViewModel> users);
+        byte[] ExportToHtml(List<T> users);
 
-        byte[] ExportToJson(List<UserViewModel> users);
+        byte[] ExportToJson(List<T> users);
 
-        byte[] ExportToXml(List<UserViewModel> users);
+        byte[] ExportToXml(List<T> users);
 
-        byte[] ExportToYaml(List<UserViewModel> users);
+        byte[] ExportToYaml(List<T> users);
     }
 }
