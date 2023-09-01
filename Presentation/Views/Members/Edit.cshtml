@@ -30,11 +30,11 @@
             <div class="form-group">
                 <label class="control-label">Gender</label><br>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" asp-for="Gender" value="M">
+                    <input class="form-check-input" type="radio" asp-for="Gender" value="Male">
                     <label class="form-check-label" for="Gender">Male</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" asp-for="Gender" value="F">
+                    <input class="form-check-input" type="radio" asp-for="Gender" value="Female">
                     <label class="form-check-label" for="Gender">Female</label>
                 </div>
                 <span asp-validation-for="Gender" class="text-danger"></span>
@@ -103,7 +103,7 @@
             </dd>
             }
         <div class="form-group">
-            <input type="submit" value="Edit" class="btn btn-primary" />
+            <input type="submit" value="Save Changes" class="btn btn-primary" />
         </div>
         </form>
     </div>

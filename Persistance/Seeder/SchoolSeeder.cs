@@ -14,24 +14,6 @@ public static class SchoolSeeder
                     Name = "Cairo 1 School ",
                     Description = "desc. of Cairo 1 School",
                     OrganizationId = 1,
-                },
-                new School
-                {
-                    Name = "Cairo 2 School ",
-                    Description = "desc. of Cairo 2 School",
-                    OrganizationId = 1,
-                },
-                new School
-                {
-                    Name = "Alex 1 School ",
-                    Description = "desc. of Alex 1 School",
-                    OrganizationId = 2,
-                },
-                new School
-                {
-                    Name = "Alex 2 School ",
-                    Description = "desc. of Alex 2 School",
-                    OrganizationId = 2,
                 }
             };
 

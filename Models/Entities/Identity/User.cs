@@ -15,7 +15,7 @@ public class User : IdentityUser<int>
     public string? MotherMobile { get; set; }
     public string? MentorName { get; set; }
     public string? ProfilePicturePath { get; set; }
-    public string GpsLocation { get; set; } = string.Empty;
+    public string? GpsLocation { get; set; } = string.Empty;
     public string? Notes { get; set; }
     public string? NationalID { get; set; }
     public int ParticipationNumber { get; set; }

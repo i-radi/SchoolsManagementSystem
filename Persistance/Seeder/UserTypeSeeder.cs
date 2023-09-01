@@ -10,7 +10,8 @@ public static class UserTypeSeeder
             var userTypes = new List<UserType>
             {
                 new UserType{ Name = "Teacher"},
-                new UserType{ Name = "Student"}
+                new UserType{ Name = "Student"},
+                new UserType{ Name = "Parent"},
             };
 
             await dbContext.AddRangeAsync(userTypes);

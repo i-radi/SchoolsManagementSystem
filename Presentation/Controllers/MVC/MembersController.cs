@@ -119,10 +119,11 @@ namespace Presentation.Controllers.MVC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserFormViewModel user)
         {
+            string CreatedEmail = (string.IsNullOrEmpty(user.Email)) ? Guid.NewGuid() + "@sms.com" : user.Email;
             var newUser = new User
             {
-                Email = user.Email,
-                UserName = user.Email.Split('@')[0],
+                Email = CreatedEmail,
+                UserName = CreatedEmail.Split('@')[0],
                 Name = user.Name,
                 PlainPassword = "123456",
                 RefreshToken = Guid.NewGuid(),
@@ -157,7 +158,7 @@ namespace Presentation.Controllers.MVC
             _context.User.Update(createdUser);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index),"Users");
         }
 
         // GET: Members/Edit/5
@@ -206,11 +207,19 @@ namespace Presentation.Controllers.MVC
             {
                 return NotFound();
             }
+            string UpdatedEmail = (string.IsNullOrEmpty(userVM.Email)) ? Guid.NewGuid() + "@sms.com" : userVM.Email;
+
+            var alreadyexisted = await _userManager.FindByEmailAsync(UpdatedEmail);
+            if (alreadyexisted is not null)
+            {
+                ModelState.AddModelError("", "Unable to save changes. Try again, The user email is exited before.");
+                return View(userVM);
+            }
             var updatedUser = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (updatedUser is not null)
             {
-                updatedUser.UserName = userVM.Email;
-                updatedUser.Email = userVM.Email;
+                updatedUser.Email = (string.IsNullOrEmpty(userVM.Email)) ? Guid.NewGuid() + "@sms.com" : userVM.Email;
+                updatedUser.UserName = updatedUser.Email.Split('@')[0];
                 updatedUser.Name = userVM.Name;
                 updatedUser.Address = userVM.Address;
                 updatedUser.Birthdate = userVM.Birthdate;
@@ -231,7 +240,7 @@ namespace Presentation.Controllers.MVC
                 try
                 {
                     await _userManager.UpdateAsync(updatedUser);
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index), "Users");
                 }
                 catch (Exception ex)
                 {

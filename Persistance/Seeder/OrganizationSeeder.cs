@@ -15,8 +15,6 @@ public static class OrganizationSeeder
             var orgs = new List<Organization>
             {
                 new Organization{ Name = "Cairo Organization"},
-                new Organization{ Name = "Alex Organization"},
-                new Organization{ Name = "Tanta Organization"},
             };
 
             await dbContext.AddRangeAsync(orgs);
