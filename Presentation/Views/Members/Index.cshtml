@@ -1,45 +1,86 @@
-﻿@model IEnumerable<UserViewModel>
-
+﻿@model PaginatedList<UserClassViewModel>
 
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Members</h1>
+<h1>Class Members</h1>
 
 <p>
-    <a asp-action="Create">Create New Member</a>
+    <a asp-action="Assign">Create New Member</a>
 </p>
 
-<form id="export-to-file-form" method="POST" enctype="application/x-www-form-urlencoded">
-</form>
-
-<div class="row">
-    <div class="col-md-12">
-        <table id="dt-members" class="table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>@Html.DisplayNameFor(model => model.Name)</th>
-                    <th>@Html.DisplayNameFor(model => model.Email)</th>
-                    <th></th>
-                </tr>
-            </thead>
-        </table>
-    </div>
-</div>
-
-@section Styles{
-    <link rel="stylesheet" href="~/lib/datatables/css/dataTables.bootstrap4.min.css" asp-append-version="true" />
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+               Id
+            </th>
+            <th>
+                ClassRoom
+            </th>
+            <th>
+                User ID
+            </th>
+            <th>
+User Type
+            </th>
+            <th>
+         Season
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Classroom.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserType.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Season.Name)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
 }
+    </tbody>
+</table>
 
-@section Scripts{
-    <script src="~/lib/momentjs/moment.min.js" asp-append-version="true"></script>
-    <script src="~/lib/datatables/js/jquery.dataTables.min.js" asp-append-version="true"></script>
-    <script src="~/lib/datetime-moment/datetime-moment.js" asp-append-version="true"></script>
-    <script src="~/lib/datatables/js/dataTables.bootstrap4.js" asp-append-version="true"></script>
-    <script src="~/lib/datatables-buttons/dataTables.buttons.min.js" asp-append-version="true"></script>
-
-    <script src="~/js/app.js" asp-append-version="true"></script>
+<ul class="pagination">
+    <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Index", new { page = 1 })">First</a>
+    </li>
+    <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex - 1 })">Previous</a>
+    </li>
+    @for (int i = 1; i <= Model.TotalPages; i++)
+    {
+        <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+        </li>
+    }
+    <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex + 1 })">Next</a>
+    </li>
+    <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Index", new { page = Model.TotalPages })">Last</a>
+    </li>
+</ul>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

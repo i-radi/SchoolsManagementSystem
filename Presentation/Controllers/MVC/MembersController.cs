@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Models.Entities.Identity;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Bcpg;
+using System.Drawing.Printing;
 using System.Linq.Dynamic.Core;
 using static Azure.Core.HttpHeader;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -16,6 +18,7 @@ namespace Presentation.Controllers.MVC
         private readonly RoleManager<Role> _roleManager;
         private readonly IOrganizationRepo _organizationRepo;
         private readonly ISchoolRepo _schoolRepo;
+        private readonly IGradeRepo _gradeRepo;
         private readonly ISeasonRepo _seasonRepo;
         private readonly IUserTypeRepo _userTypeRepo;
         private readonly IClassroomRepo _classroomRepo;
@@ -33,6 +36,7 @@ namespace Presentation.Controllers.MVC
             RoleManager<Role> roleManager,
             IOrganizationRepo organizationService,
             ISchoolRepo schoolService,
+            IGradeRepo gradeRepo,
             ISeasonRepo seasonRepo,
             IUserTypeRepo userTypeRepo,
             IClassroomRepo classroomRepo,
@@ -47,6 +51,7 @@ namespace Presentation.Controllers.MVC
             _roleManager = roleManager;
             _organizationRepo = organizationService;
             _schoolRepo = schoolService;
+            _gradeRepo = gradeRepo;
             _seasonRepo = seasonRepo;
             _userTypeRepo = userTypeRepo;
             _classroomRepo = classroomRepo;
@@ -61,32 +66,19 @@ namespace Presentation.Controllers.MVC
         }
 
         // GET: Members
-        public IActionResult Index(int schoolId, string search = "")
+        public IActionResult Index(int page = 1, int pageSize = 10)
         {
-            var users = _userManager.Users
-                .Include(u => u.UserRoles)
-                .Include(u => u.UserClasses)
-                .ThenInclude(uc => uc.Classroom)
-                .Include(u => u.UserClasses)
-                .ThenInclude(uc => uc.Season)
-                .Include(u => u.UserClasses)
-                .ThenInclude(uc => uc.UserType)
+            var userclass = _userClassRepo.GetTableNoTracking()
+                .Include(u => u.User)
+                .Include(u => u.Classroom)
+                .Include(u => u.Season)
+                .Include(u => u.UserType)
                 .AsQueryable();
 
-            if (schoolId > 0)
-            {
-                users = users.Where(u => u.UserRoles.Any(u => u.SchoolId == schoolId));
-            }
+     
+            var result = PaginatedList<UserClassViewModel>.Create(_mapper.Map<List<UserClassViewModel>>(userclass), page, pageSize);
 
-            if (!string.IsNullOrEmpty(search))
-            {
-                users = users.Where(u => u.Name.Contains(search)
-                | u.UserClasses.Any(ur => ur.Season!.To.ToString().Contains(search))
-                | u.UserClasses.Any(ur => ur.Classroom!.Name.Contains(search))
-                | u.UserClasses.Any(ur => ur.UserType!.Name.Contains(search)));
-            }
-            var usersVM = _mapper.Map<List<UserViewModel>>(users.ToList());
-            return View(usersVM);
+            return View(result);
         }
 
         // GET: Members/Details/5
@@ -143,23 +135,49 @@ namespace Presentation.Controllers.MVC
         }
 
         // GET: Members/Assign
-        public async Task<IActionResult> Assign(int id)
+        public async Task<IActionResult> Assign(int? userId, int? orgid, int? schoolid, int? gradeid)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
-            if (user == null)
+
+            IQueryable<User> usersQuery = _userManager.Users
+                .Include(u => u.UserOrganizations)
+                .ThenInclude(uo => uo.Organization)
+                .AsQueryable();
+
+            if (userId is not null)
+            {
+                usersQuery = usersQuery.Where(u => u.Id == userId);
+            }
+            else
+            {
+                if (orgid is not null)
+                {
+                    usersQuery = usersQuery.Where(u => u.UserOrganizations.Any(uo => uo.OrganizationId == orgid));
+                }
+            }
+
+
+            if (usersQuery == null)
             {
                 return NotFound();
             }
+            var organizations = _organizationRepo.GetTableNoTracking().ToList();
+            var schools = _schoolRepo.GetTableNoTracking().ToList();
+            var grades = _gradeRepo.GetTableNoTracking().ToList();
             var classrooms = _classroomRepo.GetTableNoTracking().Include(c => c.Grade).ToList();
             var seasons = _seasonRepo.GetTableNoTracking().ToList();
-
             var usertypes = _userTypeRepo.GetTableNoTracking().ToList();
 
-            ViewData["UserId"] = new SelectList(new List<User> { user }, "Id", "Name");
+            ViewData["UserId"] = new SelectList(usersQuery, "Id", "Name");
+            ViewData["OrgId"] = new SelectList(organizations, "Id", "Name");
+            ViewData["SchoolId"] = new SelectList(schools, "Id", "Name");
+            ViewData["GradeId"] = new SelectList(grades, "Id", "Name");
             ViewData["ClassroomId"] = new SelectList(classrooms, "Id", "Name");
             ViewData["UserTypeId"] = new SelectList(usertypes, "Id", "Name");
             ViewData["SeasonId"] = new SelectList(seasons, "Id", "Name");
-            return View(new UserClassViewModel { UserId = user.Id });
+            return View(new UserClassViewModel { UserId = usersQuery.FirstOrDefault().Id });
+
+
+
         }
 
         // POST: Members/Assign

@@ -3,8 +3,18 @@
 public class UserClassViewModel
 {
     public int Id { get; set; }
+    public int OrganizationId { get; set; }
+    public virtual Organization? Organization { get; set; }
+
+    public int SchoolId { get; set; }
+    public virtual School? School { get; set; }
+
+    public int GradeId { get; set; }
+    public virtual Grade? Grade { get; set; }
+
     public int ClassroomId { get; set; }
     public virtual Classroom? Classroom { get; set; }
+
     public int UserId { get; set; }
     public virtual User? User { get; set; }
     public int UserTypeId { get; set; }

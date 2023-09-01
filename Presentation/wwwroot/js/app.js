@@ -128,25 +128,25 @@ function strtrunc(str, num) {
 function assign(rowContext) {
     if (table) {
         var data = table.row($(rowContext).parents("tr")).data();
-        window.location.href = `/Members/Assign/${data["id"]}`;
+        window.location.href = `/Members/Assign/${data["userid"]}`;
     }
 }
 function edit(rowContext) {
     if (table) {
         var data = table.row($(rowContext).parents("tr")).data();
-        window.location.href = `/Members/Edit/${data["id"]}`;
+        window.location.href = `/Members/Edit/${data["userid"]}`;
     }
 }
 function details(rowContext) {
     if (table) {
         var data = table.row($(rowContext).parents("tr")).data();
-        window.location.href = `/Members/Details/${data["id"]}`;
+        window.location.href = `/Members/Details/${data["userid"]}`;
     }
 }
 function deletion(rowContext) {
     if (table) {
         var data = table.row($(rowContext).parents("tr")).data();
-        window.location.href = `/Members/Delte/${data["id"]}`;
+        window.location.href = `/Members/Delte/${data["userid"]}`;
     }
 }
 
