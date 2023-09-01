@@ -40,6 +40,9 @@
             <th>
                 PhoneNumber
             </th>
+            <th>
+                Password
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -62,6 +65,10 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.PhoneNumber)
                 </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PlainPassword)
+                </td>
+
                 <td>
                     <a href="/users/Roles/@item.Id">Manage Roles</a> |
                     <a href="/users/UserOrganization/@item.Id">Manage Organizatrions</a> |

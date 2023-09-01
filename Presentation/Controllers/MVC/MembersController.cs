@@ -158,7 +158,7 @@ namespace Presentation.Controllers.MVC
             _context.User.Update(createdUser);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index),"Users");
+            return RedirectToAction(nameof(Index), "Users");
         }
 
         // GET: Members/Edit/5
@@ -208,13 +208,17 @@ namespace Presentation.Controllers.MVC
                 return NotFound();
             }
             string UpdatedEmail = (string.IsNullOrEmpty(userVM.Email)) ? Guid.NewGuid() + "@sms.com" : userVM.Email;
-
-            var alreadyexisted = await _userManager.FindByEmailAsync(UpdatedEmail);
-            if (alreadyexisted is not null)
+            if (UpdatedEmail != userVM.Email)
             {
-                ModelState.AddModelError("", "Unable to save changes. Try again, The user email is exited before.");
-                return View(userVM);
+
+                var alreadyexisted = await _userManager.FindByEmailAsync(UpdatedEmail);
+                if (alreadyexisted is not null)
+                {
+                    ModelState.AddModelError("", "Unable to save changes. Try again, The user email is exited before.");
+                    return View(userVM);
+                }
             }
+
             var updatedUser = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (updatedUser is not null)
             {
