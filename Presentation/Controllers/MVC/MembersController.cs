@@ -66,7 +66,7 @@ namespace Presentation.Controllers.MVC
         }
 
         // GET: Members
-        public IActionResult Index(int page = 1, int pageSize = 10)
+        public IActionResult Index(int pageNumber = 1, int pageSize = 10)
         {
             var userclass = _userClassRepo.GetTableNoTracking()
                 .Include(u => u.User)
@@ -75,9 +75,9 @@ namespace Presentation.Controllers.MVC
                 .Include(u => u.UserType)
                 .AsQueryable();
 
-     
-            var result = PaginatedList<UserClassViewModel>.Create(_mapper.Map<List<UserClassViewModel>>(userclass), page, pageSize);
 
+            var result = PaginatedList<UserClassViewModel>.Create(_mapper.Map<List<UserClassViewModel>>(userclass), pageNumber, pageSize);
+            
             return View(result);
         }
 
