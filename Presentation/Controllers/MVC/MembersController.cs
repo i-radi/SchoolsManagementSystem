@@ -77,7 +77,7 @@ namespace Presentation.Controllers.MVC
 
 
             var result = PaginatedList<UserClassViewModel>.Create(_mapper.Map<List<UserClassViewModel>>(userclass), pageNumber, pageSize);
-            
+
             return View(result);
         }
 
@@ -164,46 +164,58 @@ namespace Presentation.Controllers.MVC
         }
 
         // GET: Members/Assign
-        public async Task<IActionResult> Assign(int? userId, int? orgid, int? schoolid, int? gradeid)
+        public async Task<IActionResult> Assign(int? orgid, int? schoolid, int? userId, int? gradeid)
         {
+            var organizations = await _organizationRepo.GetTableNoTracking().ToListAsync();
+            var schools = new List<School>();
+            var users = new List<User>();
+            var seasons = new List<Season>();
+            var grades = new List<Grade>();
+            var classrooms = new List<Classroom>();
+            var usertypes = new List<UserType>();
+            var userclass = new UserClassViewModel();
 
-            IQueryable<User> usersQuery = _userManager.Users
-                .Include(u => u.UserOrganizations)
-                .ThenInclude(uo => uo.Organization)
-                .AsQueryable();
+            if (orgid is not null)
+            {
+                userclass.OrganizationId = (int)orgid;
+                schools = _schoolRepo.GetTableNoTracking().Where(s => s.OrganizationId == orgid).ToList();
+            }
 
             if (userId is not null)
             {
-                usersQuery = usersQuery.Where(u => u.Id == userId);
-            }
-            else
-            {
-                if (orgid is not null)
-                {
-                    usersQuery = usersQuery.Where(u => u.UserOrganizations.Any(uo => uo.OrganizationId == orgid));
-                }
+                userclass.UserId = (int)userId;
             }
 
-            if (usersQuery == null)
+            if (schoolid is not null)
             {
-                return NotFound();
+                userclass.SchoolId = (int)schoolid;
+                userclass.OrganizationId = (int)orgid!;
+                grades = _gradeRepo.GetTableNoTracking().Where(g => g.SchoolId == schoolid).ToList();
+                users = await _userManager.Users
+                    .Where(u => u.UserOrganizations.Any(uo => uo.OrganizationId == orgid))
+                    .ToListAsync();
             }
-            var organizations = _organizationRepo.GetTableNoTracking().ToList();
-            var schools = _schoolRepo.GetTableNoTracking().ToList();
-            var grades = _gradeRepo.GetTableNoTracking().ToList();
-            var classrooms = _classroomRepo.GetTableNoTracking().Include(c => c.Grade).ToList();
-            var seasons = _seasonRepo.GetTableNoTracking().ToList();
-            var usertypes = _userTypeRepo.GetTableNoTracking().ToList();
 
-            ViewData["UserId"] = new SelectList(usersQuery, "Id", "Name");
+            if (gradeid is not null)
+            {
+                userclass.GradeId = (int)gradeid;
+                userclass.SchoolId = (int)schoolid!;
+                userclass.OrganizationId = (int)orgid!;
+                userclass.UserId = userId ?? 0;
+                seasons = _seasonRepo.GetTableNoTracking().Where(s => s.SchoolId == schoolid).ToList();
+                classrooms = _classroomRepo.GetTableNoTracking().Where(s => s.GradeId == gradeid).ToList();
+                usertypes = _userTypeRepo.GetTableNoTracking().ToList();
+            }
+
             ViewData["OrgId"] = new SelectList(organizations, "Id", "Name");
             ViewData["SchoolId"] = new SelectList(schools, "Id", "Name");
+            ViewData["UserId"] = new SelectList(users, "Id", "Name");
             ViewData["GradeId"] = new SelectList(grades, "Id", "Name");
+            ViewData["SeasonId"] = new SelectList(seasons, "Id", "Name");
             ViewData["ClassroomId"] = new SelectList(classrooms, "Id", "Name");
             ViewData["UserTypeId"] = new SelectList(usertypes, "Id", "Name");
-            ViewData["SeasonId"] = new SelectList(seasons, "Id", "Name");
 
-            return View(new UserClassViewModel { UserId = usersQuery.FirstOrDefault().Id });
+            return View(userclass);
         }
 
         // POST: Members/Assign
