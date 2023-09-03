@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Models.Entities.Identity;
 
 namespace Presentation.Controllers.API;
 
@@ -28,7 +29,7 @@ public class UsersController : ControllerBase
         _mapper = mapper;
         _exportService = exportService;
         _webHostEnvironment = webHostEnvironment;
-        _imagesBaseURL = Path.Combine(webHostEnvironment.WebRootPath, "uploads/users");
+        _imagesBaseURL = webHostEnvironment.WebRootPath;
     }
 
     [HttpPost("register")]
@@ -86,7 +87,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    //[Authorize(Policy = "SuperAdmin")]
+    [Authorize]
     public async Task<IActionResult> GetAll(int pageNumber = 1, int pageSize = 10)
     {
         var modelItems = PaginatedList<User>
@@ -166,6 +167,54 @@ public class UsersController : ControllerBase
 
         var result = await _exportService.ExportToExcel(data);
 
+        return Ok(ResponseHandler.Success(result));
+    }
+
+    [HttpPost("change-image/{id}")]
+    public async Task<IActionResult> UploadImage(int id,IFormFile image)
+    {
+        var modelItem = await _userManager.Users
+            .FirstOrDefaultAsync(u => u.Id == id);
+        if (modelItem is null)
+        {
+            return NotFound(ResponseHandler.NotFound<string>("not found user.."));
+        }
+
+        if (image is null || image.Length == 0)
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("Invalid image."));
+        }
+        
+        if (image.Length > 5 * 1024 * 1024) 
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("Image size exceeds the limit (5 MB)."));
+        }
+
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+        var fileExtension = Path.GetExtension(image.FileName).ToLower();
+        if (!allowedExtensions.Contains(fileExtension))
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("Invalid file format. Allowed formats: jpg, jpeg, png, gif."));
+        }
+
+        modelItem.ProfilePicturePath = await Picture.Upload(
+            image,
+            _webHostEnvironment,
+            $"uploads/users/{modelItem.UserName}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
+
+        var updatedModel = await _userManager.UpdateAsync(modelItem);
+
+        if (!updatedModel.Succeeded)
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>(updatedModel.Errors.ToString()));
+        }
+
+        if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
+        {
+            modelItem.ProfilePicturePath = Path.Combine(_imagesBaseURL, modelItem.ProfilePicturePath);
+        }
+
+        var result = _mapper.Map<GetUserDto>(modelItem);
         return Ok(ResponseHandler.Success(result));
     }
 }
