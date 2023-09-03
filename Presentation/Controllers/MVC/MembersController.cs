@@ -3,6 +3,7 @@ using Models.Entities.Identity;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Bcpg;
 using System.Drawing.Printing;
+using System.Linq;
 using System.Linq.Dynamic.Core;
 using static Azure.Core.HttpHeader;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -66,18 +67,63 @@ namespace Presentation.Controllers.MVC
         }
 
         // GET: Members
-        public IActionResult Index(int pageNumber = 1, int pageSize = 10)
+        public IActionResult Index(
+            int pageNumber = 1,
+            int pageSize = 10,
+            int orgId = 0,
+            int schoolId = 0,
+            int seasonId = 0,
+            int gradeId = 0,
+            int classroomId = 0,
+            int usertypeId = 0,
+            string searchUserName = "")
         {
             var userclass = _userClassRepo.GetTableNoTracking()
                 .Include(u => u.User)
                 .Include(u => u.Classroom)
                 .Include(u => u.Season)
+                .ThenInclude(s => s.School)
                 .Include(u => u.UserType)
                 .AsQueryable();
 
+            if (orgId != 0)
+            {
+                userclass = userclass.Where(uc => uc.Season!.School!.OrganizationId == orgId);
+            }
+            if (schoolId != 0)
+            {
+                userclass = userclass.Where(uc => uc.Season!.SchoolId == schoolId);
+            }
+            if (seasonId != 0)
+            {
+                userclass = userclass.Where(uc => uc.SeasonId == seasonId);
+            }
+            if (gradeId != 0)
+            {
+                userclass = userclass.Where(uc => uc.Classroom!.GradeId == gradeId);
+            }
+            if (classroomId != 0)
+            {
+                userclass = userclass.Where(uc => uc.ClassroomId == classroomId);
+            }
+            if (usertypeId != 0)
+            {
+                userclass = userclass.Where(uc => uc.UserTypeId == usertypeId);
+            }
+            if (!string.IsNullOrWhiteSpace(searchUserName))
+            {
+                userclass = userclass.Where(uc => uc.User!.Email!.ToLower().Contains(searchUserName.ToLower())
+                || uc.User!.Name!.ToLower().Contains(searchUserName.ToLower()));
+            }
+
+            ViewBag.OrganizationsList = new SelectList(_organizationRepo.GetTableNoTracking(), "Id", "Name");
+            ViewBag.SchoolsList = new SelectList(_schoolRepo.GetTableNoTracking(), "Id", "Name");
+            ViewBag.SeasonsList = new SelectList(_seasonRepo.GetTableNoTracking(), "Id", "Name");
+            ViewBag.GradesList = new SelectList(_gradeRepo.GetTableNoTracking(), "Id", "Name");
+            ViewBag.ClassroomsList = new SelectList(_classroomRepo.GetTableNoTracking(), "Id", "Name");
+            ViewBag.UserTypesList = new SelectList(_userTypeRepo.GetTableNoTracking(), "Id", "Name");
 
             var result = PaginatedList<UserClassViewModel>.Create(_mapper.Map<List<UserClassViewModel>>(userclass), pageNumber, pageSize);
-
             return View(result);
         }
 

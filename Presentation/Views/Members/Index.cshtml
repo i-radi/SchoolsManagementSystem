@@ -10,6 +10,22 @@
     <a asp-action="Assign">Assign New Member</a>
 </p>
 
+@using (Html.BeginForm("Index", "Members", FormMethod.Get, new { id = "searchForm" }))
+{
+    <p>
+        @Html.TextBox("searchUserName", ViewBag.CurrentFilter as string, new { placeholder = "Search by username." })
+
+        @Html.DropDownList("orgId", ViewBag.OrganizationsList as SelectList, "All Organizations", new { placeholder = "filter by organization" })
+        @Html.DropDownList("schoolId", ViewBag.SchoolsList as SelectList, "All Schools", new { placeholder = "filter by school" })
+        @Html.DropDownList("seasonId", ViewBag.SeasonsList as SelectList, "All Seasons", new { placeholder = "filter by season" })
+        @Html.DropDownList("gradeId", ViewBag.GradesList as SelectList, "All Grades", new { placeholder = "filter by grade" })
+        @Html.DropDownList("classroomId", ViewBag.ClassroomsList as SelectList, "All Classrooms", new { placeholder = "filter by classroom" })
+        @Html.DropDownList("usertypeId", ViewBag.UserTypesList as SelectList, "All UserTypes", new { placeholder = "filter by usertype" })
+
+        <input type="submit" value="Search" hidden />
+    </p>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -20,7 +36,7 @@
                 ClassRoom
             </th>
             <th>
-                User ID
+                User
             </th>
             <th>
                 User Type
@@ -96,4 +112,11 @@
    class="btn btn-default @nextDisabled">
     Next
 </a>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/members/index.js"></script>
+}
 
