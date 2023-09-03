@@ -1,4 +1,9 @@
-﻿namespace Presentation.Controllers.MVC
+﻿using Microsoft.AspNetCore.Hosting;
+using Models.Entities;
+using Models.Entities.Identity;
+using System.IO;
+
+namespace Presentation.Controllers.MVC
 {
     public class SchoolsController : Controller
     {
@@ -80,7 +85,16 @@
                 };
                 if (viewModel.Picture is not null)
                 {
-                    school.PicturePath = await Picture.Upload(viewModel.Picture, _webHostEnvironment);
+                    var fileExtension = Path.GetExtension(Path.GetFileName(viewModel.Picture.FileName));
+
+                    var orgName = (await _organizationRepo.GetByIdAsync((int)school.OrganizationId)).Name;
+                    if (!Directory.Exists(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/schools/{orgName}")))
+                    {
+                        Directory.CreateDirectory(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/schools/{orgName}"));
+                    }
+
+                    school.PicturePath = await Picture.Upload(viewModel.Picture, _webHostEnvironment,
+                        $"uploads/schools/{orgName}/{viewModel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
 
                 await _schoolsRepo.AddAsync(school);
@@ -136,6 +150,20 @@
                 modelItem.Order = viewModel.Order;
                 modelItem.OrganizationId = viewModel.OrganizationId;
                 modelItem.PicturePath = viewModel.PicturePath;
+
+                if (viewModel.Picture is not null)
+                {
+                    var fileExtension = Path.GetExtension(Path.GetFileName(viewModel.Picture.FileName));
+
+                    var orgName = (await _organizationRepo.GetByIdAsync((int)viewModel.OrganizationId)).Name;
+                    if (!Directory.Exists(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/schools/{orgName}")))
+                    {
+                        Directory.CreateDirectory(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/schools/{orgName}"));
+                    }
+
+                    modelItem.PicturePath = await Picture.Upload(viewModel.Picture, _webHostEnvironment,
+                        $"uploads/schools/{orgName}/{viewModel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
+                }
 
                 var model = _schoolsRepo.UpdateAsync(modelItem);
                 return RedirectToAction(nameof(Index));

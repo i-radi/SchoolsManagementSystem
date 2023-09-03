@@ -1,4 +1,6 @@
-﻿namespace Presentation.Controllers.MVC
+﻿using Models.Entities.Identity;
+
+namespace Presentation.Controllers.MVC
 {
     public class OrganizationsController : Controller
     {
@@ -63,7 +65,9 @@
             };
             if (viewmodel.Picture is not null)
             {
-                organization.PicturePath = await Picture.Upload(viewmodel.Picture, _webHostEnvironment);
+                var fileExtension = Path.GetExtension(Path.GetFileName(viewmodel.Picture.FileName));
+                organization.PicturePath = await Picture.Upload(viewmodel.Picture, _webHostEnvironment,
+                    $"uploads/organizations/{viewmodel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
             }
             var model = await _organizationRepo.AddAsync(organization);
             return RedirectToAction(nameof(Index));
@@ -106,7 +110,9 @@
                 updatedOrganization.Name = organization.Name;
                 if (organization.Picture is not null)
                 {
-                    updatedOrganization.PicturePath = await Picture.Upload(organization.Picture, _webHostEnvironment);
+                    var fileExtension = Path.GetExtension(Path.GetFileName(organization.Picture.FileName));
+                    updatedOrganization.PicturePath = await Picture.Upload(organization.Picture, _webHostEnvironment,
+                        $"uploads/organizations/{organization.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
                 try
                 {

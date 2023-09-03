@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace VModels.ViewModels;
 
@@ -6,6 +7,7 @@ public class UserFormViewModel
 {
     public int? Id { get; set; }
     public string Name { get; set; }
+    [EmailAddress(ErrorMessage = "The Email field is not a valid email address.")]
     public string? Email { get; set; }
     public IFormFile? ProfilePicture { get; set; }
     public string? ProfilePicturePath { get; set; }

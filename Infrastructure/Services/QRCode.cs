@@ -17,7 +17,7 @@ public static class QR
         var qrCodeImage = qrCode.GetGraphic(20);
 
         var wwwrootPath = webHostEnvironment.WebRootPath;
-        var qrCodeFilePath = Path.Combine(wwwrootPath, "qrcodes", $"{userId}.png");
+        var qrCodeFilePath = Path.Combine(wwwrootPath, "uploads", "qrcodes", $"{userId}.png");
 
         using (var stream = new FileStream(qrCodeFilePath, FileMode.Create))
         {

@@ -6,17 +6,20 @@ namespace Presentation.Controllers.MVC
     {
         private readonly IClassroomRepo _classroomRepo;
         private readonly IGradeRepo _gradeRepo;
+        private readonly ISchoolRepo _schoolRepo;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IMapper _mapper;
 
         public ClassroomsController(
             IClassroomRepo classroomRepo,
             IGradeRepo gradeRepo,
+            ISchoolRepo schoolRepo,
             IWebHostEnvironment webHostEnvironment,
             IMapper mapper)
         {
             _classroomRepo = classroomRepo;
             _gradeRepo = gradeRepo;
+            _schoolRepo = schoolRepo;
             _webHostEnvironment = webHostEnvironment;
             _mapper = mapper;
         }
@@ -75,20 +78,61 @@ namespace Presentation.Controllers.MVC
                 Name = viewmodel.Name,
                 GradeId = viewmodel.GradeId
             };
-
+            
             if (viewmodel.Picture is not null)
             {
-                classroom.PicturePath = await Picture.Upload(viewmodel.Picture, _webHostEnvironment);
+                var fileExtension = Path.GetExtension(Path.GetFileName(viewmodel.Picture.FileName));
+
+                var school = _schoolRepo.GetTableNoTracking()
+                    .Include(s => s.Organization)
+                    .Where(s => s.Grades.Any(g => g.Id == viewmodel.GradeId))
+                    .FirstOrDefault();
+                var schoolName = school!.Name;
+                var orgName = school!.Organization!.Name;
+                if (!Directory.Exists(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/classrooms/{orgName}/{schoolName}")))
+                {
+                    Directory.CreateDirectory(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/classrooms/{orgName}/{schoolName}"));
+                }
+                classroom.PicturePath = await Picture.Upload(viewmodel.Picture, _webHostEnvironment,
+                        $"uploads/classrooms/{orgName}/{schoolName}/{viewmodel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
             }
 
             if (viewmodel.TeacherImage is not null)
             {
-                classroom.TeacherImagePath = await Picture.Upload(viewmodel.TeacherImage, _webHostEnvironment);
+                var fileExtension = Path.GetExtension(Path.GetFileName(viewmodel.TeacherImage.FileName));
+
+                var school = _schoolRepo.GetTableNoTracking()
+                    .Include(s => s.Organization)
+                    .Where(s => s.Grades.Any(g => g.Id == viewmodel.GradeId))
+                    .FirstOrDefault();
+                var schoolName = school!.Name;
+                var orgName = school!.Organization!.Name;
+
+                if (!Directory.Exists(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/classrooms/{orgName}/{schoolName}")))
+                {
+                    Directory.CreateDirectory(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/classrooms/{orgName}/{schoolName}"));
+                }
+                classroom.TeacherImagePath = await Picture.Upload(viewmodel.TeacherImage, _webHostEnvironment,
+                        $"uploads/classrooms/{orgName}/{schoolName}/{viewmodel.Name}-Teacher-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
             }
 
             if (viewmodel.StudentImage is not null)
             {
-                classroom.StudentImagePath = await Picture.Upload(viewmodel.StudentImage, _webHostEnvironment);
+                var fileExtension = Path.GetExtension(Path.GetFileName(viewmodel.StudentImage.FileName));
+
+                var school = _schoolRepo.GetTableNoTracking()
+                    .Include(s => s.Organization)
+                    .Where(s => s.Grades.Any(g => g.Id == viewmodel.GradeId))
+                    .FirstOrDefault();
+                var schoolName = school!.Name;
+                var orgName = school!.Organization!.Name;
+
+                if (!Directory.Exists(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/classrooms/{orgName}/{schoolName}")))
+                {
+                    Directory.CreateDirectory(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/classrooms/{orgName}/{schoolName}"));
+                }
+                classroom.StudentImagePath = await Picture.Upload(viewmodel.StudentImage, _webHostEnvironment,
+                        $"uploads/classrooms/{orgName}/{schoolName}/{viewmodel.Name}-Student-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
             }
 
             await _classroomRepo.AddAsync(classroom);
@@ -143,17 +187,59 @@ namespace Presentation.Controllers.MVC
                 
                 if (classroomVM.Picture is not null)
                 {
-                    updatedClassroom.PicturePath = await Picture.Upload(classroomVM.Picture, _webHostEnvironment);
+                    var fileExtension = Path.GetExtension(Path.GetFileName(classroomVM.Picture.FileName));
+
+                    var school = _schoolRepo.GetTableNoTracking()
+                        .Include(s => s.Organization)
+                        .Where(s => s.Grades.Any(g => g.Id == updatedClassroom.GradeId))
+                        .FirstOrDefault();
+                    var schoolName = school!.Name;
+                    var orgName = school!.Organization!.Name;
+
+                    if (!Directory.Exists(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/classrooms/{orgName}/{schoolName}")))
+                    {
+                        Directory.CreateDirectory(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/classrooms/{orgName}/{schoolName}"));
+                    }
+                    updatedClassroom.PicturePath = await Picture.Upload(classroomVM.Picture, _webHostEnvironment,
+                            $"uploads/classrooms/{orgName}/{schoolName}/{classroomVM.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
                 if (classroomVM.TeacherImage is not null)
                 {
-                    updatedClassroom.TeacherImagePath = await Picture.Upload(classroomVM.TeacherImage, _webHostEnvironment);
-                }
+                    var fileExtension = Path.GetExtension(Path.GetFileName(classroomVM.TeacherImage.FileName));
 
+                    var school = _schoolRepo.GetTableNoTracking()
+                        .Include(s => s.Organization)
+                        .Where(s => s.Grades.Any(g => g.Id == updatedClassroom.GradeId))
+                        .FirstOrDefault();
+                    var schoolName = school!.Name;
+                    var orgName = school!.Organization!.Name;
+
+                    if (!Directory.Exists(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/classrooms/{orgName}/{schoolName}")))
+                    {
+                        Directory.CreateDirectory(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/classrooms/{orgName}/{schoolName}"));
+                    }
+                    updatedClassroom.TeacherImagePath = await Picture.Upload(classroomVM.TeacherImage, _webHostEnvironment,
+                            $"uploads/classrooms/{orgName}/{schoolName}/{classroomVM.Name}-Teacher-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
+                }
                 if (classroomVM.StudentImage is not null)
                 {
-                    updatedClassroom.StudentImagePath = await Picture.Upload(classroomVM.StudentImage, _webHostEnvironment);
+                    var fileExtension = Path.GetExtension(Path.GetFileName(classroomVM.StudentImage.FileName));
+
+                    var school = _schoolRepo.GetTableNoTracking()
+                        .Include(s => s.Organization)
+                        .Where(s => s.Grades.Any(g => g.Id == updatedClassroom.GradeId))
+                        .FirstOrDefault();
+                    var schoolName = school!.Name;
+                    var orgName = school!.Organization!.Name;
+
+                    if (!Directory.Exists(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/classrooms/{orgName}/{schoolName}")))
+                    {
+                        Directory.CreateDirectory(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/classrooms/{orgName}/{schoolName}"));
+                    }
+                    updatedClassroom.StudentImagePath = await Picture.Upload(classroomVM.StudentImage, _webHostEnvironment,
+                            $"uploads/classrooms/{orgName}/{schoolName}/{classroomVM.Name}-Student-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
+
                 try
                 {
                     await _classroomRepo.UpdateAsync(updatedClassroom);

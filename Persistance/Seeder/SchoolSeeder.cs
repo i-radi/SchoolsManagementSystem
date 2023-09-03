@@ -11,7 +11,7 @@ public static class SchoolSeeder
             {
                 new School
                 {
-                    Name = "Cairo 1 School ",
+                    Name = "Cairo 1 School",
                     Description = "desc. of Cairo 1 School",
                     OrganizationId = 1,
                 }

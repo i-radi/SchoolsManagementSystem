@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Models.Entities.Identity;
 
 namespace Presentation.Controllers.MVC
 {
@@ -85,14 +86,14 @@ namespace Presentation.Controllers.MVC
             return View(result);
         }
 
-        // GET: Members/Create
+        // GET: Users/Create
         public IActionResult Create()
         {
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
             return View();
         }
 
-        // POST: Members/Create
+        // POST: Users/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserFormViewModel user)
@@ -121,14 +122,23 @@ namespace Presentation.Controllers.MVC
             };
             if (user.ProfilePicture is not null)
             {
-                newUser.ProfilePicturePath = await Picture.Upload(user.ProfilePicture, _webHostEnvironment);
+                var fileExtension = Path.GetExtension(Path.GetFileName(user.ProfilePicture.FileName));
+
+                newUser.ProfilePicturePath = await Picture.Upload(
+                    user.ProfilePicture,
+                    _webHostEnvironment,
+                    $"uploads/users/{newUser.UserName}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
             }
             else
             {
-                newUser.ProfilePicturePath = "emptyAvatar.png";
+                newUser.ProfilePicturePath = "uploads/users/emptyAvatar.png";
             }
 
-            await _userManager.CreateAsync(newUser, newUser.PlainPassword);
+            var result = await _userManager.CreateAsync(newUser, newUser.PlainPassword);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
 
             var createdUser = await _userManager.FindByEmailAsync(newUser.Email);
             createdUser!.ParticipationNumber = createdUser.Id;
@@ -185,33 +195,24 @@ namespace Presentation.Controllers.MVC
             {
                 return NotFound();
             }
-            string UpdatedEmail = (string.IsNullOrEmpty(userVM.Email)) ? Guid.NewGuid() + "@sms.com" : userVM.Email;
-            if (UpdatedEmail != userVM.Email)
+            userVM.Email = (string.IsNullOrEmpty(userVM.Email)) ? Guid.NewGuid() + "@sms.com" : userVM.Email;
+            string oldEmail = (await _userManager.FindByIdAsync(id.ToString()))!.Email!;
+
+            if (userVM.Email != oldEmail)
             {
 
-                var alreadyexisted = await _userManager.FindByEmailAsync(UpdatedEmail);
+                var alreadyexisted = await _userManager.FindByEmailAsync(userVM.Email);
                 if (alreadyexisted is not null)
                 {
                     ModelState.AddModelError("", "Unable to save changes. Try again, The user email is exited before.");
                     return View(userVM);
                 }
             }
-            else
-            {
-                var alreadyexisted = await _userManager.FindByEmailAsync(UpdatedEmail);
-                if (alreadyexisted is not null)
-                {
-                    ModelState.AddModelError("", "Unable to save changes. Try again, The user email is exited before.");
-                    return View(userVM);
-                }
-            }
-
 
             var updatedUser = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (updatedUser is not null)
             {
-                updatedUser.Email = (string.IsNullOrEmpty(userVM.Email)) ? Guid.NewGuid() + "@sms.com" : userVM.Email;
-                updatedUser.UserName = updatedUser.Email.Split('@')[0];
+                updatedUser.UserName = userVM.Email.Split('@')[0];
                 updatedUser.Name = userVM.Name;
                 updatedUser.Address = userVM.Address;
                 updatedUser.Birthdate = userVM.Birthdate;
@@ -227,7 +228,12 @@ namespace Presentation.Controllers.MVC
                 updatedUser.NationalID = userVM.NationalID;
                 if (userVM.ProfilePicture is not null)
                 {
-                    updatedUser.ProfilePicturePath = await Picture.Upload(userVM.ProfilePicture, _webHostEnvironment);
+                    var fileExtension = Path.GetExtension(Path.GetFileName(userVM.ProfilePicture.FileName));
+
+                    updatedUser.ProfilePicturePath = await Picture.Upload(
+                        userVM.ProfilePicture,
+                        _webHostEnvironment,
+                        $"uploads/users/{updatedUser.UserName}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
                 try
                 {

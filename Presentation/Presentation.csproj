@@ -32,11 +32,4 @@
     <ProjectReference Include="..\VModels\VModels.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Logs\August-2023\" />
-    <Folder Include="wwwroot\export attachments\" />
-    <Folder Include="wwwroot\qrcodes\" />
-    <Folder Include="wwwroot\uploads\" />
-  </ItemGroup>
-
 </Project>

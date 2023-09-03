@@ -5,16 +5,14 @@ namespace Infrastructure.Services;
 
 public static class Picture
 {
-    public static async Task<string> Upload(IFormFile profilePicture, IWebHostEnvironment webHostEnvironment)
+    public static async Task<string> Upload(IFormFile profilePicture, IWebHostEnvironment webHostEnvironment, string picturePath)
     {
-        string uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "uploads");
-        string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(profilePicture.FileName);
-        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+        string filePath = Path.Combine(webHostEnvironment.WebRootPath, picturePath);
 
         using (var fileStream = new FileStream(filePath, FileMode.Create))
         {
             await profilePicture.CopyToAsync(fileStream);
         }
-        return uniqueFileName;
+        return picturePath;
     }
 }

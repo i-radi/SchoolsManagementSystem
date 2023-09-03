@@ -18,7 +18,7 @@ public static class UserSeeder
                 PlainPassword = "123456",
                 RefreshToken = Guid.NewGuid(),
                 RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
-                ProfilePicturePath = "emptyAvatar.png"
+                ProfilePicturePath = "uploads/users/emptyAvatar.png"
             };
             await _userManager.CreateAsync(defaultuser, "123456");
             await context.UserRoles.AddAsync(new UserRole

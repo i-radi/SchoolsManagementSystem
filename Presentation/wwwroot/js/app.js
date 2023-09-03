@@ -98,7 +98,7 @@ $(document).ready(function () {
                 targets: 0,
                 data: "profilePicturePath",
                 render: function (data, type, row) {
-                    return `<img src='/uploads/${row.profilePicturePath}' alt="Profile Picture" class="img-fluid rounded" style="max-width: 50px; max-height: 50px;">`;
+                    return `<img src='/${row.profilePicturePath}' alt="Profile Picture" class="img-fluid rounded" style="max-width: 50px; max-height: 50px;">`;
                 },
                 orderable: false
             },

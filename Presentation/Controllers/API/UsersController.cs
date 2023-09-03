@@ -28,7 +28,7 @@ public class UsersController : ControllerBase
         _mapper = mapper;
         _exportService = exportService;
         _webHostEnvironment = webHostEnvironment;
-        _imagesBaseURL = Path.Combine(webHostEnvironment.WebRootPath, "uploads");
+        _imagesBaseURL = Path.Combine(webHostEnvironment.WebRootPath, "uploads/users");
     }
 
     [HttpPost("register")]

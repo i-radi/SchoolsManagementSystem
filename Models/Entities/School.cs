@@ -13,5 +13,6 @@ public class School
     [ForeignKey(nameof(OrganizationId))]
     public virtual Organization? Organization { get; set; }
     public virtual ICollection<Season> Seasons { get; set; } = new HashSet<Season>();
+    public virtual ICollection<Grade> Grades { get; set; } = new HashSet<Grade>();
     public virtual ICollection<Activity> Activities { get; set; } = new HashSet<Activity>();
 }
