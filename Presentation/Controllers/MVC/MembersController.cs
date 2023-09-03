@@ -89,20 +89,29 @@ namespace Presentation.Controllers.MVC
                 return NotFound();
             }
 
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id.Value);
-            if (user == null)
+            var userclass = await _userClassRepo
+                .GetTableAsTracking()
+                .Include(uc => uc.User)
+                .Include(uc => uc.Season)
+                .ThenInclude(s => s!.School)
+                .ThenInclude(sc => sc!.Organization)
+                .Include(uc => uc.Classroom)
+                .ThenInclude(c => c.Grade)
+                .Include(uc => uc.UserType)
+                .FirstOrDefaultAsync(uc => uc.Id == id);
+            if (userclass == null)
             {
                 return NotFound();
             }
 
-            var userVM = _mapper.Map<UserViewModel>(user);
-            return View(userVM);
+            var userclassVM = _mapper.Map<UserClassViewModel>(userclass);
+            userclassVM.OrganizationId = userclassVM.Season!.School!.Organization!.Id;
+            userclassVM.Organization = userclassVM.Season.School.Organization;
+            userclassVM.GradeId = userclassVM.Classroom!.GradeId;
+            userclassVM.Grade = userclassVM.Classroom.Grade;
+
+            return View(userclassVM);
         }
-
-
-
-
-
         // GET: Members/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -111,14 +120,28 @@ namespace Presentation.Controllers.MVC
                 return NotFound();
             }
 
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id.Value);
-            if (user == null)
+            var userclass = await _userClassRepo
+                .GetTableAsTracking()
+                .Include(uc => uc.User)
+                .Include(uc => uc.Season)
+                .ThenInclude(s => s!.School)
+                .ThenInclude(sc => sc!.Organization)
+                .Include(uc => uc.Classroom)
+                .ThenInclude(c => c.Grade)
+                .Include(uc => uc.UserType)
+                .FirstOrDefaultAsync(uc => uc.Id == id);
+            if (userclass == null)
             {
                 return NotFound();
             }
-            var userVM = _mapper.Map<UserViewModel>(user);
 
-            return View(userVM);
+            var userclassVM = _mapper.Map<UserClassViewModel>(userclass);
+            userclassVM.OrganizationId = userclassVM.Season!.School!.Organization!.Id;
+            userclassVM.Organization = userclassVM.Season.School.Organization;
+            userclassVM.GradeId = userclassVM.Classroom!.GradeId;
+            userclassVM.Grade = userclassVM.Classroom.Grade;
+
+            return View(userclassVM);
         }
 
         // POST: Members/Delete/5
@@ -126,11 +149,17 @@ namespace Presentation.Controllers.MVC
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
-            if (user != null)
+            var userclass = await _userClassRepo
+                .GetTableAsTracking()
+                .FirstOrDefaultAsync(uc => uc.Id == id);
+
+            if (userclass == null)
             {
-                await _userManager.DeleteAsync(user);
+                return NotFound();
             }
+
+            await _userClassRepo.DeleteAsync(userclass);
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -155,7 +184,6 @@ namespace Presentation.Controllers.MVC
                 }
             }
 
-
             if (usersQuery == null)
             {
                 return NotFound();
@@ -174,10 +202,8 @@ namespace Presentation.Controllers.MVC
             ViewData["ClassroomId"] = new SelectList(classrooms, "Id", "Name");
             ViewData["UserTypeId"] = new SelectList(usertypes, "Id", "Name");
             ViewData["SeasonId"] = new SelectList(seasons, "Id", "Name");
+
             return View(new UserClassViewModel { UserId = usersQuery.FirstOrDefault().Id });
-
-
-
         }
 
         // POST: Members/Assign
