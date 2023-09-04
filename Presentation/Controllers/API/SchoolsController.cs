@@ -8,11 +8,13 @@ namespace Presentation.Controllers.API;
 public class SchoolsController : ControllerBase
 {
     private readonly ISchoolService _schoolService;
+    private readonly ISeasonService _seasonService;
     private readonly IOrganizationService _organizationService;
 
-    public SchoolsController(ISchoolService schoolService,IOrganizationService organizationService)
+    public SchoolsController(ISchoolService schoolService,ISeasonService seasonService,IOrganizationService organizationService)
     {
         _schoolService = schoolService;
+        _seasonService = seasonService;
         _organizationService = organizationService;
     }
 
@@ -20,6 +22,20 @@ public class SchoolsController : ControllerBase
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
         return Ok(_schoolService.GetAll(pageNumber, pageSize));
+    }
+
+    [HttpGet("{schoolId}/season/{seasonId}")]
+    public async Task<IActionResult> GetSchoolReport([FromRoute] int schoolId, [FromRoute] int seasonId)
+    {
+        var schooldto = await _schoolService.GetById(schoolId);
+        if (schooldto is null)
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Found School"));
+
+        var seasondto = await _seasonService.GetById(seasonId);
+        if (seasondto is null)
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Found Season"));
+
+        return Ok(await _schoolService.GetSchoolReport(schoolId, seasonId));
     }
 
 
