@@ -23,6 +23,6 @@ public static class QR
         {
             qrCodeImage.Save(stream, ImageFormat.Png);
         }
-        return $"uploads/qrcodes/{userId}.png";
+        return $"{userId}.png";
     }
 }

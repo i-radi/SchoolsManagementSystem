@@ -46,6 +46,11 @@ public static class ModuleInfrastructureDependencies
         }); 
         services.AddRazorPages();
         services.AddMvc();
+
+        var baseSettings = new BaseSettings();
+        configuration.GetSection(nameof(baseSettings)).Bind(baseSettings);
+        services.AddSingleton(baseSettings);
+
         return services;
     }
 }
