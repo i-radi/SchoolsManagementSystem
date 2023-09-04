@@ -40,6 +40,20 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPut("change-user/{id}")]
+    public async Task<IActionResult> UpdateAsync([FromRoute]int id, [FromBody]ChangeUserDto dto)
+    {
+        if (id != dto.UserId)
+            return BadRequest("Invalid User Id.");
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _authService.UpdateAsync(dto);
+
+        return Ok(result);
+    }
+
     [HttpPost("refresh-token")]
     public async Task<IActionResult> GetRefreshTokenAsync(RefreshTokenInputDto model)
     {
