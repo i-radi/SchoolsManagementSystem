@@ -1,5 +1,5 @@
 ﻿@model OrganizationViewModel
-
+@inject BaseSettings Base
 @{
     ViewData["Title"] = "Details";
 }
@@ -20,7 +20,7 @@
         {
             <dt class="col-sm-3">Picture</dt>
             <dd class="col-sm-9">
-                <img src="~/@Model.PicturePath" alt="Picture" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
+                <img src="~/@(Base.organizationsPath)/@Model.PicturePath" alt="Picture" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
             </dd>
         }
     </dl>

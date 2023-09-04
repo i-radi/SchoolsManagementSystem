@@ -1,5 +1,5 @@
 ﻿@model PaginatedList<UserViewModel>
-
+@inject BaseSettings Base
 @{
     ViewData["Title"] = "Index";
 }
@@ -53,7 +53,7 @@
                 <td>
                     @if (!string.IsNullOrEmpty(item.ProfilePicturePath))
                     {
-                        <img src="~/@(item.ProfilePicturePath)" alt="Profile Picture" class="img-fluid rounded" style="max-width: 50px; max-height: 50px;">
+                        <img src="~/@(Base.usersPath)/@(item.ProfilePicturePath)" alt="Profile Picture" class="img-fluid rounded" style="max-width: 50px; max-height: 50px;">
                     }
                 </td>
                 <td>

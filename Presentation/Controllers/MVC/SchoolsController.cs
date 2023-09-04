@@ -7,14 +7,16 @@ namespace Presentation.Controllers.MVC
 {
     public class SchoolsController : Controller
     {
+        private readonly BaseSettings _baseSettings;
         private readonly ISchoolRepo _schoolsRepo;
         private readonly IOrganizationRepo _organizationRepo;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IMapper _mapper;
 
 
-        public SchoolsController(ISchoolRepo schoolsRepo, IOrganizationRepo organizationRepo, IWebHostEnvironment webHostEnvironment, IMapper mapper)
+        public SchoolsController(BaseSettings baseSettings, ISchoolRepo schoolsRepo, IOrganizationRepo organizationRepo, IWebHostEnvironment webHostEnvironment, IMapper mapper)
         {
+            _baseSettings = baseSettings;
             _schoolsRepo = schoolsRepo;
             _organizationRepo = organizationRepo;
             _webHostEnvironment = webHostEnvironment;
@@ -88,13 +90,10 @@ namespace Presentation.Controllers.MVC
                     var fileExtension = Path.GetExtension(Path.GetFileName(viewModel.Picture.FileName));
 
                     var orgName = (await _organizationRepo.GetByIdAsync((int)school.OrganizationId)).Name;
-                    if (!Directory.Exists(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/schools/{orgName}")))
-                    {
-                        Directory.CreateDirectory(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/schools/{orgName}"));
-                    }
 
                     school.PicturePath = await Picture.Upload(viewModel.Picture, _webHostEnvironment,
-                        $"uploads/schools/{orgName}/{viewModel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
+                        _baseSettings.schoolsPath,
+                        $"{orgName}-{viewModel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
 
                 await _schoolsRepo.AddAsync(school);
@@ -156,13 +155,10 @@ namespace Presentation.Controllers.MVC
                     var fileExtension = Path.GetExtension(Path.GetFileName(viewModel.Picture.FileName));
 
                     var orgName = (await _organizationRepo.GetByIdAsync((int)viewModel.OrganizationId)).Name;
-                    if (!Directory.Exists(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/schools/{orgName}")))
-                    {
-                        Directory.CreateDirectory(Path.Combine(_webHostEnvironment.WebRootPath, $"uploads/schools/{orgName}"));
-                    }
 
                     modelItem.PicturePath = await Picture.Upload(viewModel.Picture, _webHostEnvironment,
-                        $"uploads/schools/{orgName}/{viewModel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
+                        _baseSettings.schoolsPath,
+                        $"{orgName}-{viewModel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
 
                 var model = _schoolsRepo.UpdateAsync(modelItem);

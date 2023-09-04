@@ -12,22 +12,23 @@ public class UsersController : ControllerBase
     private readonly UserManager<User> _userManager;
     private readonly IMapper _mapper;
     private readonly IExportService<GetUserDto> _exportService;
+    private readonly BaseSettings _baseSettings;
     private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly string _imagesBaseURL;
 
     public UsersController(
         SignInManager<User> signInManager,
         UserManager<User> userManager,
         IMapper mapper,
         IWebHostEnvironment webHostEnvironment,
-        IExportService<GetUserDto> exportService)
+        IExportService<GetUserDto> exportService,
+        BaseSettings baseSettings)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _mapper = mapper;
         _exportService = exportService;
+        _baseSettings = baseSettings;
         _webHostEnvironment = webHostEnvironment;
-        _imagesBaseURL = webHostEnvironment.WebRootPath;
     }
 
     [HttpGet("{id}")]
@@ -38,7 +39,10 @@ public class UsersController : ControllerBase
             .FirstOrDefaultAsync(u => u.Id == id);
         if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
         {
-            modelItem.ProfilePicturePath = Path.Combine(_imagesBaseURL, modelItem.ProfilePicturePath);
+            modelItem.ProfilePicturePath = Path.Combine(
+                _baseSettings.url,
+                _baseSettings.usersPath,
+                modelItem.ProfilePicturePath);
         }
 
         var result = _mapper.Map<GetUserDto>(modelItem);
@@ -61,7 +65,10 @@ public class UsersController : ControllerBase
         {
             if (!string.IsNullOrEmpty(user.ProfilePicturePath))
             {
-                user.ProfilePicturePath = Path.Combine(_imagesBaseURL, user.ProfilePicturePath);
+                user.ProfilePicturePath = Path.Combine(
+                _baseSettings.url,
+                _baseSettings.usersPath,
+                user.ProfilePicturePath);
             }
         }
 
@@ -82,7 +89,10 @@ public class UsersController : ControllerBase
         {
             if (!string.IsNullOrEmpty(user.ProfilePicturePath))
             {
-                user.ProfilePicturePath = Path.Combine(_imagesBaseURL, user.ProfilePicturePath);
+                user.ProfilePicturePath = Path.Combine(
+                _baseSettings.url,
+                _baseSettings.usersPath,
+                user.ProfilePicturePath);
             }
         }
 
@@ -115,7 +125,10 @@ public class UsersController : ControllerBase
         {
             if (!string.IsNullOrEmpty(user.ProfilePicturePath))
             {
-                user.ProfilePicturePath = Path.Combine(_imagesBaseURL, user.ProfilePicturePath);
+                user.ProfilePicturePath = Path.Combine(
+                _baseSettings.url,
+                _baseSettings.usersPath,
+                user.ProfilePicturePath);
             }
         }
 
@@ -168,7 +181,8 @@ public class UsersController : ControllerBase
         modelItem.ProfilePicturePath = await Picture.Upload(
             image,
             _webHostEnvironment,
-            $"uploads/users/{modelItem.UserName}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
+            _baseSettings.usersPath,
+            $"{modelItem.UserName}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
 
         var updatedModel = await _userManager.UpdateAsync(modelItem);
 
@@ -179,7 +193,10 @@ public class UsersController : ControllerBase
 
         if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
         {
-            modelItem.ProfilePicturePath = Path.Combine(_imagesBaseURL, modelItem.ProfilePicturePath);
+            modelItem.ProfilePicturePath = Path.Combine(
+                _baseSettings.url,
+                _baseSettings.usersPath,
+                modelItem.ProfilePicturePath);
         }
 
         var result = _mapper.Map<GetUserDto>(modelItem);

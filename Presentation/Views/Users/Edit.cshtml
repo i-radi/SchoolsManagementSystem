@@ -1,5 +1,5 @@
 ﻿@model UserFormViewModel
-
+@inject BaseSettings Base
 @{
     ViewData["Title"] = "Edit";
 }
@@ -94,17 +94,17 @@
                 <label asp-for="ProfilePicture" class="control-label"></label>
                 <input type="file" asp-for="ProfilePicture" class="form-control" accept=".jpg, .jpeg, .png" id="profilePictureInput">
                 <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+                @if (!string.IsNullOrEmpty(Model.ProfilePicturePath))
+                {
+                    <label class="col-sm-3">Profile Picture</label>
+                    <div class="col-sm-9">
+                        <img id="imagePreview" src="~/@(Base.usersPath)/@Model.ProfilePicturePath" alt="Profile Picture Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
+                    </div>
+                }
             </div>
-            @if (!string.IsNullOrEmpty(Model.ProfilePicturePath))
-            {
-            <dt class="col-sm-3">Profile Picture</dt>
-            <dd class="col-sm-9">
-                <img id="imagePreview" src="~/@Model.ProfilePicturePath" alt="Profile Picture Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
-            </dd>
-            }
-        <div class="form-group">
-            <input type="submit" value="Save Changes" class="btn btn-primary" />
-        </div>
+            <div class="form-group">
+                <input type="submit" value="Save Changes" class="btn btn-primary" />
+            </div>
         </form>
     </div>
 </div>
@@ -114,7 +114,9 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
 
     <script>

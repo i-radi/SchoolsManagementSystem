@@ -4,12 +4,14 @@ namespace Presentation.Controllers.MVC
 {
     public class OrganizationsController : Controller
     {
+        private readonly BaseSettings _baseSettings;
         private readonly IOrganizationRepo _organizationRepo;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public OrganizationsController(IOrganizationRepo organizationRepo, IMapper mapper, IWebHostEnvironment webHostEnvironment)
+        public OrganizationsController(BaseSettings baseSettings, IOrganizationRepo organizationRepo, IMapper mapper, IWebHostEnvironment webHostEnvironment)
         {
+            _baseSettings = baseSettings;
             _organizationRepo = organizationRepo;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
@@ -67,7 +69,8 @@ namespace Presentation.Controllers.MVC
             {
                 var fileExtension = Path.GetExtension(Path.GetFileName(viewmodel.Picture.FileName));
                 organization.PicturePath = await Picture.Upload(viewmodel.Picture, _webHostEnvironment,
-                    $"uploads/organizations/{viewmodel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
+                    _baseSettings.organizationsPath,
+                    $"{viewmodel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
             }
             var model = await _organizationRepo.AddAsync(organization);
             return RedirectToAction(nameof(Index));
@@ -112,7 +115,8 @@ namespace Presentation.Controllers.MVC
                 {
                     var fileExtension = Path.GetExtension(Path.GetFileName(organization.Picture.FileName));
                     updatedOrganization.PicturePath = await Picture.Upload(organization.Picture, _webHostEnvironment,
-                        $"uploads/organizations/{organization.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
+                        _baseSettings.organizationsPath,
+                        $"{organization.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
                 try
                 {

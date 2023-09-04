@@ -1,5 +1,5 @@
 ﻿@model ClassroomViewModel
-
+@inject BaseSettings Base
 @{
     ViewData["Title"] = "Details";
 }
@@ -32,21 +32,21 @@
         {
             <dt class="col-sm-3">Picture</dt>
             <dd class="col-sm-9">
-                <img src="~/@Model.PicturePath" alt="Picture" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
+                <img src="~/@(Base.classroomsPath)/@Model.PicturePath" alt="Picture" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
             </dd>
         }
         @if (!string.IsNullOrEmpty(Model.TeacherImagePath))
         {
             <dt class="col-sm-3">Picture</dt>
             <dd class="col-sm-9">
-                <img src="~/@Model.TeacherImagePath" alt="Picture" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
+                <img src="~/@(Base.classroomsPath)/@Model.TeacherImagePath" alt="Picture" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
             </dd>
         }
         @if (!string.IsNullOrEmpty(Model.StudentImagePath))
         {
             <dt class="col-sm-3">Picture</dt>
             <dd class="col-sm-9">
-                <img src="~/@Model.StudentImagePath" alt="Picture" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
+                <img src="~/@(Base.classroomsPath)/@Model.StudentImagePath" alt="Picture" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
             </dd>
         }
     </dl>

@@ -20,6 +20,7 @@ namespace Presentation.Controllers.MVC
         private readonly IMapper _mapper;
         private readonly ApplicationDBContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly BaseSettings _baseSettings;
 
         public UsersController(
             ILogger<UsersController> logger,
@@ -34,7 +35,8 @@ namespace Presentation.Controllers.MVC
             IAuthService authService,
             IMapper mapper,
             ApplicationDBContext context,
-            IWebHostEnvironment webHostEnvironment)
+            IWebHostEnvironment webHostEnvironment,
+            BaseSettings baseSettings)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -49,6 +51,7 @@ namespace Presentation.Controllers.MVC
             _mapper = mapper;
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _baseSettings = baseSettings;
         }
 
 
@@ -127,11 +130,12 @@ namespace Presentation.Controllers.MVC
                 newUser.ProfilePicturePath = await Picture.Upload(
                     user.ProfilePicture,
                     _webHostEnvironment,
-                    $"uploads/users/{newUser.UserName}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
+                    _baseSettings.usersPath,
+                    $"{newUser.UserName}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
             }
             else
             {
-                newUser.ProfilePicturePath = "uploads/users/emptyAvatar.png";
+                newUser.ProfilePicturePath = "emptyAvatar.png";
             }
 
             var result = await _userManager.CreateAsync(newUser, newUser.PlainPassword);
@@ -233,7 +237,8 @@ namespace Presentation.Controllers.MVC
                     updatedUser.ProfilePicturePath = await Picture.Upload(
                         userVM.ProfilePicture,
                         _webHostEnvironment,
-                        $"uploads/users/{updatedUser.UserName}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
+                        _baseSettings.usersPath,
+                        $"{updatedUser.UserName}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
                 try
                 {

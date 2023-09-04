@@ -1,5 +1,5 @@
 ﻿@model OrganizationFormViewModel
-
+@inject BaseSettings Base
 @{
     ViewData["Title"] = "Edit";
 }
@@ -27,7 +27,7 @@
             {
             <dt class="col-sm-3">Profile Picture</dt>
             <dd class="col-sm-9">
-                <img id="imagePreview" src="~/@Model.PicturePath" alt="Profile Picture Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
+                <img id="imagePreview" src="~/@(Base.organizationsPath)/@Model.PicturePath" alt="Profile Picture Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
             </dd>
             }
             <div class="form-group">
