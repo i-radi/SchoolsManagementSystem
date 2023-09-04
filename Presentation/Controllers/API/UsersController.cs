@@ -3,13 +3,13 @@ using Models.Entities.Identity;
 
 namespace Presentation.Controllers.API;
 
+[Authorize]
 [Route("api/users")]
 [ApiController]
 public class UsersController : ControllerBase
 {
     private readonly SignInManager<User> _signInManager;
     private readonly UserManager<User> _userManager;
-    private readonly IAuthService _authService;
     private readonly IMapper _mapper;
     private readonly IExportService<GetUserDto> _exportService;
     private readonly IWebHostEnvironment _webHostEnvironment;
@@ -18,72 +18,16 @@ public class UsersController : ControllerBase
     public UsersController(
         SignInManager<User> signInManager,
         UserManager<User> userManager,
-        IAuthService authService,
         IMapper mapper,
         IWebHostEnvironment webHostEnvironment,
         IExportService<GetUserDto> exportService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
-        _authService = authService;
         _mapper = mapper;
         _exportService = exportService;
         _webHostEnvironment = webHostEnvironment;
         _imagesBaseURL = webHostEnvironment.WebRootPath;
-    }
-
-    [HttpPost("register")]
-    public async Task<IActionResult> RegisterAsync(RegisterDto dto)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var result = await _authService.RegisterAsync(dto);
-
-        return Ok(result);
-    }
-
-    [HttpPost("login")]
-    public async Task<IActionResult> GetTokenAsync(LoginDto model)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var result = await _authService.LoginAsync(model);
-
-        if (!result.Succeeded)
-            return BadRequest(result);
-
-        return Ok(result);
-    }
-
-    [HttpPost("refresh-token")]
-    public async Task<IActionResult> GetRefreshTokenAsync(RefreshTokenInputDto model)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var result = await _authService.RefreshTokenAsync(model);
-
-        if (!result.Succeeded)
-            return BadRequest(result);
-
-        return Ok(result);
-    }
-
-    [HttpDelete("revoke-token")]
-    //[Authorize(Policy = "SuperAdmin")]
-    public async Task<IActionResult> RevokeTokenAsync(string username)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var result = await _authService.RevokeTokenAsync(username);
-
-        if (!result.Succeeded)
-            return BadRequest("Opps, something went wrong.");
-
-        return Ok("done.");
     }
 
     [HttpGet]

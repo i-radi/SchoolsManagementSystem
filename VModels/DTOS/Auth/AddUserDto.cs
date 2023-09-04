@@ -3,7 +3,7 @@ using VModels.DTOS.Auth;
 
 namespace VModels.DTOS;
 
-public class RegisterDto
+public class AddUserDto
 {
     [StringLength(100)]
     public string Name { get; set; } = string.Empty;

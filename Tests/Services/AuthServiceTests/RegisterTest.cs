@@ -29,7 +29,7 @@ public class RegisterTest
     public async void Register_ValidInput_ReturnsSuccessMsg()
     {
         // Arrange
-        var model = new RegisterDto
+        var model = new AddUserDto
         {
             Email = "test@mail.com",
             Name = "test",
