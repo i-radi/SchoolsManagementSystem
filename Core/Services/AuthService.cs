@@ -40,21 +40,16 @@ public class AuthService : IAuthService
     #endregion
 
     #region Handle Methods
-    public async Task<Response<string>> RegisterAsync(RegisterDto dto)
+    public async Task<Response<string>> AddAsync(AddUserDto dto)
     {
         if (await _userManager.FindByEmailAsync(dto.Email) is not null)
             return ResponseHandler.BadRequest<string>("Email is already registered!");
 
         var user = _mapper.Map<User>(dto);
         user.UserName = dto.Email.Split('@')[0];
-        user.ProfilePicturePath = "emptyAvatar.png";
+        user.ProfilePicturePath = "uploads/users/emptyAvatar.png";
 
         var result = await _userManager.CreateAsync(user, dto.Password);
-
-        var createdUser = _userManager.FindByEmailAsync(user.Email!);
-        QR.Generate(createdUser.Result!.Id, _webHostEnvironment);
-
-
         if (!result.Succeeded)
         {
             var errors = string.Empty;
@@ -64,16 +59,71 @@ public class AuthService : IAuthService
 
             return ResponseHandler.BadRequest<string>(errors);
         }
-        await _userRoleRepo.AddAsync(new()
+
+        var createdUser = _userManager.FindByEmailAsync(user.Email!);
+        QR.Generate(createdUser.Result!.Id, _webHostEnvironment);
+
+        if (dto.Role.roleId > 0)
         {
-            UserId = (await _userManager.FindByEmailAsync(dto.Email))!.Id,
-            RoleId = dto.Role.roleId,
-            OrganizationId = dto.Role.organizationId,
-            SchoolId = dto.Role.schoolId,
-            ActivityId = dto.Role.activityId
-        });
+            await _userRoleRepo.AddAsync(new()
+            {
+                UserId = (await _userManager.FindByEmailAsync(dto.Email))!.Id,
+                RoleId = dto.Role.roleId,
+                OrganizationId = dto.Role.organizationId,
+                SchoolId = dto.Role.schoolId,
+                ActivityId = dto.Role.activityId
+            });
+        }
 
         return ResponseHandler.Success<string>($"{dto.Email} created successfully");
+    }
+
+    public async Task<Response<JwtAuthResult>> UpdateAsync(ChangeUserDto dto)
+    {
+        var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
+
+        if (user == null)
+        {
+            return ResponseHandler.NotFound<JwtAuthResult>("User not found.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.Email) && dto.Email != user.Email)
+        {
+            var checkUser = await _userManager.FindByEmailAsync(dto.Email);
+            if (checkUser is not null)
+            {
+                return ResponseHandler.BadRequest<JwtAuthResult>("The email already exists.");
+            }
+            user.Email = dto.Email;
+            user.UserName = dto.Email.Split('@')[0];
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                var errors = string.Empty;
+
+                foreach (var error in result.Errors)
+                    errors += $"{error.Description},";
+
+                return ResponseHandler.BadRequest<JwtAuthResult>(errors);
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.Password))
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, dto.Password);
+            if (!result.Succeeded)
+            {
+                var errors = string.Empty;
+
+                foreach (var error in result.Errors)
+                    errors += $"{error.Description},";
+
+                return ResponseHandler.BadRequest<JwtAuthResult>(errors);
+            }
+        }
+
+        return ResponseHandler.Success<JwtAuthResult>(await GetJWTToken(user, Guid.NewGuid()));
     }
 
     public async Task<Response<JwtAuthResult>> LoginAsync(LoginDto dto)
@@ -104,7 +154,7 @@ public class AuthService : IAuthService
             AccessToken = accessToken,
             AccessTokenExpiryDate = expireDate,
             RefreshToken = refreshToken,
-            RefreshTokenExpiryDate = DateTime.Now.AddDays(_jwtSettings.RefreshTokenExpireDate),
+            RefreshTokenExpiryDate = DateTime.Now.AddMinutes(_jwtSettings.RefreshTokenExpireDate),
             IsAuthenticated = true,
             Email = user.Email ?? string.Empty,
             IsSuperAdmin = userroles.Any(r => r.Role!.Name == "SuperAdmin"),
@@ -141,7 +191,7 @@ public class AuthService : IAuthService
             _jwtSettings.Issuer,
             _jwtSettings.Audience,
             claims,
-            expires: DateTime.Now.AddDays(_jwtSettings.AccessTokenExpireDate),
+            expires: DateTime.Now.AddMinutes(_jwtSettings.AccessTokenExpireDate),
             signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtSettings.Secret)), SecurityAlgorithms.HmacSha256Signature));
         var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
         return (accessToken, jwtToken.ValidTo);
@@ -182,10 +232,14 @@ public class AuthService : IAuthService
         }
 
         if (user.AccessToken != dto.AccessToken
-            || user.RefreshToken != dto.RefreshToken
-            || user.RefreshTokenExpiryDate <= DateTime.Now)
+            || user.RefreshToken != dto.RefreshToken)
         {
             return ResponseHandler.BadRequest<JwtAuthResult>("Token is invalid");
+        }
+
+        if (user.RefreshTokenExpiryDate <= DateTime.Now)
+        {
+            return ResponseHandler.BadRequest<JwtAuthResult>("Refresh Token is expired");
         }
 
         #endregion
