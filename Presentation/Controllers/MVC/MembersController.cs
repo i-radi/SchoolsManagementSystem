@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Models.Entities;
 using Models.Entities.Identity;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Bcpg;
@@ -272,7 +273,20 @@ namespace Presentation.Controllers.MVC
             userClassVM.Id = 0;
             var userClass = _mapper.Map<UserClass>(userClassVM);
             await _userClassRepo.AddAsync(userClass);
-            return RedirectToAction(nameof(Index));
+            TempData["SuccessMessage"] = "User assigned successfully.";
+
+            userClassVM.UserId = 0;
+            ViewData["OrgId"] = new SelectList(_organizationRepo.GetTableNoTracking(), "Id", "Name");
+            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking(), "Id", "Name");
+            ViewData["UserId"] = new SelectList(await _userManager.Users
+                .Include(u => u.UserOrganizations)
+                .Where(u => u.UserOrganizations.Any(uo => uo.OrganizationId == userClassVM.OrganizationId))
+                .ToListAsync(), "Id", "Name");
+            ViewData["GradeId"] = new SelectList(_gradeRepo.GetTableNoTracking(), "Id", "Name");
+            ViewData["SeasonId"] = new SelectList(_seasonRepo.GetTableNoTracking(), "Id", "Name");
+            ViewData["ClassroomId"] = new SelectList(_seasonRepo.GetTableNoTracking(), "Id", "Name");
+            ViewData["UserTypeId"] = new SelectList(_userTypeRepo.GetTableNoTracking(), "Id", "Name");
+            return View(userClassVM);
         }
 
         public IActionResult GetSchools(int organizationId)

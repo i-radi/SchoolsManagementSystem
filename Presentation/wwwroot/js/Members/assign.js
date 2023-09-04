@@ -45,29 +45,3 @@ $(document).ready(function () {
         window.location.href = url;
     });
 });
-
-$(document).ready(function () {
-    const form = $('#assignForm');
-    const assignAndAddNewButton = $('#assignAndAddNew');
-
-    assignAndAddNewButton.on('click', function () {
-        const formData = form.serialize();
-
-        $.ajax({
-            url: form.attr('action'),
-            type: 'POST',
-            data: formData,
-            success: function () {
-                const selectedOrganizationId = $('#organizationDropdown').val();
-                const selectedSchoolId = $('#schoolDropdown').val();
-                const selectedGradeId = $('#gradeDropdown').val();
-                const url = `/Members/Assign?orgid=${selectedOrganizationId}&schoolid=${selectedSchoolId}&gradeid=${selectedGradeId}`;
-
-                window.location.href = url;
-            },
-            error: function () {
-                alert('An error occurred while submitting the form.');
-            }
-        });
-    });
-});
