@@ -19,6 +19,18 @@ public class SchoolService : ISchoolService
         return ResponseHandler.Success(_mapper.Map<List<GetSchoolDto>>(result));
     }
 
+    public Response<List<GetSchoolDto>> GetByOrganization(int orgId, int pageNumber, int pageSize)
+    {
+        var modelItems = _schoolsRepo
+            .GetTableNoTracking()
+            .Include(m => m.Organization)
+            .Where(s => s.OrganizationId == orgId);
+        
+        var result = PaginatedList<GetSchoolDto>.Create(_mapper.Map<List<GetSchoolDto>>(modelItems), pageNumber, pageSize);
+
+        return ResponseHandler.Success(_mapper.Map<List<GetSchoolDto>>(result));
+    }
+
     public async Task<Response<GetSchoolDto?>> GetById(int id)
     {
         var modelItem = await _schoolsRepo.GetByIdAsync(id);

@@ -1,4 +1,6 @@
-﻿namespace Presentation.Controllers.API;
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace Presentation.Controllers.API;
 
 //[Authorize]
 [Route("api/schools")]
@@ -6,10 +8,12 @@
 public class SchoolsController : ControllerBase
 {
     private readonly ISchoolService _schoolService;
+    private readonly IOrganizationService _organizationService;
 
-    public SchoolsController(ISchoolService schoolService)
+    public SchoolsController(ISchoolService schoolService,IOrganizationService organizationService)
     {
         _schoolService = schoolService;
+        _organizationService = organizationService;
     }
 
     [HttpGet]
@@ -17,6 +21,23 @@ public class SchoolsController : ControllerBase
     {
         return Ok(_schoolService.GetAll(pageNumber, pageSize));
     }
+
+
+    [HttpGet("organization/{organizationId}")]
+    public async Task<IActionResult> GetByOrganization([FromRoute] int organizationId, int pageNumber = 1, int pageSize = 10)
+    {
+        if (organizationId > 0)
+        {
+            var orgResponse = (await _organizationService.GetById(organizationId));
+            if (orgResponse is null)
+            {
+                return BadRequest(ResponseHandler.BadRequest<string>("Invalid Organization Id."));
+            }
+            return Ok(_schoolService.GetByOrganization(organizationId, pageNumber, pageSize));
+        }
+        return Ok(_schoolService.GetAll(pageNumber, pageSize));
+    }
+
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
