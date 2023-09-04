@@ -30,8 +30,47 @@ public class UsersController : ControllerBase
         _imagesBaseURL = webHostEnvironment.WebRootPath;
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var modelItem = await _userManager.Users
+            .Include(u => u.UserRoles)
+            .FirstOrDefaultAsync(u => u.Id == id);
+        if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
+        {
+            modelItem.ProfilePicturePath = Path.Combine(_imagesBaseURL, modelItem.ProfilePicturePath);
+        }
+
+        var result = _mapper.Map<GetUserDto>(modelItem);
+        return Ok(ResponseHandler.Success(result));
+    }
+
+    [HttpGet("organization/{organizationId}")]
+    public async Task<IActionResult> GetByOrganization([FromRoute]int organizationId ,int pageNumber = 1, int pageSize = 10)
+    {
+        var usersQuery = _userManager.Users.Include(u => u.UserOrganizations).AsQueryable();
+
+        if (organizationId > 0)
+        {
+            usersQuery = usersQuery.Where(u => u.UserOrganizations.Any(uo => uo.OrganizationId == organizationId));
+        }
+
+        var modelItems = PaginatedList<User>.Create(await usersQuery.ToListAsync(), pageNumber, pageSize);
+
+        foreach (var user in modelItems)
+        {
+            if (!string.IsNullOrEmpty(user.ProfilePicturePath))
+            {
+                user.ProfilePicturePath = Path.Combine(_imagesBaseURL, user.ProfilePicturePath);
+            }
+        }
+
+        var result = _mapper.Map<IEnumerable<GetUserDto>>(modelItems);
+
+        return Ok(ResponseHandler.Success(result));
+    }
+
     [HttpGet]
-    [Authorize]
     public async Task<IActionResult> GetAll(int pageNumber = 1, int pageSize = 10)
     {
         var modelItems = PaginatedList<User>
@@ -52,21 +91,6 @@ public class UsersController : ControllerBase
         return Ok(ResponseHandler.Success(result));
     }
 
-    [HttpGet("{id}")]
-    //[Authorize(Policy = "SuperAdmin")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        var modelItem = await _userManager.Users
-            .Include(u => u.UserRoles)
-            .FirstOrDefaultAsync(u => u.Id == id);
-        if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
-        {
-            modelItem.ProfilePicturePath = Path.Combine(_imagesBaseURL, modelItem.ProfilePicturePath);
-        }
-
-        var result = _mapper.Map<GetUserDto>(modelItem);
-        return Ok(ResponseHandler.Success(result));
-    }
 
     [HttpGet("export-users")]
     public async Task<IActionResult> ExportUsers(
