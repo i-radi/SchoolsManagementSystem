@@ -2,7 +2,7 @@
 
 namespace Presentation.Controllers.API;
 
-[Route("api/activityInstanceUsers")]
+[Route("api/activity-instance-users")]
 [ApiController]
 public class ActivityInstanceUsersController : ControllerBase
 {

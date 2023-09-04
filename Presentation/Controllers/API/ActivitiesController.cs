@@ -1,6 +1,6 @@
 ﻿namespace Presentation.Controllers.API;
 
-[Route("api/activiteis")]
+[Route("api/activities")]
 [ApiController]
 public class ActivitiesController : ControllerBase
 {
