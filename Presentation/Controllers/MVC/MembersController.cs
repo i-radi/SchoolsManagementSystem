@@ -159,6 +159,85 @@ namespace Presentation.Controllers.MVC
 
             return View(userclassVM);
         }
+
+        // GET: Members/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var modelItem = await _userClassRepo
+                .GetTableAsTracking()
+                .Include(uc => uc.User)
+                .Include(uc => uc.Season)
+                .ThenInclude(s => s!.School)
+                .ThenInclude(sc => sc!.Organization)
+                .Include(uc => uc.Classroom)
+                .ThenInclude(c => c.Grade)
+                .Include(uc => uc.UserType)
+                .FirstOrDefaultAsync(uc => uc.Id == id);
+
+            if (modelItem == null)
+            {
+                return NotFound();
+            }
+            var viewModel = new UserClassViewModel
+            {
+                Id = id.Value,
+                OrganizationId = modelItem.Season!.School!.OrganizationId,
+                SchoolId = modelItem.Season.SchoolId,
+                SeasonId = modelItem.SeasonId,
+                GradeId = modelItem.Classroom!.GradeId,
+                UserId = modelItem.UserId,
+                ClassroomId = modelItem.ClassroomId,
+                UserTypeId = modelItem.UserTypeId
+            };
+
+            ViewData["OrgId"] = new SelectList(_organizationRepo.GetTableNoTracking(), "Id", "Name");
+            ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking(), "Id", "Name");
+            ViewData["UserId"] = new SelectList(await _userManager.Users
+                .Include(u => u.UserOrganizations)
+                .Where(u => u.UserOrganizations.Any(uo => uo.OrganizationId == viewModel.OrganizationId))
+                .ToListAsync(), "Id", "Name");
+            ViewData["GradeId"] = new SelectList(_gradeRepo.GetTableNoTracking(), "Id", "Name");
+            ViewData["SeasonId"] = new SelectList(_seasonRepo.GetTableNoTracking(), "Id", "Name");
+            ViewData["ClassroomId"] = new SelectList(_seasonRepo.GetTableNoTracking(), "Id", "Name");
+            ViewData["UserTypeId"] = new SelectList(_userTypeRepo.GetTableNoTracking(), "Id", "Name");
+            return View(viewModel);
+        }
+
+        // POST: Members/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, UserClassViewModel viewModel)
+        {
+            if (id != viewModel.Id)
+            {
+                return NotFound();
+            }
+            var updatedUserClass = await _userClassRepo.GetByIdAsync(id);
+            if (updatedUserClass is not null)
+            {
+                updatedUserClass.UserId = viewModel.UserId;
+                updatedUserClass.SeasonId = viewModel.SeasonId;
+                updatedUserClass.ClassroomId = viewModel.ClassroomId;
+                updatedUserClass.UserTypeId = viewModel.UserTypeId;
+
+                try
+                {
+                    await _userClassRepo.UpdateAsync(updatedUserClass);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+            }
+            return View(viewModel);
+        }
+
         // GET: Members/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {

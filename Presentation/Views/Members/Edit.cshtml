@@ -1,0 +1,72 @@
+﻿@model UserClassViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Member</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="OrganizationId" class="control-label">Organization</label>
+                <select id="organizationDropdown" asp-for="OrganizationId" class="form-control" asp-items="ViewBag.OrgId">
+                    <option value="">-- Select Organization --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="SchoolId" class="control-label">School</label>
+                <select id="schoolDropdown" asp-for="SchoolId" class="form-control" asp-items="ViewBag.SchoolId">
+                    <option value="">-- Select School --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserId" class="control-label">User</label>
+                <input type="text" id="userSearch" class="form-control" placeholder="Search by user name">
+                <select id="userDropdown" asp-for="UserId" class="form-control" asp-items="ViewBag.UserId">
+                    <option value="">-- Select Member --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="GradeId" class="control-label">Grade</label>
+                <select id="gradeDropdown" asp-for="GradeId" class="form-control" asp-items="ViewBag.GradeId">
+                    <option value="">-- Select Grade --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="SeasonId" class="control-label">Season</label>
+                <select asp-for="SeasonId" class="form-control" asp-items="ViewBag.SeasonId">
+                    <option value="">-- Select Season --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ClassroomId" class="control-label">Classroom</label>
+                <select asp-for="ClassroomId" class="form-control" asp-items="ViewBag.ClassroomId">
+                    <option value="">-- Select Classroom --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserTypeId" class="control-label">UserType</label>
+                <select asp-for="UserTypeId" class="form-control" asp-items="ViewBag.UserTypeId">
+                    <option value="">-- Select User Type --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
