@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Models.Entities.Identity;
+using Models.Helpers;
 using Persistance.Context;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -20,6 +21,7 @@ public class AuthService : IAuthService
     private readonly IUserRoleRepo _userRoleRepo;
     private readonly IMapper _mapper;
     private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly BaseSettings _baseSettings;
     #endregion
 
     #region Constructors
@@ -28,7 +30,8 @@ public class AuthService : IAuthService
         ApplicationDBContext applicationDBContext,
         IUserRoleRepo userRoleRepo,
         IMapper mapper,
-        IWebHostEnvironment webHostEnvironment)
+        IWebHostEnvironment webHostEnvironment,
+        BaseSettings baseSettings)
     {
         _jwtSettings = jwtSettings;
         _userManager = userManager;
@@ -36,6 +39,7 @@ public class AuthService : IAuthService
         _userRoleRepo = userRoleRepo;
         _mapper = mapper;
         _webHostEnvironment = webHostEnvironment;
+        _baseSettings = baseSettings;
     }
     #endregion
 
@@ -47,7 +51,7 @@ public class AuthService : IAuthService
 
         var user = _mapper.Map<User>(dto);
         user.UserName = dto.Email.Split('@')[0];
-        user.ProfilePicturePath = "uploads/users/emptyAvatar.png";
+        user.ProfilePicturePath = "emptyAvatar.png";
 
         var result = await _userManager.CreateAsync(user, dto.Password);
         if (!result.Succeeded)
@@ -76,6 +80,40 @@ public class AuthService : IAuthService
         }
 
         return ResponseHandler.Success<string>($"{dto.Email} created successfully");
+    }
+
+    public async Task<Response<GetUserDto>> ChangeUserPasswordAsync(ChangeUserPasswordDto dto)
+    {
+        var user = await _userManager.FindByEmailAsync(dto.Email);
+
+        if (user == null)
+        {
+            return ResponseHandler.BadRequest<GetUserDto>("Invalid Email...");
+        }
+
+        var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+
+        if (!result.Succeeded)
+        {
+            var errors = string.Empty;
+
+            foreach (var error in result.Errors)
+                errors += $"{error.Description},";
+
+            return ResponseHandler.BadRequest<GetUserDto>(errors);
+        }
+
+        if (!string.IsNullOrEmpty(user.ProfilePicturePath))
+        {
+            user.ProfilePicturePath = Path.Combine(
+                _baseSettings.url,
+                _baseSettings.usersPath,
+                user.ProfilePicturePath);
+        }
+
+        var viewmodel = _mapper.Map<GetUserDto>(user);
+
+        return ResponseHandler.Success<GetUserDto>(viewmodel);
     }
 
     public async Task<Response<JwtAuthResult>> UpdateAsync(ChangeUserDto dto)
