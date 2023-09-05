@@ -130,7 +130,21 @@ public class AuthService : IAuthService
     {
         var authModel = new JwtAuthResult();
 
-        var user = await _userManager.FindByEmailAsync(dto.Email);
+        var user = await _userManager.FindByEmailAsync(dto.UserNameOrEmail);
+
+        if (user is null || !await _userManager.CheckPasswordAsync(user, dto.Password))
+        {
+            return ResponseHandler.NotFound<JwtAuthResult>("Email or Password is incorrect!");
+        }
+
+        return ResponseHandler.Success<JwtAuthResult>(await GetJWTToken(user, Guid.NewGuid()));
+    }
+
+    public async Task<Response<JwtAuthResult>> LoginByUserNameAsync(LoginDto dto)
+    {
+        var authModel = new JwtAuthResult();
+
+        var user = await _userManager.FindByNameAsync(dto.UserNameOrEmail);
 
         if (user is null || !await _userManager.CheckPasswordAsync(user, dto.Password))
         {

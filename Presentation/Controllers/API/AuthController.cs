@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Infrastructure.Utilities;
+using Microsoft.AspNetCore.Hosting;
 using Models.Entities.Identity;
+using Models.Results;
 
 namespace Presentation.Controllers.API;
 
@@ -16,12 +18,21 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> GetTokenAsync(LoginDto model)
+    public async Task<IActionResult> Login(LoginDto model)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var result = await _authService.LoginAsync(model);
+        var result = new Response<JwtAuthResult>();
+
+        if (Check.IsEmail(model.UserNameOrEmail))
+        {
+            result = await _authService.LoginAsync(model);
+        }
+        else
+        {
+            result = await _authService.LoginByUserNameAsync(model);
+        }
 
         if (!result.Succeeded)
             return BadRequest(result);
