@@ -1,6 +1,4 @@
-﻿using Models.Entities.Identity;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
     public class OrganizationsController : Controller
     {

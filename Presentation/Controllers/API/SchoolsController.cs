@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿namespace Presentation.Controllers.API;
 
-namespace Presentation.Controllers.API;
-
-//[Authorize]
+[Authorize]
 [Route("api/schools")]
 [ApiController]
 public class SchoolsController : ControllerBase
@@ -11,7 +9,7 @@ public class SchoolsController : ControllerBase
     private readonly ISeasonService _seasonService;
     private readonly IOrganizationService _organizationService;
 
-    public SchoolsController(ISchoolService schoolService,ISeasonService seasonService,IOrganizationService organizationService)
+    public SchoolsController(ISchoolService schoolService, ISeasonService seasonService, IOrganizationService organizationService)
     {
         _schoolService = schoolService;
         _seasonService = seasonService;
@@ -65,7 +63,6 @@ public class SchoolsController : ControllerBase
     }
 
     [HttpPost]
-    //[Authorize(Policy = "SuperAdmin")]
     public async Task<IActionResult> Add(AddSchoolDto dto)
     {
         return Ok(await _schoolService.Add(dto));

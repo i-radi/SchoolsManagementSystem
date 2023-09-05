@@ -1,7 +1,4 @@
-﻿
-using System.Text;
-
-namespace Infrastructure.Services;
+﻿namespace Infrastructure.Services;
 
 public class ExportService<T> : IExportService<T>
 {
@@ -27,7 +24,7 @@ public class ExportService<T> : IExportService<T>
         return await _excelService.Write(registers);
     }
 
-    public async Task<string> ExportToExcelAndSave(List<T> registers,string path)
+    public async Task<string> ExportToExcelAndSave(List<T> registers, string path)
     {
         return await _excelService.WriteAndSave(registers, path);
     }

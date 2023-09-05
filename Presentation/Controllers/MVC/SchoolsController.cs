@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Models.Entities;
-using Models.Entities.Identity;
-using System.IO;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
     public class SchoolsController : Controller
     {

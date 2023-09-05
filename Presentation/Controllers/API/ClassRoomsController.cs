@@ -1,6 +1,6 @@
 ﻿namespace Presentation.Controllers.API;
 
-//[Authorize]
+[Authorize]
 [Route("api/classrooms")]
 [ApiController]
 public class ClassroomsController : ControllerBase
@@ -32,7 +32,6 @@ public class ClassroomsController : ControllerBase
     }
 
     [HttpPost]
-    //[Authorize(Policy = "SuperAdmin")]
     public async Task<IActionResult> Add(AddClassroomDto dto)
     {
         return Ok(await _classroomService.Add(dto));
@@ -65,8 +64,7 @@ public class ClassroomsController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("assign-user")]
-    //[Authorize(Policy = "SuperAdmin")]
+    [HttpPost("add-class-member")]
     public async Task<IActionResult> AssignUser(AddUserClassDto dto)
     {
         var result = await _userClassService.Add(dto);

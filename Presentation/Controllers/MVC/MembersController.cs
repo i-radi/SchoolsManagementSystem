@@ -1,14 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Models.Entities;
-using Models.Entities.Identity;
-using Newtonsoft.Json;
-using Org.BouncyCastle.Bcpg;
-using System.Drawing.Printing;
-using System.Linq;
+﻿using Newtonsoft.Json;
 using System.Linq.Dynamic.Core;
-using static Azure.Core.HttpHeader;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using static QRCoder.PayloadGenerator;
 
 namespace Presentation.Controllers.MVC
 {

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Models.Entities.Identity;
-using Models.Helpers;
 using Persistance.Context;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

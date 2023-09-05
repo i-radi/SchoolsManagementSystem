@@ -1,5 +1,6 @@
 ﻿namespace Presentation.Controllers.API;
 
+[Authorize]
 [Route("api/activity-times")]
 [ApiController]
 public class ActivityTimesController : ControllerBase

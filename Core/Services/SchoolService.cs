@@ -1,5 +1,4 @@
-﻿using Models.Entities;
-using VModels.DTOS.Report;
+﻿using VModels.DTOS.Report;
 
 namespace Core.Services;
 
@@ -70,7 +69,7 @@ public class SchoolService : ISchoolService
                         Description = grade.Description,
                         Order = grade.Order
                     };
-                    if(grade.Classrooms.Any())
+                    if (grade.Classrooms.Any())
                     {
                         gradeDto.Classrooms = new List<ClassroomDto>();
                         foreach (var classroom in grade.Classrooms)
@@ -88,7 +87,7 @@ public class SchoolService : ISchoolService
                             if (classroom.UserClasses.Any())
                             {
                                 classDto.Users = new List<UserDto>();
-                                foreach(var userclass in classroom.UserClasses)
+                                foreach (var userclass in classroom.UserClasses)
                                 {
                                     classDto.Users.Add(new UserDto
                                     {

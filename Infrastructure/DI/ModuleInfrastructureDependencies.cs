@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Models.Helpers;
 using System.Reflection;
-using Newtonsoft.Json.Converters;
 
 namespace Infrastructure.DI;
 
@@ -43,7 +42,7 @@ public static class ModuleInfrastructureDependencies
 
                 throw new ValidationException(errors);
             };
-        }); 
+        });
         services.AddRazorPages();
         services.AddMvc();
 

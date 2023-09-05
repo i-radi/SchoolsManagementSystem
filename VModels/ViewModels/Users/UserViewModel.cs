@@ -21,4 +21,4 @@ public class UserViewModel
     public string? Notes { get; set; }
     public string? NationalID { get; set; }
     public string ProfilePicturePath { get; set; } = string.Empty;
-   }
+}

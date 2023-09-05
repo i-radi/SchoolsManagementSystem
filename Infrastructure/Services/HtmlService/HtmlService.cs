@@ -9,7 +9,7 @@ namespace Infrastructure.Services
         public byte[] Write<T>(IList<T> registers)
         {
             StringBuilder sb = new StringBuilder();
-            
+
             sb.Append("<table>\n");
             sb.Append("\t<thead>\n");
             sb.Append("\t\t<tr>\n");
@@ -46,7 +46,7 @@ namespace Infrastructure.Services
                     sb.Append(properties[i].GetValue(register, null));
                     sb.Append("</td>\n");
                 }
-                    
+
                 sb.Append("\t\t</tr>\n");
             }
 

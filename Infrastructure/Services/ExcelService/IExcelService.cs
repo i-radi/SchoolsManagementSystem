@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace Infrastructure.Services;
+﻿namespace Infrastructure.Services;
 
 public interface IExcelService
 {

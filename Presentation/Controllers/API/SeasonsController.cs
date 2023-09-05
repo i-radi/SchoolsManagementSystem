@@ -1,6 +1,6 @@
 ﻿namespace Presentation.Controllers.API;
 
-//[Authorize]
+[Authorize]
 [Route("api/seasons")]
 [ApiController]
 public class SeasonsController : ControllerBase
@@ -28,7 +28,6 @@ public class SeasonsController : ControllerBase
     }
 
     [HttpPost]
-    //[Authorize(Policy = "SuperAdmin")]
     public async Task<IActionResult> Add(AddSeasonDto dto)
     {
         return Ok(await _seasonService.Add(dto));

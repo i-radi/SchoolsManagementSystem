@@ -1,10 +1,9 @@
 ﻿using Infrastructure.Utilities;
-using Microsoft.AspNetCore.Hosting;
-using Models.Entities.Identity;
 using Models.Results;
 
 namespace Presentation.Controllers.API;
 
+[Authorize]
 [Route("api/auth")]
 [ApiController]
 public class AuthController : ControllerBase
@@ -17,6 +16,7 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto model)
     {
@@ -39,46 +39,8 @@ public class AuthController : ControllerBase
 
         return Ok(result);
     }
-
-    [HttpPost("add-user")]
-    public async Task<IActionResult> AddAsync(AddUserDto dto)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var result = await _authService.AddAsync(dto);
-
-        return Ok(result);
-    }
-
-    [HttpPost("change-password")]
-    public async Task<IActionResult> ChangeUserPasswordAsync(ChangeUserPasswordDto dto)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var result = await _authService.ChangeUserPasswordAsync(dto);
-
-        if (!result.Succeeded)
-            return BadRequest(result);
-
-        return Ok(result);
-    }
-
-    [HttpPut("change-user/{id}")]
-    public async Task<IActionResult> UpdateAsync([FromRoute]int id, [FromBody]ChangeUserDto dto)
-    {
-        if (id != dto.UserId)
-            return BadRequest("Invalid User Id.");
-
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var result = await _authService.UpdateAsync(dto);
-
-        return Ok(result);
-    }
-
+    
+    [AllowAnonymous]
     [HttpPost("refresh-token")]
     public async Task<IActionResult> GetRefreshTokenAsync(RefreshTokenInputDto model)
     {
@@ -94,7 +56,6 @@ public class AuthController : ControllerBase
     }
 
     [HttpDelete("revoke-token")]
-    //[Authorize(Policy = "SuperAdmin")]
     public async Task<IActionResult> RevokeTokenAsync(string username)
     {
         if (!ModelState.IsValid)
@@ -107,4 +68,19 @@ public class AuthController : ControllerBase
 
         return Ok("done.");
     }
+    
+    [HttpPut("change-user-email-or-password/{id}")]
+    public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] ChangeUserDto dto)
+    {
+        if (id != dto.UserId)
+            return BadRequest("Invalid User Id.");
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _authService.UpdateAsync(dto);
+
+        return Ok(result);
+    }
+
 }

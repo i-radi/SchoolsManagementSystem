@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Models.Entities.Identity;
+﻿using Models.Entities.Identity;
 
 namespace Presentation.Controllers.API;
 
@@ -13,6 +12,7 @@ public class UsersController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IExportService<GetUserDto> _exportService;
     private readonly BaseSettings _baseSettings;
+    private readonly IAuthService _authService;
     private readonly IWebHostEnvironment _webHostEnvironment;
 
     public UsersController(
@@ -21,14 +21,27 @@ public class UsersController : ControllerBase
         IMapper mapper,
         IWebHostEnvironment webHostEnvironment,
         IExportService<GetUserDto> exportService,
-        BaseSettings baseSettings)
+        BaseSettings baseSettings,
+        IAuthService authService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _mapper = mapper;
         _exportService = exportService;
         _baseSettings = baseSettings;
+        _authService = authService;
         _webHostEnvironment = webHostEnvironment;
+    }
+
+    [HttpPost()]
+    public async Task<IActionResult> AddAsync(AddUserDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _authService.AddAsync(dto);
+
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
@@ -60,8 +73,122 @@ public class UsersController : ControllerBase
         return Ok(ResponseHandler.Success(result));
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> EditUserById(int id,UpdateUserDto dto)
+    {
+        if (id != dto.Id)
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("Invalid User Id."));
+        }
+
+        var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (modelItem is null)
+        {
+            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
+        }
+
+        modelItem = modelItem.MapUpdateUserDto(dto);
+        var result = await _userManager.UpdateAsync(modelItem);
+        if (!result.Succeeded)
+        {
+            var errors = string.Empty;
+
+            foreach (var error in result.Errors)
+                errors += $"{error.Description},";
+
+            return NotFound(ResponseHandler.BadRequest<string>(errors));
+        }
+
+        var userDto = _mapper.Map<GetProfileDto>(modelItem);
+        return Ok(ResponseHandler.Success(userDto));
+    }
+    
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangeUserPasswordAsync(ChangeUserPasswordDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _authService.ChangeUserPasswordAsync(dto);
+
+        if (!result.Succeeded)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [HttpPut("change-image/{id}")]
+    public async Task<IActionResult> UploadImage(int id, IFormFile image)
+    {
+        var modelItem = await _userManager.Users
+            .FirstOrDefaultAsync(u => u.Id == id);
+        if (modelItem is null)
+        {
+            return NotFound(ResponseHandler.NotFound<string>("not found user.."));
+        }
+
+        if (image is null || image.Length == 0)
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("Invalid image."));
+        }
+
+        if (image.Length > 5 * 1024 * 1024)
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("Image size exceeds the limit (5 MB)."));
+        }
+
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+        var fileExtension = Path.GetExtension(image.FileName).ToLower();
+        if (!allowedExtensions.Contains(fileExtension))
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("Invalid file format. Allowed formats: jpg, jpeg, png, gif."));
+        }
+
+        modelItem.ProfilePicturePath = await Picture.Upload(
+            image,
+            _webHostEnvironment,
+            _baseSettings.usersPath,
+            $"{modelItem.UserName}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
+
+        var updatedModel = await _userManager.UpdateAsync(modelItem);
+
+        if (!updatedModel.Succeeded)
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>(updatedModel.Errors.ToString()));
+        }
+
+        if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
+        {
+            modelItem.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{modelItem.ProfilePicturePath}";
+        }
+
+        var result = _mapper.Map<GetUserDto>(modelItem);
+        return Ok(ResponseHandler.Success(result));
+    }
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Remove(int id)
+    {
+        var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (modelItem is null)
+        {
+            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
+        }
+        var result = await _userManager.DeleteAsync(modelItem);
+        if (!result.Succeeded)
+        {
+            var errors = string.Empty;
+
+            foreach (var error in result.Errors)
+                errors += $"{error.Description},";
+
+            return NotFound(ResponseHandler.BadRequest<string>(errors));
+        }
+        return Ok(ResponseHandler.BadRequest<bool>("deleted successfully"));
+    }
+
     [HttpGet("organization/{organizationId}")]
-    public async Task<IActionResult> GetByOrganization([FromRoute]int organizationId ,int pageNumber = 1, int pageSize = 10)
+    public async Task<IActionResult> GetByOrganization([FromRoute] int organizationId, int pageNumber = 1, int pageSize = 10)
     {
         var usersQuery = _userManager.Users.Include(u => u.UserOrganizations).AsQueryable();
 
@@ -112,7 +239,6 @@ public class UsersController : ControllerBase
         return Ok(ResponseHandler.Success(result));
     }
 
-
     [HttpGet("export-users")]
     public async Task<IActionResult> ExportUsers(
         int pageNumber = 1,
@@ -159,58 +285,6 @@ public class UsersController : ControllerBase
 
         var result = await _exportService.ExportToExcel(data);
 
-        return Ok(ResponseHandler.Success(result));
-    }
-
-    [HttpPost("change-image/{id}")]
-    public async Task<IActionResult> UploadImage(int id,IFormFile image)
-    {
-        var modelItem = await _userManager.Users
-            .FirstOrDefaultAsync(u => u.Id == id);
-        if (modelItem is null)
-        {
-            return NotFound(ResponseHandler.NotFound<string>("not found user.."));
-        }
-
-        if (image is null || image.Length == 0)
-        {
-            return BadRequest(ResponseHandler.BadRequest<string>("Invalid image."));
-        }
-        
-        if (image.Length > 5 * 1024 * 1024) 
-        {
-            return BadRequest(ResponseHandler.BadRequest<string>("Image size exceeds the limit (5 MB)."));
-        }
-
-        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-        var fileExtension = Path.GetExtension(image.FileName).ToLower();
-        if (!allowedExtensions.Contains(fileExtension))
-        {
-            return BadRequest(ResponseHandler.BadRequest<string>("Invalid file format. Allowed formats: jpg, jpeg, png, gif."));
-        }
-
-        modelItem.ProfilePicturePath = await Picture.Upload(
-            image,
-            _webHostEnvironment,
-            _baseSettings.usersPath,
-            $"{modelItem.UserName}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
-
-        var updatedModel = await _userManager.UpdateAsync(modelItem);
-
-        if (!updatedModel.Succeeded)
-        {
-            return BadRequest(ResponseHandler.BadRequest<string>(updatedModel.Errors.ToString()));
-        }
-
-        if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
-        {
-            modelItem.ProfilePicturePath = Path.Combine(
-                _baseSettings.url,
-                _baseSettings.usersPath,
-                modelItem.ProfilePicturePath);
-        }
-
-        var result = _mapper.Map<GetUserDto>(modelItem);
         return Ok(ResponseHandler.Success(result));
     }
 }

@@ -1,7 +1,6 @@
-﻿using Core.Services;
+﻿namespace Presentation.Controllers.API;
 
-namespace Presentation.Controllers.API;
-
+[Authorize]
 [Route("api/activity-instance-users")]
 [ApiController]
 public class ActivityInstanceUsersController : ControllerBase

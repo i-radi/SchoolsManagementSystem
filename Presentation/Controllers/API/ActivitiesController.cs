@@ -1,5 +1,6 @@
 ﻿namespace Presentation.Controllers.API;
 
+[Authorize]
 [Route("api/activities")]
 [ApiController]
 public class ActivitiesController : ControllerBase

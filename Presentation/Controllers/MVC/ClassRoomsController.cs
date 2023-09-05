@@ -1,6 +1,4 @@
-﻿using Models.Entities;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
     public class ClassroomsController : Controller
     {
@@ -81,7 +79,7 @@ namespace Presentation.Controllers.MVC
                 Name = viewmodel.Name,
                 GradeId = viewmodel.GradeId
             };
-            
+
             if (viewmodel.Picture is not null)
             {
                 var fileExtension = Path.GetExtension(Path.GetFileName(viewmodel.Picture.FileName));
@@ -93,7 +91,7 @@ namespace Presentation.Controllers.MVC
                 var schoolName = school!.Name;
                 var orgName = school!.Organization!.Name;
                 classroom.PicturePath = await Picture.Upload(viewmodel.Picture, _webHostEnvironment,
-                           _baseSettings.classroomsPath ,
+                           _baseSettings.classroomsPath,
                     $"{orgName}-{schoolName}-{viewmodel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
             }
 
@@ -125,7 +123,7 @@ namespace Presentation.Controllers.MVC
                 var orgName = school!.Organization!.Name;
 
                 classroom.StudentImagePath = await Picture.Upload(viewmodel.StudentImage, _webHostEnvironment,
-                        _baseSettings.classroomsPath ,
+                        _baseSettings.classroomsPath,
                     $"{orgName}-{schoolName}-{viewmodel.Name}-Student-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
             }
 
@@ -178,7 +176,7 @@ namespace Presentation.Controllers.MVC
                 updatedClassroom.GradeId = classroomVM.GradeId;
                 updatedClassroom.Location = classroomVM.Location;
                 updatedClassroom.Order = classroomVM.Order;
-                
+
                 if (classroomVM.Picture is not null)
                 {
                     var fileExtension = Path.GetExtension(Path.GetFileName(classroomVM.Picture.FileName));
@@ -191,7 +189,7 @@ namespace Presentation.Controllers.MVC
                     var orgName = school!.Organization!.Name;
 
                     updatedClassroom.PicturePath = await Picture.Upload(classroomVM.Picture, _webHostEnvironment,
-                               _baseSettings.classroomsPath ,
+                               _baseSettings.classroomsPath,
                     $"{orgName}-{schoolName}-{classroomVM.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
                 if (classroomVM.TeacherImage is not null)
@@ -206,7 +204,7 @@ namespace Presentation.Controllers.MVC
                     var orgName = school!.Organization!.Name;
 
                     updatedClassroom.TeacherImagePath = await Picture.Upload(classroomVM.TeacherImage, _webHostEnvironment,
-                               _baseSettings.classroomsPath ,
+                               _baseSettings.classroomsPath,
                     $"{orgName}-{schoolName}-{classroomVM.Name}-Teacher-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
                 if (classroomVM.StudentImage is not null)
