@@ -39,13 +39,24 @@ public class UsersController : ControllerBase
             .FirstOrDefaultAsync(u => u.Id == id);
         if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
         {
-            modelItem.ProfilePicturePath = Path.Combine(
-                _baseSettings.url,
-                _baseSettings.usersPath,
-                modelItem.ProfilePicturePath);
+            modelItem.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{modelItem.ProfilePicturePath}";
         }
 
         var result = _mapper.Map<GetUserDto>(modelItem);
+        return Ok(ResponseHandler.Success(result));
+    }
+
+    [HttpGet("profile/{id}")]
+    public async Task<IActionResult> GetProfileById(int id)
+    {
+        var modelItem = await _userManager.Users
+            .FirstOrDefaultAsync(u => u.Id == id);
+        if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
+        {
+            modelItem.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{modelItem.ProfilePicturePath}";
+        }
+
+        var result = _mapper.Map<GetProfileDto>(modelItem);
         return Ok(ResponseHandler.Success(result));
     }
 

@@ -103,12 +103,21 @@ public class AuthService : IAuthService
             return ResponseHandler.BadRequest<GetUserDto>(errors);
         }
 
+        user.PlainPassword = dto.NewPassword;
+        var updatedUserResult = await _userManager.UpdateAsync(user);
+        if (!updatedUserResult.Succeeded)
+        {
+            var errors = string.Empty;
+
+            foreach (var error in updatedUserResult.Errors)
+                errors += $"{error.Description},";
+
+            return ResponseHandler.BadRequest<GetUserDto>(errors);
+        }
+
         if (!string.IsNullOrEmpty(user.ProfilePicturePath))
         {
-            user.ProfilePicturePath = Path.Combine(
-                _baseSettings.url,
-                _baseSettings.usersPath,
-                user.ProfilePicturePath);
+            user.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{user.ProfilePicturePath}";
         }
 
         var viewmodel = _mapper.Map<GetUserDto>(user);
