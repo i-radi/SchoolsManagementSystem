@@ -11,10 +11,14 @@ public class ActivityInstanceService : IActivityInstanceService
         _mapper = mapper;
     }
 
-    public Response<List<GetActivityInstanceDto>> GetAll(int pageNumber, int pageSize)
+    public Response<List<GetActivityInstanceDto>> GetAll(int pageNumber, int pageSize, int activityId = 0)
     {
         var modelItems = _activityInstancesRepo.GetTableNoTracking();
 
+        if (activityId > 0 ) 
+        {
+            modelItems = modelItems.Where(a => a.ActivityId == activityId);
+        }
 
         var result = PaginatedList<GetActivityInstanceDto>.Create(_mapper.Map<List<GetActivityInstanceDto>>(modelItems), pageNumber, pageSize);
 

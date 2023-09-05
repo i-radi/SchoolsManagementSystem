@@ -20,6 +20,12 @@ public class ActivitiesController : ControllerBase
         return Ok(_activityService.GetAll(pageNumber, pageSize));
     }
 
+    [HttpGet("school/{schoolId}")]
+    public IActionResult GetSchoolActivity(int schoolId,int pageNumber = 1, int pageSize = 10)
+    {
+        return Ok(_activityService.GetAll(pageNumber, pageSize,schoolId));
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -60,5 +66,17 @@ public class ActivitiesController : ControllerBase
             return BadRequest(ResponseHandler.BadRequest<string>("Not Deleted"));
         }
         return Ok(result);
+    }
+
+    [HttpGet("archive-activity/{id}")]
+    public async Task<IActionResult> ArchiveActivityById(int id)
+    {
+        var dto = await _activityService.Archive(id);
+        if (!dto.Succeeded)
+        {
+            return BadRequest(dto);
+        }
+
+        return Ok(dto);
     }
 }

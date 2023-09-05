@@ -7,4 +7,5 @@ public interface IActivityService
     Task<Response<GetActivityDto>> Add(AddActivityDto model);
     Task<Response<bool>> Update(UpdateActivityDto model);
     Task<Response<bool>> Delete(int id);
+    Task<Response<bool>> Archive(int activityId);
 }

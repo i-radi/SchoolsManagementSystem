@@ -14,7 +14,7 @@ public class ActivityService : IActivityService
     public Response<List<GetActivityDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0)
     {
         var modelItems = _activitiesRepo.GetTableNoTracking();
-        ;
+        
         if (schoolId > 0)
         {
             modelItems = modelItems.Include(c => c.School)
@@ -71,6 +71,20 @@ public class ActivityService : IActivityService
 
         await _activitiesRepo.DeleteAsync(dbModel);
         return ResponseHandler.Deleted<bool>();
+    }
+
+    public async Task<Response<bool>> Archive(int activityId)
+    {
+        var modelItem = await _activitiesRepo.GetByIdAsync(activityId);
+
+        if (modelItem is null)
+            return ResponseHandler.NotFound<bool>("Not Found Activity");
+
+        modelItem.IsAvailable = false;
+
+        var model = _activitiesRepo.UpdateAsync(modelItem);
+
+        return ResponseHandler.Success(true);
     }
 }
 
