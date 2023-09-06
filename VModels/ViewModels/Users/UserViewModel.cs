@@ -11,6 +11,7 @@ public class UserViewModel
     public string? Address { get; set; }
     public string? Gender { get; set; }
     public DateTime? Birthdate { get; set; }
+    public string? PositionType { get; set; }
     public string? SchoolUniversityJob { get; set; }
     public string? FirstMobile { get; set; }
     public string? SecondMobile { get; set; }

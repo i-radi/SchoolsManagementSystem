@@ -6,9 +6,6 @@ public static class OrganizationSeeder
 {
     public static async Task SeedAsync(ApplicationDBContext dbContext, IConfiguration configuration)
     {
-        using var context = new ApplicationDBContext(configuration);
-        context.Database.EnsureCreated();
-
         var usersCount = await dbContext.Organizations.CountAsync();
         if (usersCount <= 0)
         {

@@ -10,6 +10,7 @@ public class UpdateUserDto
     public string? Address { get; set; }
     public string? Gender { get; set; }
     public DateTime? Birthdate { get; set; }
+    public string? PositionType { get; set; }
     public string? SchoolUniversityJob { get; set; }
     public string? FirstMobile { get; set; }
     public string? SecondMobile { get; set; }
@@ -30,6 +31,7 @@ public static class UserMapping
         user.Address = dto.Address;
         user.Gender = dto.Gender;
         user.Birthdate = dto.Birthdate;
+        user.PositionType = dto.PositionType;
         user.SchoolUniversityJob = dto.SchoolUniversityJob;
         user.FirstMobile = dto.FirstMobile;
         user.SecondMobile = dto.SecondMobile;
