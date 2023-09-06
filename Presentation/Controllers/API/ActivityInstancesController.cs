@@ -23,9 +23,9 @@ public class ActivityInstancesController : ControllerBase
     }
 
     [HttpGet("activity/{activityId}")]
-    public IActionResult GetByActivity(int activityId,int pageNumber = 1, int pageSize = 10)
+    public IActionResult GetByActivity(int activityId, int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_activityInstanceService.GetAll(pageNumber, pageSize,activityId));
+        return Ok(_activityInstanceService.GetAll(pageNumber, pageSize, activityId));
     }
 
     [HttpGet("{id}")]

@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace VModels.DTOS;
+﻿namespace VModels.DTOS;
 
 public class UpdateUserDto
 {

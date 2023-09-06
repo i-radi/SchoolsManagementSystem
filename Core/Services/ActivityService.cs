@@ -14,7 +14,7 @@ public class ActivityService : IActivityService
     public Response<List<GetActivityDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0)
     {
         var modelItems = _activitiesRepo.GetTableNoTracking();
-        
+
         if (schoolId > 0)
         {
             modelItems = modelItems.Include(c => c.School)

@@ -15,7 +15,7 @@ public class ActivityInstanceService : IActivityInstanceService
     {
         var modelItems = _activityInstancesRepo.GetTableNoTracking();
 
-        if (activityId > 0 ) 
+        if (activityId > 0)
         {
             modelItems = modelItems.Where(a => a.ActivityId == activityId);
         }

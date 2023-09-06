@@ -21,9 +21,9 @@ public class ActivitiesController : ControllerBase
     }
 
     [HttpGet("school/{schoolId}")]
-    public IActionResult GetSchoolActivity(int schoolId,int pageNumber = 1, int pageSize = 10)
+    public IActionResult GetSchoolActivity(int schoolId, int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_activityService.GetAll(pageNumber, pageSize,schoolId));
+        return Ok(_activityService.GetAll(pageNumber, pageSize, schoolId));
     }
 
     [HttpGet("{id}")]

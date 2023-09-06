@@ -1,6 +1,4 @@
-﻿using Models.Entities.Identity;
-
-namespace Presentation.Controllers.API;
+﻿namespace Presentation.Controllers.API;
 
 [Authorize]
 [Route("api/users")]
@@ -74,7 +72,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> EditUserById(int id,UpdateUserDto dto)
+    public async Task<IActionResult> EditUserById(int id, UpdateUserDto dto)
     {
         if (id != dto.Id)
         {
@@ -102,7 +100,7 @@ public class UsersController : ControllerBase
         var userDto = _mapper.Map<GetProfileDto>(modelItem);
         return Ok(ResponseHandler.Success(userDto));
     }
-    
+
     [HttpPut("change-password")]
     public async Task<IActionResult> ChangeUserPasswordAsync(ChangeUserPasswordDto dto)
     {
@@ -165,7 +163,7 @@ public class UsersController : ControllerBase
         var result = _mapper.Map<GetUserDto>(modelItem);
         return Ok(ResponseHandler.Success(result));
     }
-    
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Remove(int id)
     {

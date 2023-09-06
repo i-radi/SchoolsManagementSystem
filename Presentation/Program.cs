@@ -1,6 +1,5 @@
 using Infrastructure.MiddleWares;
 using Newtonsoft.Json.Converters;
-using Persistance.Seeder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,11 +63,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
     dbContext.Database.Migrate();
-    await SeedData.SeedAsync(dbContext, userManager, roleManager, builder.Configuration);
-} 
+}
 
 #endregion
 

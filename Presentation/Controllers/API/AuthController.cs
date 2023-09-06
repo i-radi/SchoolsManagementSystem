@@ -39,7 +39,7 @@ public class AuthController : ControllerBase
 
         return Ok(result);
     }
-    
+
     [AllowAnonymous]
     [HttpPost("refresh-token")]
     public async Task<IActionResult> GetRefreshTokenAsync(RefreshTokenInputDto model)
@@ -68,7 +68,7 @@ public class AuthController : ControllerBase
 
         return Ok("done.");
     }
-    
+
     [HttpPut("change-user-email-or-password/{id}")]
     public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] ChangeUserDto dto)
     {
