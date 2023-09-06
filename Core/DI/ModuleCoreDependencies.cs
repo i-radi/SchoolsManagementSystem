@@ -9,6 +9,7 @@ public static class ModuleCoreDependencies
     public static IServiceCollection AddCoreDependencies(this IServiceCollection services)
     {
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserRoleService, UserRoleService>();
         services.AddScoped<IClassroomService, ClassroomService>();
         services.AddScoped<IGradeService, GradeService>();
         services.AddScoped<IOrganizationService, OrganizationService>();

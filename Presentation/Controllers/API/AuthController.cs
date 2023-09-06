@@ -11,13 +11,19 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly RoleManager<Role> _roleManager;
+    private readonly UserManager<User> _userManager;
+    private readonly IUserRoleService _userRoleService;
 
     public AuthController(
         IAuthService authService,
-        RoleManager<Role> roleManager)
+        RoleManager<Role> roleManager,
+        UserManager<User> userManager,
+        IUserRoleService userRoleService)
     {
         _authService = authService;
         _roleManager = roleManager;
+        _userManager = userManager;
+        _userRoleService = userRoleService;
     }
 
     [AllowAnonymous]
@@ -86,16 +92,58 @@ public class AuthController : ControllerBase
 
         return Ok(result);
     }
-    
+
     [HttpGet("roles")]
     public async Task<IActionResult> GetRoles()
     {
         var roles = (await _roleManager.Roles.ToListAsync())
-            .Select(r => new 
-            { 
-                r.Id, r.Name
+            .Select(r => new
+            {
+                r.Id,
+                r.Name
             });
-
         return Ok(roles);
+    }
+
+    [HttpPost("user-roles/{userId}")]
+    public async Task<IActionResult> AddUserRoles([FromRoute] int userId, UserRoleRequest request)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("Invalid User Id."));
+        }
+        var dto = request.ToDto(userId);
+        if ((await _userRoleService.IsExists(dto)).Data)
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("This role already exists."));
+        }
+        var result = await _userRoleService.Add(dto);
+        if (!result.Succeeded)
+        {
+            return BadRequest(result);
+        }
+        return Ok(result);
+    }
+
+    [HttpDelete("user-roles/{userId}")]
+    public async Task<IActionResult> DeleteUserRoles([FromRoute] int userId, UserRoleRequest request)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("Invalid User Id."));
+        }
+        var dto = request.ToDto(userId);
+        if (!(await _userRoleService.IsExists(dto)).Data)
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("This role not exist."));
+        }
+        var result = await _userRoleService.Delete(dto);
+        if (!result.Succeeded)
+        {
+            return BadRequest(result);
+        }
+        return Ok(result);
     }
 }
