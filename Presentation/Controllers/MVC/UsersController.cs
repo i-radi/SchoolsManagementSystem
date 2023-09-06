@@ -213,6 +213,7 @@
             if (updatedUser is not null)
             {
                 updatedUser.UserName = userVM.Email.Split('@')[0];
+                updatedUser.Email = userVM.Email;
                 updatedUser.Name = userVM.Name;
                 updatedUser.Address = userVM.Address;
                 updatedUser.Birthdate = userVM.Birthdate;
