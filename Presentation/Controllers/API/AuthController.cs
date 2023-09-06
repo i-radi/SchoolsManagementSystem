@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Models.Results;
 
 namespace Presentation.Controllers.API;
@@ -9,11 +10,14 @@ namespace Presentation.Controllers.API;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly RoleManager<Role> _roleManager;
 
     public AuthController(
-        IAuthService authService)
+        IAuthService authService,
+        RoleManager<Role> roleManager)
     {
         _authService = authService;
+        _roleManager = roleManager;
     }
 
     [AllowAnonymous]
@@ -82,5 +86,16 @@ public class AuthController : ControllerBase
 
         return Ok(result);
     }
+    
+    [HttpGet("roles")]
+    public async Task<IActionResult> GetRoles()
+    {
+        var roles = (await _roleManager.Roles.ToListAsync())
+            .Select(r => new 
+            { 
+                r.Id, r.Name
+            });
 
+        return Ok(roles);
+    }
 }

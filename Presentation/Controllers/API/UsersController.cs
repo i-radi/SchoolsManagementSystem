@@ -213,6 +213,39 @@ public class UsersController : ControllerBase
         return Ok(ResponseHandler.Success(result));
     }
 
+    [HttpGet("organization/{organizationId}/search")]
+    public async Task<IActionResult> SearchByNameOrMobile([FromRoute] int organizationId, string nameOrMobile)
+    {
+        var usersQuery = _userManager.Users.Include(u => u.UserOrganizations).AsQueryable();
+
+        if (organizationId > 0)
+        {
+            usersQuery = usersQuery.Where(u => u.UserOrganizations.Any(uo => uo.OrganizationId == organizationId));
+        }
+
+        if (!string.IsNullOrEmpty(nameOrMobile))
+        {
+            usersQuery = usersQuery
+                .Where(u => u.UserName!.Contains(nameOrMobile)
+            || u.Name.Contains(nameOrMobile)
+            || u.Email!.Contains(nameOrMobile)
+            || u.PhoneNumber == nameOrMobile);
+        }
+        var modelItems = await usersQuery.ToListAsync();
+
+        foreach (var user in modelItems)
+        {
+            if (!string.IsNullOrEmpty(user.ProfilePicturePath))
+            {
+                user.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{user.ProfilePicturePath}";
+            }
+        }
+
+        var result = _mapper.Map<IEnumerable<GetUserDto>>(modelItems);
+
+        return Ok(ResponseHandler.Success(result));
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetAll(int pageNumber = 1, int pageSize = 10)
     {
@@ -225,10 +258,7 @@ public class UsersController : ControllerBase
         {
             if (!string.IsNullOrEmpty(user.ProfilePicturePath))
             {
-                user.ProfilePicturePath = Path.Combine(
-                _baseSettings.url,
-                _baseSettings.usersPath,
-                user.ProfilePicturePath);
+                user.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{user.ProfilePicturePath}";
             }
         }
 
