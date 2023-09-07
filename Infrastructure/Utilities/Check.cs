@@ -12,4 +12,13 @@ public static class Check
 
         return match.Success;
     }
+
+    public static bool InLength(string input)
+    {
+        string pattern = @"^(?=.{3,50}$)[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FFa-zA-Z]+(?:\s[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FFa-zA-Z\d_-]+)?$|[\x20]*$";
+        Regex regex = new Regex(pattern);
+        Match match = regex.Match(input);
+
+        return match.Success;
+    }
 }

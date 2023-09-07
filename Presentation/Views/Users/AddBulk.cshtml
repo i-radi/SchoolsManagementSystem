@@ -1,0 +1,117 @@
+﻿@model UserFormViewModel
+
+@{
+    ViewData["Title"] = "AddBulk";
+}
+
+<h1 class="display-4">Add Multiple Users</h1>
+
+<hr />
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="description">
+                <p>
+                    To upload multiple users, download our <a href="/files/Multiple Users Template.xlsx">template sheet</a> and add their information including email, name, organizations, address, gender, birthdate, school/university/job, GPS location, national ID, mentor name, first mobile, second mobile, father's mobile, and mother's mobile.
+                </p>
+            </div>
+            <div class="note">
+                <p>
+                    Please note that if you add a user to multiple organizations, separate them in the Excel sheet with a comma.
+                </p>
+                <p>
+                    The maximum number of users to upload is 1000 users per sheet.
+                </p>
+                <p>
+                    The Email and Name are required.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Upload Excel File</h5>
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="UploadedFile">Choose File</label>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="UploadedFile" name="uploadedFiles"
+                                       data-multiple-caption="{count} files selected" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="button" onclick="uploadFile()" id="upload-excel-sheet" class="btn btn-primary">Upload</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id="loadingSpinner" class="spinner-border text-primary" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+<div class="mt-4">
+    <a asp-action="Create" class="btn btn-secondary">Back to Create User</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function uploadFile() {
+            $('#loadingSpinner').show();
+
+            let formData = new FormData();
+            formData.append('uploadedFile', $('#UploadedFile')[0].files[0]);
+
+            $.ajax({
+                type: 'POST',
+                url: '/Users/UploadUserExcel',
+                data: formData,
+                processData: false,
+                contentType: false,
+                timeout: 120000, // sets timeout to 2 min
+                success: function (data) {
+                    $('#loadingSpinner').hide();
+
+                    if (data["succeeded"]) {
+                        RemoveErrorMessages();
+                        window.location.href = '/Users';
+                    } else {
+                        AddErrorMessage(data["errors"]);
+                    }
+                },
+                error: function (xmlhttprequest, textstatus, message) {
+                    $('#loadingSpinner').hide();
+
+                    if (textstatus === "timeout") {
+                        AddErrorMessage("Timeout");
+                    } else {
+                        console.log(xmlhttprequest.responseText);
+                    }
+                }
+            });
+        }
+
+        function RemoveErrorMessages() {
+            $('.error-message').remove();
+        }
+
+        function AddErrorMessage(errors) {
+            RemoveErrorMessages();
+
+            let errorList = $('<ul class="error-message"></ul>');
+            if (Array.isArray(errors)) {
+                errors.forEach(function (error) {
+                    errorList.append('<li>' + error + '</li>');
+                });
+            } else {
+                errorList.append('<li>' + errors + '</li>');
+            }
+
+            $('#uploadForm').append(errorList);
+        }
+
+    </script>
+}
