@@ -1,4 +1,6 @@
-﻿namespace Presentation.Controllers.MVC
+﻿using Models.Entities.Identity;
+
+namespace Presentation.Controllers.MVC
 {
     [Authorize(Policy = "SuperAdmin")]
     public class UsersController : Controller
@@ -89,6 +91,8 @@
         public IActionResult Create()
         {
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
+            ViewData["OrganizationId"] = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name");
+
             return View();
         }
 
@@ -145,6 +149,16 @@
             createdUser!.ParticipationQRCodePath = QR.Generate(createdUser.Id, _webHostEnvironment);
             _context.User.Update(createdUser);
             await _context.SaveChangesAsync();
+
+            foreach (var selectedOrgId in user.SelectedOrganizationIds)
+            {
+                var userOrg = new UserOrganization
+                {
+                    UserId = createdUser.Id,
+                    OrganizationId = selectedOrgId
+                };
+                await _userOrganizationRepo.AddAsync(userOrg);
+            }
 
             return RedirectToAction(nameof(Index), "Users");
         }
