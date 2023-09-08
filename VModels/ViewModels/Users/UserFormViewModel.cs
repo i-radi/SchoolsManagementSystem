@@ -25,4 +25,5 @@ public class UserFormViewModel
     public string? Notes { get; set; }
     public string? NationalID { get; set; }
     public string? ParticipationQRCodePath { get; set; }
+    public List<int> SelectedOrganizationIds { get; set; } = new List<int>();
 }
