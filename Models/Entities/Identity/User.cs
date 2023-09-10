@@ -29,4 +29,5 @@ public class User : IdentityUser<int>
     public virtual ICollection<UserClass> UserClasses { get; set; } = new HashSet<UserClass>();
     public virtual ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
     public virtual ICollection<ActivityInstanceUser> ActivityInstanceUsers { get; set; } = new HashSet<ActivityInstanceUser>();
+    public virtual ICollection<UserRecord> UserRecords { get; set; } = new HashSet<UserRecord>();
 }

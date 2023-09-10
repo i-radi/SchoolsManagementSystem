@@ -40,6 +40,11 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
     public virtual DbSet<ActivityInstance> ActivityInstances => Set<ActivityInstance>();
     public virtual DbSet<ActivityInstanceUser> ActivityInstanceUsers => Set<ActivityInstanceUser>();
     public virtual DbSet<ActivityTime> ActivityTimes => Set<ActivityTime>();
+    public virtual DbSet<Record> Records => Set<Record>();
+    public virtual DbSet<UserRecord> UserRecords => Set<UserRecord>();
+    public virtual DbSet<RecordClass> RecordClasses => Set<RecordClass>();
+    public virtual DbSet<Course> Courses => Set<Course>();
+    public virtual DbSet<CourseDetails> CourseDetails => Set<CourseDetails>();
     #endregion
 
     #region OnModelCreating & OnConfiguring

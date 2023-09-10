@@ -18,4 +18,5 @@ public class Classroom
     public virtual Grade? Grade { get; set; }
     public virtual ICollection<UserClass> UserClasses { get; set; } = new HashSet<UserClass>();
     public virtual ICollection<ActivityClassroom> ActivityClassrooms { get; set; } = new HashSet<ActivityClassroom>();
+    public virtual ICollection<RecordClass> RecordClasses { get; set; } = new HashSet<RecordClass>();
 }

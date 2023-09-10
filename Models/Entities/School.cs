@@ -15,4 +15,6 @@ public class School
     public virtual ICollection<Season> Seasons { get; set; } = new HashSet<Season>();
     public virtual ICollection<Grade> Grades { get; set; } = new HashSet<Grade>();
     public virtual ICollection<Activity> Activities { get; set; } = new HashSet<Activity>();
+    public virtual ICollection<Record> Records { get; set; } = new HashSet<Record>();
+    public virtual ICollection<Course> Courses { get; set; } = new HashSet<Course>();
 }
