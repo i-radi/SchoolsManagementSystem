@@ -354,7 +354,7 @@ namespace Presentation.Controllers.MVC
                 .ToListAsync(), "Id", "Name");
             ViewData["GradeId"] = new SelectList(_gradeRepo.GetTableNoTracking(), "Id", "Name");
             ViewData["SeasonId"] = new SelectList(_seasonRepo.GetTableNoTracking(), "Id", "Name");
-            ViewData["ClassroomId"] = new SelectList(_seasonRepo.GetTableNoTracking(), "Id", "Name");
+            ViewData["ClassroomId"] = new SelectList(_classroomRepo.GetTableNoTracking(), "Id", "Name");
             ViewData["UserTypeId"] = new SelectList(_userTypeRepo.GetTableNoTracking(), "Id", "Name");
             return View(userClassVM);
         }
