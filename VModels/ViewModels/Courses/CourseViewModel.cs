@@ -8,6 +8,7 @@ public class CourseViewModel
     public DateTime? CreatedDate { get; set; }
     public int SchoolId { get; set; }
     public virtual School? School { get; set; }
-    public virtual CourseDetails? CourseDetails { get; set; }
+    public string Content { get; set; } = string.Empty;
+    public ContentType ContentType { get; set; }
 
 }
