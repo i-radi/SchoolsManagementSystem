@@ -537,7 +537,7 @@ public class UsersController : Controller
             var result = new Response<List<UserFormViewModel>>();
             var allUsers = new List<UserFormViewModel>();
 
-            if (uploadedFile.Length < 1)
+            if (uploadedFile is null || uploadedFile.Length < 1)
             {
                 result.Succeeded = false;
                 result.StatusCode = System.Net.HttpStatusCode.BadRequest;
@@ -616,7 +616,7 @@ public class UsersController : Controller
             }
             else
             {
-                allErrors.Add($"Required Email field is missing in in row ({row}).");
+                user.Email = Guid.NewGuid() + "@sms.com";
             }
             if (worksheet.Cells[row, 2].Value != null)
             {
