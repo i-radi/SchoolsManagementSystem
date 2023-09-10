@@ -73,6 +73,7 @@ namespace Presentation.Controllers.MVC
         {
             if (ModelState.IsValid)
             {
+                recordVM.Available = true;
                 var record = _mapper.Map<Record>(recordVM);
 
                 await _recordRepo.AddAsync(record);
