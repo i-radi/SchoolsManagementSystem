@@ -1,9 +1,12 @@
 ﻿using Infrastructure.Utilities;
 using Models.Entities.Identity;
 using NuGet.DependencyResolver;
+using NuGet.Packaging;
 using OfficeOpenXml;
+using OfficeOpenXml.DataValidation;
 using System.Text.RegularExpressions;
 using VModels.DTOS.Report;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace Presentation.Controllers.MVC;
 
@@ -635,7 +638,7 @@ public class UsersController : Controller
             }
             if (worksheet.Cells[row, 3].Value != null)
             {
-                var organizations = (worksheet.Cells[row, 2].Value?.ToString()?.Trim() ?? "").Split(',');
+                var organizations = (worksheet.Cells[row, 3].Value?.ToString()?.Trim() ?? "").Split(',');
                 foreach (var orgName in organizations)
                 {
                     var org = await _organizationRepo
@@ -764,5 +767,37 @@ public class UsersController : Controller
         resultUser.Data = createdUser;
         return resultUser;
     }
+
+    public async Task<IActionResult> DownloadExcelSheet()
+    {
+        var templateFilePath = Path.Combine(_webHostEnvironment.WebRootPath, "files", "Multiple Users Template.xlsx");
+
+        ExcelPackage.LicenseContext = LicenseContext.Commercial;
+        using (var package = new ExcelPackage(new FileInfo(templateFilePath)))
+        {
+            var worksheet = package.Workbook.Worksheets["Sheet1"];
+
+            var validation = worksheet.DataValidations.AddListValidation("C2:C1001");
+            var dropDownValues = await _organizationRepo.GetTableNoTracking().Select(o => o.Name).ToListAsync();
+            var joinedValues = string.Join(",", dropDownValues);
+            validation.Formula.Values.Add(joinedValues);
+            validation.AllowBlank = true;
+            //validation.Formula.ExcelFormula = $"\"{joinedValues}\"";
+            //validation.ShowErrorMessage = true;
+            //validation.ErrorTitle = "Invalid Entry";
+            //validation.Error = "Please select a valid organization name from the list.";
+
+            var stream = new MemoryStream(package.GetAsByteArray());
+            
+            Response.Clear();
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            Response.Headers.Add("content-disposition", "attachment; filename=Multiple Users Template.xlsx");
+
+            stream.CopyTo(Response.Body);
+        }
+        return new EmptyResult();
+    }
+
+
 
 }
