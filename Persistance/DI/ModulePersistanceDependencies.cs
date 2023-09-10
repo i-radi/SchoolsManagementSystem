@@ -21,6 +21,11 @@ public static class ModulePersistanceDependencies
         services.AddScoped<IActivityClassroomRepo, ActivityClassroomRepo>();
         services.AddScoped<IActivityInstanceRepo, ActivityInstanceRepo>();
         services.AddScoped<IActivityInstanceUserRepo, ActivityInstanceUserRepo>();
+        services.AddScoped<IClassroomRepo, ClassroomRepo>();
+        services.AddScoped<ICourseDetailsRepo, CourseDetailsRepo>();
+        services.AddScoped<IRecordRepo, RecordRepo>();
+        services.AddScoped<IUserRecordRepo, UserRecordRepo>();
+        services.AddScoped<IRecordClassRepo, RecordClassRepo>();
         services.AddScoped(typeof(IGenericRepoAsync<>), typeof(GenericRepoAsync<>));
         return services;
     }
