@@ -4,6 +4,6 @@ public partial class RecordClassProfile
 {
     public void AddRecordClassMapping()
     {
-        //CreateMap<AddRecordClassDto, RecordClass>();
+        CreateMap<AddRecordClassDto, RecordClass>();
     }
 }

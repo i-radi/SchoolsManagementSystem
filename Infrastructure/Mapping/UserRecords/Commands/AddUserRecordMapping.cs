@@ -4,6 +4,6 @@ public partial class UserRecordProfile
 {
     public void AddUserRecordMapping()
     {
-        //CreateMap<AddUserRecordDto, UserRecord>();
+        CreateMap<AddUserRecordDto, UserRecord>();
     }
 }

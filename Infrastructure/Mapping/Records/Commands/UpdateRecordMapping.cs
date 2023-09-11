@@ -4,6 +4,6 @@ public partial class RecordProfile
 {
     public void UpdateRecordMapping()
     {
-        //CreateMap<UpdateRecordDto, Record>();
+        CreateMap<UpdateRecordDto, Record>();
     }
 }

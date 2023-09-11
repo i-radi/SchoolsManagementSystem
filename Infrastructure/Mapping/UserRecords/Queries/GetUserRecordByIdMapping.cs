@@ -4,7 +4,7 @@ public partial class UserRecordProfile
 {
     public void GetUserRecordByIdMapping()
     {
-        //CreateMap<UserRecord, GetUserRecordDto>();
+        CreateMap<UserRecord, GetUserRecordDto>();
 
         CreateMap<UserRecord, UserRecordViewModel>().ReverseMap();
     }

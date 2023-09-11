@@ -4,7 +4,7 @@ public partial class RecordClassProfile
 {
     public void GetRecordClassByIdMapping()
     {
-        //CreateMap<RecordClass, GetRecordClassDto>();
+        CreateMap<RecordClass, GetRecordClassDto>();
 
         CreateMap<RecordClass, RecordClassViewModel>().ReverseMap();
     }
