@@ -2,13 +2,15 @@
 {
     public class OrganizationsController : Controller
     {
+        private readonly IAttachmentService _attachmentService;
         private readonly BaseSettings _baseSettings;
         private readonly IOrganizationRepo _organizationRepo;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public OrganizationsController(BaseSettings baseSettings, IOrganizationRepo organizationRepo, IMapper mapper, IWebHostEnvironment webHostEnvironment)
+        public OrganizationsController(IAttachmentService attachmentService, BaseSettings baseSettings, IOrganizationRepo organizationRepo, IMapper mapper, IWebHostEnvironment webHostEnvironment)
         {
+            _attachmentService = attachmentService;
             _baseSettings = baseSettings;
             _organizationRepo = organizationRepo;
             _mapper = mapper;
@@ -66,7 +68,7 @@
             if (viewmodel.Picture is not null)
             {
                 var fileExtension = Path.GetExtension(Path.GetFileName(viewmodel.Picture.FileName));
-                organization.PicturePath = await Picture.Upload(viewmodel.Picture, _webHostEnvironment,
+                organization.PicturePath = await _attachmentService.Upload(viewmodel.Picture, _webHostEnvironment,
                     _baseSettings.organizationsPath,
                     $"{viewmodel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
             }
@@ -112,7 +114,7 @@
                 if (organization.Picture is not null)
                 {
                     var fileExtension = Path.GetExtension(Path.GetFileName(organization.Picture.FileName));
-                    updatedOrganization.PicturePath = await Picture.Upload(organization.Picture, _webHostEnvironment,
+                    updatedOrganization.PicturePath = await _attachmentService.Upload(organization.Picture, _webHostEnvironment,
                         _baseSettings.organizationsPath,
                         $"{organization.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }

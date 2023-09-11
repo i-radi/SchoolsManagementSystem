@@ -1,6 +1,4 @@
-﻿using Models.Entities.Identity;
-
-namespace Models.Entities;
+﻿namespace Models.Entities;
 public class UserRecordViewModel
 {
     public int Id { get; set; }

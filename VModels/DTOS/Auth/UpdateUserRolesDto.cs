@@ -10,7 +10,7 @@ public class UserRoleRequest
 
 public static class UserRoleMapping
 {
-    public static AddUserRoleDto ToDto(this UserRoleRequest request,int userId)
+    public static AddUserRoleDto ToDto(this UserRoleRequest request, int userId)
     {
         return new AddUserRoleDto
         {

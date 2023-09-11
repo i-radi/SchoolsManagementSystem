@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Linq.Dynamic.Core;
+﻿using System.Linq.Dynamic.Core;
 
 namespace Presentation.Controllers.MVC
 {

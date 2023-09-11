@@ -1,5 +1,5 @@
 ﻿using Infrastructure.Bases;
-using Infrastructure.IServices;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,10 +16,10 @@ public class ErrorHandlerMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<ErrorHandlerMiddleware> _logger;
     private readonly EmailSettings _emailSettings;
-    private readonly IEmailSender _emailSender;
+    private readonly IEmailService _emailSender;
     private readonly IConfiguration _configuration;
 
-    public ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMiddleware> logger, EmailSettings emailSettings, IEmailSender emailSender)
+    public ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMiddleware> logger, EmailSettings emailSettings, IEmailService emailSender)
     {
         _next = next;
         _logger = logger;
@@ -52,32 +52,27 @@ public class ErrorHandlerMiddleware
                 _emailSender.SendEmailAsync(message);
             }
 
-            //TODO:: cover all validation errors
             switch (error)
             {
                 case UnauthorizedAccessException e:
-                    // custom application error
                     responseModel.Message = error.Message;
                     responseModel.StatusCode = HttpStatusCode.Unauthorized;
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     break;
 
                 case ValidationException e:
-                    // custom validation error
                     responseModel.Message = error.Message;
                     responseModel.StatusCode = HttpStatusCode.UnprocessableEntity;
                     response.StatusCode = (int)HttpStatusCode.UnprocessableEntity;
                     break;
 
                 case KeyNotFoundException e:
-                    // not found error
                     responseModel.Message = error.Message;
                     responseModel.StatusCode = HttpStatusCode.NotFound;
                     response.StatusCode = (int)HttpStatusCode.NotFound;
                     break;
 
                 case DbUpdateException e:
-                    // can't update error
                     responseModel.Message = e.Message;
                     responseModel.StatusCode = HttpStatusCode.BadRequest;
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -99,7 +94,6 @@ public class ErrorHandlerMiddleware
                     break;
 
                 default:
-                    // unhandled error
                     responseModel.Message = error.Message;
                     responseModel.StatusCode = HttpStatusCode.InternalServerError;
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;

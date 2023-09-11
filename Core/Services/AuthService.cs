@@ -21,6 +21,7 @@ public class AuthService : IAuthService
     private readonly IMapper _mapper;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly BaseSettings _baseSettings;
+    private readonly IAttachmentService _attachmentService;
     #endregion
 
     #region Constructors
@@ -30,7 +31,8 @@ public class AuthService : IAuthService
         IUserRoleRepo userRoleRepo,
         IMapper mapper,
         IWebHostEnvironment webHostEnvironment,
-        BaseSettings baseSettings)
+        BaseSettings baseSettings
+        , IAttachmentService attachmentService)
     {
         _jwtSettings = jwtSettings;
         _userManager = userManager;
@@ -39,6 +41,7 @@ public class AuthService : IAuthService
         _mapper = mapper;
         _webHostEnvironment = webHostEnvironment;
         _baseSettings = baseSettings;
+        _attachmentService = attachmentService;
     }
     #endregion
 
@@ -64,7 +67,7 @@ public class AuthService : IAuthService
         }
 
         var createdUser = _userManager.FindByEmailAsync(user.Email!);
-        QR.Generate(createdUser.Result!.Id, _webHostEnvironment);
+        _attachmentService.GenerateQrCode(createdUser.Result!.Id, _webHostEnvironment);
 
         if (dto.Role.roleId > 0)
         {

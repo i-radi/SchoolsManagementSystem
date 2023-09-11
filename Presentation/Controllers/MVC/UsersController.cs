@@ -1,12 +1,6 @@
 ﻿using Infrastructure.Utilities;
-using Models.Entities.Identity;
-using NuGet.DependencyResolver;
 using NuGet.Packaging;
 using OfficeOpenXml;
-using OfficeOpenXml.DataValidation;
-using System.Text.RegularExpressions;
-using VModels.DTOS.Report;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace Presentation.Controllers.MVC;
 
@@ -27,6 +21,7 @@ public class UsersController : Controller
     private readonly ApplicationDBContext _context;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly BaseSettings _baseSettings;
+    private readonly IAttachmentService _attachmentService;
 
     public UsersController(
         ILogger<UsersController> logger,
@@ -42,7 +37,8 @@ public class UsersController : Controller
         IMapper mapper,
         ApplicationDBContext context,
         IWebHostEnvironment webHostEnvironment,
-        BaseSettings baseSettings)
+        BaseSettings baseSettings,
+        IAttachmentService attachmentService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
@@ -58,6 +54,7 @@ public class UsersController : Controller
         _context = context;
         _webHostEnvironment = webHostEnvironment;
         _baseSettings = baseSettings;
+        _attachmentService = attachmentService;
     }
 
 
@@ -135,7 +132,7 @@ public class UsersController : Controller
         {
             var fileExtension = Path.GetExtension(Path.GetFileName(user.ProfilePicture.FileName));
 
-            newUser.ProfilePicturePath = await Picture.Upload(
+            newUser.ProfilePicturePath = await _attachmentService.Upload(
                 user.ProfilePicture,
                 _webHostEnvironment,
                 _baseSettings.usersPath,
@@ -154,7 +151,7 @@ public class UsersController : Controller
 
         var createdUser = await _userManager.FindByEmailAsync(newUser.Email);
         createdUser!.ParticipationNumber = createdUser.Id;
-        createdUser!.ParticipationQRCodePath = QR.Generate(createdUser.Id, _webHostEnvironment);
+        createdUser!.ParticipationQRCodePath = _attachmentService.GenerateQrCode(createdUser.Id, _webHostEnvironment);
         _context.User.Update(createdUser);
         await _context.SaveChangesAsync();
 
@@ -253,7 +250,7 @@ public class UsersController : Controller
             {
                 var fileExtension = Path.GetExtension(Path.GetFileName(userVM.ProfilePicture.FileName));
 
-                updatedUser.ProfilePicturePath = await Picture.Upload(
+                updatedUser.ProfilePicturePath = await _attachmentService.Upload(
                     userVM.ProfilePicture,
                     _webHostEnvironment,
                     _baseSettings.usersPath,
@@ -690,7 +687,7 @@ public class UsersController : Controller
 
     private async Task<Response<List<UserFormViewModel>>> AddUsersInDataBaseAsync(List<UserFormViewModel> users)
     {
-        Response<List<UserFormViewModel>> result = new ();
+        Response<List<UserFormViewModel>> result = new();
         foreach (var user in users)
         {
             var userResult = await AddUserAsync(user);
@@ -748,7 +745,7 @@ public class UsersController : Controller
 
         var createdUser = await _userManager.FindByEmailAsync(newUser.Email);
         createdUser!.ParticipationNumber = createdUser.Id;
-        createdUser!.ParticipationQRCodePath = QR.Generate(createdUser.Id, _webHostEnvironment);
+        createdUser!.ParticipationQRCodePath = _attachmentService.GenerateQrCode(createdUser.Id, _webHostEnvironment);
         _context.User.Update(createdUser);
         await _context.SaveChangesAsync();
 
@@ -788,7 +785,7 @@ public class UsersController : Controller
             //validation.Error = "Please select a valid organization name from the list.";
 
             var stream = new MemoryStream(package.GetAsByteArray());
-            
+
             Response.Clear();
             Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
             Response.Headers.Add("content-disposition", "attachment; filename=Multiple Users Template.xlsx");

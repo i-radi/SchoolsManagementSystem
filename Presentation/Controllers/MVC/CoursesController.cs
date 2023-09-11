@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Models.Entities;
-using Models.Helpers;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
     public class CoursesController : Controller
     {
@@ -13,6 +9,7 @@ namespace Presentation.Controllers.MVC
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ICourseDetailsRepo _courseDetailsRepo;
         private readonly IMapper _mapper;
+        private readonly IAttachmentService _attachmentService;
 
         public CoursesController(
             ICourseRepo courseRepo,
@@ -21,7 +18,8 @@ namespace Presentation.Controllers.MVC
             BaseSettings baseSettings,
             IWebHostEnvironment webHostEnvironment,
             ICourseDetailsRepo courseDetailsRepo,
-            IMapper mapper)
+            IMapper mapper,
+            IAttachmentService attachmentService)
         {
             _courseRepo = courseRepo;
             _schoolRepo = schoolRepo;
@@ -30,6 +28,7 @@ namespace Presentation.Controllers.MVC
             _webHostEnvironment = webHostEnvironment;
             _courseDetailsRepo = courseDetailsRepo;
             _mapper = mapper;
+            _attachmentService = attachmentService;
         }
 
         // GET: Courses
@@ -94,7 +93,7 @@ namespace Presentation.Controllers.MVC
                 {
                     var fileExtension = Path.GetExtension(Path.GetFileName(courseVM.Attachment.FileName));
 
-                    course.CourseDetails.Content = await Picture.Upload(courseVM.Attachment, _webHostEnvironment,
+                    course.CourseDetails.Content = await _attachmentService.Upload(courseVM.Attachment, _webHostEnvironment,
                         _baseSettings.attachmentsPath,
                         $"{course.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
@@ -144,7 +143,7 @@ namespace Presentation.Controllers.MVC
                     {
                         var fileExtension = Path.GetExtension(Path.GetFileName(courseVM.Attachment.FileName));
 
-                        courseVM.Content = await Picture.Upload(courseVM.Attachment, _webHostEnvironment,
+                        courseVM.Content = await _attachmentService.Upload(courseVM.Attachment, _webHostEnvironment,
                             _baseSettings.attachmentsPath,
                             $"{course.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                     }
@@ -152,13 +151,13 @@ namespace Presentation.Controllers.MVC
 
                     var courseDetails = await _courseDetailsRepo
                         .GetTableNoTracking()
-                        .FirstOrDefaultAsync(cd =>cd.CourseId == course.Id);
+                        .FirstOrDefaultAsync(cd => cd.CourseId == course.Id);
                     if (courseDetails is null)
                     {
                         return NotFound();
                     }
                     courseDetails.ContentType = courseVM.ContentType;
-                    courseDetails.Content = courseVM.Content??"";
+                    courseDetails.Content = courseVM.Content ?? "";
 
                     await _courseDetailsRepo.UpdateAsync(courseDetails);
                 }
@@ -257,7 +256,7 @@ namespace Presentation.Controllers.MVC
                     contentType = "application/vnd.ms-powerpoint";
                     break;
                 default:
-                    contentType = "application/octet-stream"; 
+                    contentType = "application/octet-stream";
                     break;
             }
             return contentType;
@@ -273,8 +272,8 @@ namespace Presentation.Controllers.MVC
 
             var schoolList = schools.Select(school => new SelectListItem
             {
-                Value = school.Id.ToString(), 
-                Text = school.Name 
+                Value = school.Id.ToString(),
+                Text = school.Name
             }).ToList();
 
             return Json(schoolList);

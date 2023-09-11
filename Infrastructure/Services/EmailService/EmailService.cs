@@ -1,15 +1,14 @@
-﻿using Infrastructure.IServices;
-using Models.Helpers;
+﻿using Models.Helpers;
 using System.Net;
 using System.Net.Mail;
 
 namespace Infrastructure.Services;
 
-public class EmailSender : IEmailSender
+public class EmailService : IEmailService
 {
     private readonly EmailSettings _emailSettings;
 
-    public EmailSender(EmailSettings emailSettings)
+    public EmailService(EmailSettings emailSettings)
     {
         _emailSettings = emailSettings;
     }

@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
     public class RecordsController : Controller
     {
@@ -28,7 +26,7 @@ namespace Presentation.Controllers.MVC
         }
 
         // GET: Records
-        public async Task<IActionResult> Index(int schoolId,int classroomId)
+        public async Task<IActionResult> Index(int schoolId, int classroomId)
         {
             var records = _recordRepo
                 .GetTableNoTracking()

@@ -8,6 +8,7 @@
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly BaseSettings _baseSettings;
         private readonly IMapper _mapper;
+        private readonly IAttachmentService _attachmentService;
 
         public ClassroomsController(
             IClassroomRepo classroomRepo,
@@ -15,7 +16,8 @@
             ISchoolRepo schoolRepo,
             IWebHostEnvironment webHostEnvironment,
             BaseSettings baseSettings,
-            IMapper mapper)
+            IMapper mapper,
+            IAttachmentService attachmentService)
         {
             _classroomRepo = classroomRepo;
             _gradeRepo = gradeRepo;
@@ -23,6 +25,7 @@
             _webHostEnvironment = webHostEnvironment;
             _baseSettings = baseSettings;
             _mapper = mapper;
+            _attachmentService = attachmentService;
         }
 
         // GET: Classrooms
@@ -90,7 +93,7 @@
                     .FirstOrDefault();
                 var schoolName = school!.Name;
                 var orgName = school!.Organization!.Name;
-                classroom.PicturePath = await Picture.Upload(viewmodel.Picture, _webHostEnvironment,
+                classroom.PicturePath = await _attachmentService.Upload(viewmodel.Picture, _webHostEnvironment,
                            _baseSettings.classroomsPath,
                     $"{orgName}-{schoolName}-{viewmodel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
             }
@@ -106,7 +109,7 @@
                 var schoolName = school!.Name;
                 var orgName = school!.Organization!.Name;
 
-                classroom.TeacherImagePath = await Picture.Upload(viewmodel.TeacherImage, _webHostEnvironment,
+                classroom.TeacherImagePath = await _attachmentService.Upload(viewmodel.TeacherImage, _webHostEnvironment,
                            _baseSettings.classroomsPath,
                     $"{orgName}-{schoolName}-{viewmodel.Name}-Teacher-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
             }
@@ -122,7 +125,7 @@
                 var schoolName = school!.Name;
                 var orgName = school!.Organization!.Name;
 
-                classroom.StudentImagePath = await Picture.Upload(viewmodel.StudentImage, _webHostEnvironment,
+                classroom.StudentImagePath = await _attachmentService.Upload(viewmodel.StudentImage, _webHostEnvironment,
                         _baseSettings.classroomsPath,
                     $"{orgName}-{schoolName}-{viewmodel.Name}-Student-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
             }
@@ -188,7 +191,7 @@
                     var schoolName = school!.Name;
                     var orgName = school!.Organization!.Name;
 
-                    updatedClassroom.PicturePath = await Picture.Upload(classroomVM.Picture, _webHostEnvironment,
+                    updatedClassroom.PicturePath = await _attachmentService.Upload(classroomVM.Picture, _webHostEnvironment,
                                _baseSettings.classroomsPath,
                     $"{orgName}-{schoolName}-{classroomVM.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
@@ -203,7 +206,7 @@
                     var schoolName = school!.Name;
                     var orgName = school!.Organization!.Name;
 
-                    updatedClassroom.TeacherImagePath = await Picture.Upload(classroomVM.TeacherImage, _webHostEnvironment,
+                    updatedClassroom.TeacherImagePath = await _attachmentService.Upload(classroomVM.TeacherImage, _webHostEnvironment,
                                _baseSettings.classroomsPath,
                     $"{orgName}-{schoolName}-{classroomVM.Name}-Teacher-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
@@ -218,7 +221,7 @@
                     var schoolName = school!.Name;
                     var orgName = school!.Organization!.Name;
 
-                    updatedClassroom.StudentImagePath = await Picture.Upload(classroomVM.StudentImage, _webHostEnvironment,
+                    updatedClassroom.StudentImagePath = await _attachmentService.Upload(classroomVM.StudentImage, _webHostEnvironment,
                                _baseSettings.classroomsPath,
                     $"{orgName}-{schoolName}-{classroomVM.Name}-Student-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }

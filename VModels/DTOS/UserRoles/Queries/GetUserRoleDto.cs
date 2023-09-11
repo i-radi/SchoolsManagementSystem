@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace VModels.DTOS;
+﻿namespace VModels.DTOS;
 
 public class GetUserRoleDto
 {

@@ -1,5 +1,4 @@
 ﻿using Infrastructure.Utilities;
-using Microsoft.AspNetCore.Identity;
 using Models.Results;
 
 namespace Presentation.Controllers.API;

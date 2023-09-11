@@ -2,6 +2,7 @@
 {
     public class SchoolsController : Controller
     {
+        private readonly IAttachmentService _attachmentService;
         private readonly BaseSettings _baseSettings;
         private readonly ISchoolRepo _schoolsRepo;
         private readonly IOrganizationRepo _organizationRepo;
@@ -9,8 +10,9 @@
         private readonly IMapper _mapper;
 
 
-        public SchoolsController(BaseSettings baseSettings, ISchoolRepo schoolsRepo, IOrganizationRepo organizationRepo, IWebHostEnvironment webHostEnvironment, IMapper mapper)
+        public SchoolsController(IAttachmentService attachmentService, BaseSettings baseSettings, ISchoolRepo schoolsRepo, IOrganizationRepo organizationRepo, IWebHostEnvironment webHostEnvironment, IMapper mapper)
         {
+            _attachmentService = attachmentService;
             _baseSettings = baseSettings;
             _schoolsRepo = schoolsRepo;
             _organizationRepo = organizationRepo;
@@ -86,7 +88,7 @@
 
                     var orgName = (await _organizationRepo.GetByIdAsync((int)school.OrganizationId)).Name;
 
-                    school.PicturePath = await Picture.Upload(viewModel.Picture, _webHostEnvironment,
+                    school.PicturePath = await _attachmentService.Upload(viewModel.Picture, _webHostEnvironment,
                         _baseSettings.schoolsPath,
                         $"{orgName}-{viewModel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
@@ -151,7 +153,7 @@
 
                     var orgName = (await _organizationRepo.GetByIdAsync((int)viewModel.OrganizationId)).Name;
 
-                    modelItem.PicturePath = await Picture.Upload(viewModel.Picture, _webHostEnvironment,
+                    modelItem.PicturePath = await _attachmentService.Upload(viewModel.Picture, _webHostEnvironment,
                         _baseSettings.schoolsPath,
                         $"{orgName}-{viewModel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }

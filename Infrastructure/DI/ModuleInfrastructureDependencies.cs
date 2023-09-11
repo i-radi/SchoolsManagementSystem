@@ -1,5 +1,4 @@
-﻿using Infrastructure.IServices;
-using Infrastructure.Services;
+﻿using Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Models.Helpers;
@@ -17,7 +16,7 @@ public static class ModuleInfrastructureDependencies
         var emailSettings = new EmailSettings();
         configuration.GetSection(nameof(emailSettings)).Bind(emailSettings);
         services.AddSingleton(emailSettings);
-        services.AddTransient<IEmailSender, EmailSender>();
+        services.AddTransient<IEmailService, EmailService>();
 
         services.AddScoped<IExportService<UserViewModel>, ExportService<UserViewModel>>();
         services.AddScoped<IExportService<GetUserDto>, ExportService<GetUserDto>>();
@@ -27,6 +26,7 @@ public static class ModuleInfrastructureDependencies
         services.AddScoped<IJsonService, JsonService>();
         services.AddScoped<IXmlService, XmlService>();
         services.AddScoped<IYamlService, YamlService>();
+        services.AddScoped<IAttachmentService, AttachmentService>();
 
 
         // Get Validators

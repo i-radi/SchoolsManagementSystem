@@ -1,14 +1,24 @@
-﻿
-
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using QRCoder;
 using System.Drawing.Imaging;
 
 namespace Infrastructure.Services;
 
-public static class QR
+public class AttachmentService : IAttachmentService
 {
-    public static string Generate(int userId, IWebHostEnvironment webHostEnvironment)
+    public async Task<string> Upload(IFormFile file, IWebHostEnvironment webHostEnvironment, string path, string filename)
+    {
+        string filePath = Path.Combine(webHostEnvironment.WebRootPath, path, filename);
+
+        using (var fileStream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(fileStream);
+        }
+        return filename;
+    }
+
+    public string GenerateQrCode(int userId, IWebHostEnvironment webHostEnvironment)
     {
         var qrGenerator = new QRCodeGenerator();
         var qrCodeData = qrGenerator.CreateQrCode($"{userId}", QRCodeGenerator.ECCLevel.Q);
@@ -25,4 +35,5 @@ public static class QR
         }
         return $"{userId}.png";
     }
+
 }

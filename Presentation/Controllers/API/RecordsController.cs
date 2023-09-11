@@ -13,9 +13,9 @@ public class RecordsController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll(int pageNumber = 1, int pageSize = 10,int schoolId=0)
+    public IActionResult GetAll(int pageNumber = 1, int pageSize = 10, int schoolId = 0)
     {
-        return Ok(_recordService.GetAll(pageNumber, pageSize,schoolId));
+        return Ok(_recordService.GetAll(pageNumber, pageSize, schoolId));
     }
 
     [HttpGet("{id}")]

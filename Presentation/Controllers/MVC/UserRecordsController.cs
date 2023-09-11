@@ -1,6 +1,4 @@
-﻿using Models.Entities;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
     public class UserRecordsController : Controller
     {
@@ -25,7 +23,7 @@ namespace Presentation.Controllers.MVC
         }
 
         // GET: UserRecords
-        public async Task<IActionResult> Index(string searchUserName = "",int userId = 0)
+        public async Task<IActionResult> Index(string searchUserName = "", int userId = 0)
         {
             var userRecords = _userRecordRepo
                 .GetTableNoTracking()
@@ -69,7 +67,7 @@ namespace Presentation.Controllers.MVC
         // GET: UserRecords/Create
         public IActionResult Create(int userId = 0)
         {
-            ViewData["RecordId"] = new SelectList(_recordRepo.GetTableNoTracking().Where(r=>r.Available).ToList(), "Id", "Name");
+            ViewData["RecordId"] = new SelectList(_recordRepo.GetTableNoTracking().Where(r => r.Available).ToList(), "Id", "Name");
             ViewData["OrganizationId"] = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name");
             if (userId > 0)
             {
@@ -80,7 +78,7 @@ namespace Presentation.Controllers.MVC
             {
                 ViewData["UserId"] = new SelectList(_userManager.Users.ToList(), "Id", "Name");
             }
-            return View(new UserRecordViewModel { UserId = userId});
+            return View(new UserRecordViewModel { UserId = userId });
         }
 
         // POST: UserRecords/Create
@@ -95,7 +93,7 @@ namespace Presentation.Controllers.MVC
                 await _userRecordRepo.AddAsync(userRecord);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RecordId"] = new SelectList(_recordRepo.GetTableNoTracking().Where(r=>r.Available).ToList(), "Id", "Name", userRecordVM.RecordId);
+            ViewData["RecordId"] = new SelectList(_recordRepo.GetTableNoTracking().Where(r => r.Available).ToList(), "Id", "Name", userRecordVM.RecordId);
             return View(userRecordVM);
         }
 
@@ -112,7 +110,7 @@ namespace Presentation.Controllers.MVC
             {
                 return NotFound();
             }
-            ViewData["RecordId"] = new SelectList(_recordRepo.GetTableNoTracking().Where(r=>r.Available).ToList(), "Id", "Name", userRecord.RecordId);
+            ViewData["RecordId"] = new SelectList(_recordRepo.GetTableNoTracking().Where(r => r.Available).ToList(), "Id", "Name", userRecord.RecordId);
             ViewData["UserId"] = new SelectList(_userManager.Users.ToList(), "Id", "Name");
             var userRecordVM = _mapper.Map<UserRecordViewModel>(userRecord);
             return View(userRecordVM);
@@ -148,7 +146,7 @@ namespace Presentation.Controllers.MVC
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RecordId"] = new SelectList(_recordRepo.GetTableNoTracking().Where(r=>r.Available).ToList(), "Id", "Name", userRecordVM.RecordId);
+            ViewData["RecordId"] = new SelectList(_recordRepo.GetTableNoTracking().Where(r => r.Available).ToList(), "Id", "Name", userRecordVM.RecordId);
             return View(userRecordVM);
         }
 

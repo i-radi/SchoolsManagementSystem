@@ -11,6 +11,7 @@ public class UsersController : ControllerBase
     private readonly IExportService<GetUserDto> _exportService;
     private readonly BaseSettings _baseSettings;
     private readonly IAuthService _authService;
+    private readonly IAttachmentService _attachmentService;
     private readonly IWebHostEnvironment _webHostEnvironment;
 
     public UsersController(
@@ -20,7 +21,8 @@ public class UsersController : ControllerBase
         IWebHostEnvironment webHostEnvironment,
         IExportService<GetUserDto> exportService,
         BaseSettings baseSettings,
-        IAuthService authService)
+        IAuthService authService,
+        IAttachmentService attachmentService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -28,6 +30,7 @@ public class UsersController : ControllerBase
         _exportService = exportService;
         _baseSettings = baseSettings;
         _authService = authService;
+        _attachmentService = attachmentService;
         _webHostEnvironment = webHostEnvironment;
     }
 
@@ -142,7 +145,7 @@ public class UsersController : ControllerBase
             return BadRequest(ResponseHandler.BadRequest<string>("Invalid file format. Allowed formats: jpg, jpeg, png, gif."));
         }
 
-        modelItem.ProfilePicturePath = await Picture.Upload(
+        modelItem.ProfilePicturePath = await _attachmentService.Upload(
             image,
             _webHostEnvironment,
             _baseSettings.usersPath,
