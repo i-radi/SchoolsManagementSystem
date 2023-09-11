@@ -6,6 +6,9 @@ public partial class CourseProfile
     {
         //CreateMap<Course, GetCourseDto>();
 
-        CreateMap<Course, CourseViewModel>().ReverseMap();
+        CreateMap<Course, CourseViewModel>()
+            .ForMember(dest => dest.ContentType, opt => opt.MapFrom(src => src.CourseDetails!.ContentType))
+            .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.CourseDetails!.Content))
+            .ReverseMap();
     }
 }

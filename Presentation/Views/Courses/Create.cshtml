@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -18,8 +18,42 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="SchoolId" class="control-label"></label>
-                <select asp-for="SchoolId" class ="form-control" asp-items="ViewBag.SchoolId"></select>
+                <label asp-for="OrganizationId" class="control-label">Organization</label>
+                <select id="OrganizationId" name="OrganizationId" class="form-control" asp-items="ViewBag.OrganizationId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="SchoolId" class="control-label">School</label>
+                <select asp-for="SchoolId" id="SchoolId" name="SchoolId" class="form-control" asp-items="ViewBag.SchoolId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="CourseDate" class="control-label"></label>
+                <input asp-for="CourseDate" class="form-control" type="date" asp-format="{0:yyyy-MM-dd}" />
+                <span asp-validation-for="CourseDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatedDate" class="control-label"></label>
+                <input asp-for="CreatedDate" class="form-control" type="date" asp-format="{0:yyyy-MM-dd}" />
+                <span asp-validation-for="CreatedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="ContentType" class="control-label">Content Type</label>
+                <select id="ContentType" name="ContentType" asp-for="ContentType" class="form-control">
+                    @foreach (var contentType in Enum.GetValues(typeof(ContentType)))
+                    {
+                        <option value="@contentType">@contentType</option>
+                    }
+                </select>
+                <span asp-validation-for="ContentType" class="text-danger"></span>
+            </div>
+            <div class="form-group" id="attachmentInput" style="display: none;">
+                <label asp-for="Attachment" class="control-label"></label>
+                <input type="file" asp-for="Attachment" class="form-control" accept=".pdf,.doc,.docx,.ppt,.pptx">
+                <span asp-validation-for="Attachment" class="text-danger"></span>
+            </div>
+            <div class="form-group" id="contentInput" >
+                <label asp-for="Content" class="control-label"></label>
+                <input asp-for="Content" class="form-control" />
+                <span asp-validation-for="Content" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -33,5 +67,8 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/Courses/create.js"></script>
 }

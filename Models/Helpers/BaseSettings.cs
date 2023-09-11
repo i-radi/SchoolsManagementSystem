@@ -8,4 +8,5 @@ public class BaseSettings
     public string schoolsPath { get; set; } = string.Empty;
     public string classroomsPath { get; set; } = string.Empty;
     public string usersPath { get; set; } = string.Empty;
+    public string attachmentsPath { get; set; } = string.Empty;
 }

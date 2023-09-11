@@ -32,4 +32,8 @@
     <ProjectReference Include="..\VModels\VModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\attachments\" />
+  </ItemGroup>
+
 </Project>

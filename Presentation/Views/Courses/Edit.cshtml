@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -24,6 +24,43 @@
                 <span asp-validation-for="SchoolId" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="CourseDate" class="control-label"></label>
+                <input asp-for="CourseDate" class="form-control" type="date" asp-format="{0:yyyy-MM-dd}" />
+                <span asp-validation-for="CourseDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatedDate" class="control-label"></label>
+                <input asp-for="CreatedDate" class="form-control" type="date" asp-format="{0:yyyy-MM-dd}" />
+                <span asp-validation-for="CreatedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="ContentType" class="control-label">Content Type</label>
+                <select id="ContentType" name="ContentType" asp-for="ContentType" class="form-control">
+                    @foreach (var contentType in Enum.GetValues(typeof(ContentType)))
+                    {
+                        if (contentType.ToString() == Model.ContentType.ToString())
+                        {
+                            <option value="@contentType" selected>@contentType</option>
+                        }
+                        else
+                        {
+                            <option value="@contentType">@contentType</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="ContentType" class="text-danger"></span>
+            </div>
+            <div class="form-group" id="attachmentInput" style="display: none;">
+                <label asp-for="Attachment" class="control-label"></label>
+                <input type="file" asp-for="Attachment" class="form-control" accept=".pdf,.doc,.docx,.ppt,.pptx">
+                <span asp-validation-for="Attachment" class="text-danger"></span>
+            </div>
+            <div class="form-group" id="contentInput">
+                <label asp-for="Content" class="control-label"></label>
+                <input asp-for="Content" class="form-control" />
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
@@ -35,5 +72,31 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function toggleList() {
+            debugger;
+            var selectedContentType = $('#ContentType').val();;
+            var contentInputDiv = $('#contentInput');
+            var attachmentInputDiv = $('#attachmentInput');
+
+            contentInputDiv.hide();
+            attachmentInputDiv.hide();
+
+
+            if (selectedContentType === 'Link' || selectedContentType === 'Text') {
+                contentInputDiv.show();
+                attachmentInputDiv.hide();
+            } else if (selectedContentType === 'Attachment') {
+                contentInputDiv.hide();
+                attachmentInputDiv.show();
+            } else {
+                contentInputDiv.hide();
+                attachmentInputDiv.hide();
+            }
+        };
+        $('#ContentType').on('change', toggleList);
+    </script>
 }

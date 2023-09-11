@@ -16,5 +16,5 @@ public enum ContentType
 {
     Text,
     Link,
-    Path
+    Attachment
 }

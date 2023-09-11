@@ -9,6 +9,16 @@
 <p>
     <a asp-action="Create">Create New Course</a>
 </p>
+
+@using (Html.BeginForm("Index", "Courses", FormMethod.Get, new { id = "searchForm" }))
+{
+    <p>
+        @Html.DropDownList("schoolId", ViewBag.SchoolsList as SelectList, "All Schools", new { placeholder = "filter by school" })
+
+        <input type="submit" value="Search" hidden />
+    </p>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -17,6 +27,15 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.School)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CourseDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContentType)
             </th>
             <th></th>
         </tr>
@@ -32,6 +51,15 @@
                     @Html.DisplayFor(modelItem => item.School.Name)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.CourseDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ContentType)
+                </td>
+                <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
@@ -40,3 +68,9 @@
         }
     </tbody>
 </table>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/Courses/index.js"></script>
+}
