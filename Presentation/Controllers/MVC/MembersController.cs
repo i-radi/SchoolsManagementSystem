@@ -59,7 +59,7 @@ namespace Presentation.Controllers.MVC
         }
 
         // GET: Members
-        public IActionResult Index(
+        public async Task<IActionResult> Index(
             int pageNumber = 1,
             int pageSize = 10,
             int orgId = 0,
@@ -76,6 +76,7 @@ namespace Presentation.Controllers.MVC
                 .Include(u => u.Season)
                 .ThenInclude(s => s.School)
                 .Include(u => u.UserType)
+                .AsSplitQuery()
                 .AsQueryable();
 
             if (orgId != 0)
@@ -108,14 +109,14 @@ namespace Presentation.Controllers.MVC
                 || uc.User!.Name!.ToLower().Contains(searchUserName.ToLower()));
             }
 
-            ViewBag.OrganizationsList = new SelectList(_organizationRepo.GetTableNoTracking(), "Id", "Name");
-            ViewBag.SchoolsList = new SelectList(_schoolRepo.GetTableNoTracking(), "Id", "Name");
-            ViewBag.SeasonsList = new SelectList(_seasonRepo.GetTableNoTracking(), "Id", "Name");
-            ViewBag.GradesList = new SelectList(_gradeRepo.GetTableNoTracking(), "Id", "Name");
-            ViewBag.ClassroomsList = new SelectList(_classroomRepo.GetTableNoTracking(), "Id", "Name");
-            ViewBag.UserTypesList = new SelectList(_userTypeRepo.GetTableNoTracking(), "Id", "Name");
+            ViewBag.OrganizationsList = new SelectList(await _organizationRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+            ViewBag.SchoolsList = new SelectList(await _schoolRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+            ViewBag.SeasonsList = new SelectList(await _seasonRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+            ViewBag.GradesList = new SelectList(await _gradeRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+            ViewBag.ClassroomsList = new SelectList(await _classroomRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+            ViewBag.UserTypesList = new SelectList(await _userTypeRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
 
-            var result = PaginatedList<UserClassViewModel>.Create(_mapper.Map<List<UserClassViewModel>>(userclass), pageNumber, pageSize);
+            var result = PaginatedList<UserClassViewModel>.Create(_mapper.Map<List<UserClassViewModel>>(await userclass.ToListAsync()), pageNumber, pageSize);
             return View(result);
         }
 
