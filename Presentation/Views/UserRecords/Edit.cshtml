@@ -14,14 +14,37 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="User.Name" class="control-label"></label>
-                <input asp-for="User.Name" class="form-control" />
-                <span asp-validation-for="User.Name" class="text-danger"></span>
+                <label asp-for="UserId" class="control-label">User</label>
+                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId" disabled></select>
             </div>
             <div class="form-group">
-                <label asp-for="RecordId" class="control-label">School</label>
+                <label asp-for="RecordId" class="control-label">Record</label>
                 <select asp-for="RecordId" class="form-control" asp-items="ViewBag.RecordId"></select>
-                <span asp-validation-for="RecordId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreateDate" class="control-label"></label>
+                <input asp-for="CreateDate" class="form-control" type="date" asp-format="{0:yyyy-MM-dd}" />
+                <span asp-validation-for="CreateDate" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsDone" /> @Html.DisplayNameFor(model => model.IsDone)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="DoneDate" class="control-label"></label>
+                <input asp-for="DoneDate" class="form-control" type="date" asp-format="{0:yyyy-MM-dd}" />
+                <span asp-validation-for="DoneDate" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsPaid" /> @Html.DisplayNameFor(model => model.IsPaid)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="PaidDate" class="control-label"></label>
+                <input asp-for="PaidDate" class="form-control" type="date" asp-format="{0:yyyy-MM-dd}" />
+                <span asp-validation-for="PaidDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

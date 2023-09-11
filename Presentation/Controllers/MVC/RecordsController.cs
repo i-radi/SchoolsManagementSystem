@@ -28,11 +28,12 @@ namespace Presentation.Controllers.MVC
         }
 
         // GET: Records
-        public async Task<IActionResult> Index(int schoolId)
+        public async Task<IActionResult> Index(int schoolId,int classroomId)
         {
             var records = _recordRepo
                 .GetTableNoTracking()
                 .Include(g => g.School)
+                .Include(r => r.RecordClasses)
                 .Where(r => r.Available)
                 .AsQueryable();
 
@@ -40,8 +41,13 @@ namespace Presentation.Controllers.MVC
             {
                 records = records.Where(g => g.SchoolId == schoolId);
             }
+            if (classroomId > 0)
+            {
+                records = records.Where(g => g.RecordClasses.Any(r => r.ClassroomId == classroomId));
+            }
             var recordsVM = _mapper.Map<List<RecordViewModel>>(await records.ToListAsync());
             ViewBag.SchoolsList = new SelectList(_schoolRepo.GetTableNoTracking(), "Id", "Name");
+            ViewBag.ClassroomsList = new SelectList(_classroomRepo.GetTableNoTracking(), "Id", "Name");
             return View(recordsVM);
         }
 

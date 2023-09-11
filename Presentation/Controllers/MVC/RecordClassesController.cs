@@ -28,6 +28,7 @@ namespace Presentation.Controllers.MVC
             var recordClass = _recordClassRepo.GetTableNoTracking()
                 .Include(u => u.Classroom)
                 .Include(u => u.Record)
+                .Where(r => r.Record.Available)
                 .AsQueryable();
 
             if (recordId is not null)
@@ -36,7 +37,7 @@ namespace Presentation.Controllers.MVC
             }
 
             ViewBag.ClassroomId = new SelectList(_classroomRepo.GetTableNoTracking(), "Id", "Name");
-            ViewBag.RecordId = new SelectList(_recordRepo.GetTableNoTracking(), "Id", "Name");
+            ViewBag.RecordId = new SelectList(_recordRepo.GetTableNoTracking().Where(r => r.Available), "Id", "Name");
 
             var result = _mapper.Map<List<RecordClassViewModel>>(recordClass);
             return View(result);
@@ -52,8 +53,9 @@ namespace Presentation.Controllers.MVC
 
             var recordClass = await _recordClassRepo
                 .GetTableAsTracking()
-                                .Include(u => u.Classroom)
+                .Include(u => u.Classroom)
                 .Include(u => u.Record)
+                .Where(r => r.Record.Available)
                 .FirstOrDefaultAsync(uc => uc.Id == id);
             if (recordClass == null)
             {
@@ -62,7 +64,7 @@ namespace Presentation.Controllers.MVC
 
             var recordClassVM = _mapper.Map<RecordClassViewModel>(recordClass);
             ViewBag.ClassroomId = new SelectList(_classroomRepo.GetTableNoTracking(), "Id", "Name");
-            ViewBag.RecordId = new SelectList(_recordRepo.GetTableNoTracking(), "Id", "Name");
+            ViewBag.RecordId = new SelectList(_recordRepo.GetTableNoTracking().Where(r => r.Available), "Id", "Name");
 
             return View(recordClassVM);
         }
@@ -77,8 +79,9 @@ namespace Presentation.Controllers.MVC
 
             var modelItem = await _recordClassRepo
                 .GetTableAsTracking()
-                                .Include(u => u.Classroom)
+                .Include(u => u.Classroom)
                 .Include(u => u.Record)
+                .Where(r => r.Record.Available)
                 .FirstOrDefaultAsync(uc => uc.Id == id);
 
             if (modelItem == null)
@@ -93,7 +96,7 @@ namespace Presentation.Controllers.MVC
             };
 
             ViewBag.ClassroomId = new SelectList(_classroomRepo.GetTableNoTracking(), "Id", "Name");
-            ViewBag.RecordId = new SelectList(_recordRepo.GetTableNoTracking(), "Id", "Name");
+            ViewBag.RecordId = new SelectList(_recordRepo.GetTableNoTracking().Where(r => r.Available), "Id", "Name");
             return View(viewModel);
         }
 
@@ -145,7 +148,7 @@ namespace Presentation.Controllers.MVC
 
             var recordClassVM = _mapper.Map<RecordClassViewModel>(recordClass);
             ViewBag.ClassroomId = new SelectList(_classroomRepo.GetTableNoTracking(), "Id", "Name");
-            ViewBag.RecordId = new SelectList(_recordRepo.GetTableNoTracking(), "Id", "Name");
+            ViewBag.RecordId = new SelectList(_recordRepo.GetTableNoTracking().Where(r => r.Available), "Id", "Name");
 
             return View(recordClassVM);
         }
@@ -173,7 +176,7 @@ namespace Presentation.Controllers.MVC
         public async Task<IActionResult> Assign(int? recordId)
         {
             ViewBag.ClassroomId = new SelectList(_classroomRepo.GetTableNoTracking(), "Id", "Name");
-            ViewBag.RecordId = new SelectList(_recordRepo.GetTableNoTracking(), "Id", "Name");
+            ViewBag.RecordId = new SelectList(_recordRepo.GetTableNoTracking().Where(r => r.Available), "Id", "Name");
 
             var recordClass = new RecordClassViewModel();
             if (recordId is not null)

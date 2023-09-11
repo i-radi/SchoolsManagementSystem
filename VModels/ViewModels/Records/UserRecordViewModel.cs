@@ -7,6 +7,7 @@ public class UserRecordViewModel
     public int RecordId { get; set; }
     public virtual Record? Record { get; set; }
     public int UserId { get; set; }
+    public int OrganizationId { get; set; }
     public virtual User? User { get; set; }
     public DateTime? CreateDate { get; set; } = DateTime.Now;
     public bool IsDone { get; set; }

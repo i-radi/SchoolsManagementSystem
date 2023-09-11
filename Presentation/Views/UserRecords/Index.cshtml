@@ -3,12 +3,23 @@
 @{
     ViewData["Title"] = "Index";
 }
+@{
+    string userId = ViewContext.HttpContext.Request.Query["userId"].ToString()??"0";
+}
 
 <h1>UserRecords</h1>
 
 <p>
-    <a asp-action="Create">Create New UserRecord</a>
+    <a asp-action="Create" asp-route-userId="@userId">Create New UserRecord</a>
 </p>
+
+@using (Html.BeginForm("Index", "UserRecords", FormMethod.Get, new { id = "searchForm" }))
+{
+    <p>
+        @Html.TextBox("searchUserName", ViewBag.CurrentFilter as string, new { placeholder = "Search by username." })
+        <input type="submit" value="Search" hidden />
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -17,6 +28,21 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.User.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreateDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsDone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DoneDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsPaid)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PaidDate)
             </th>
             <th></th>
         </tr>
@@ -32,6 +58,21 @@
                     @Html.DisplayFor(modelItem => item.User.Name)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.CreateDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsDone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DoneDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsPaid)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PaidDate)
+                </td>
+                <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
@@ -40,3 +81,9 @@
         }
     </tbody>
 </table>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/UserRecords/index.js"></script>
+}

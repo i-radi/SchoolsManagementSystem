@@ -10,10 +10,11 @@
     <a asp-action="Create">Create New Record</a>
 </p>
 
-@using (Html.BeginForm("Index", "Courses", FormMethod.Get, new { id = "searchForm" }))
+@using (Html.BeginForm("Index", "Records", FormMethod.Get, new { id = "searchForm" }))
 {
     <p>
         @Html.DropDownList("schoolId", ViewBag.SchoolsList as SelectList, "All Schools", new { placeholder = "filter by school" })
+        @Html.DropDownList("classroomId", ViewBag.ClassroomsList as SelectList, "All Classrooms", new { placeholder = "filter by classroom" })
 
         <input type="submit" value="Search" hidden />
     </p>
