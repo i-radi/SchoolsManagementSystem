@@ -13,15 +13,14 @@ public class RecordService : IRecordService
 
     public Response<List<GetRecordDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0)
     {
-        var modelItems = _recordsRepo.GetTableNoTracking();
+        var modelItems = _recordsRepo
+            .GetTableNoTracking()
+            .Include(c => c.School)
+            .Where(c => c.Available);
         ;
         if (schoolId > 0)
         {
-            modelItems = modelItems.Include(c => c.School).Where(cr => cr.SchoolId == schoolId);
-        }
-        else
-        {
-            modelItems = modelItems.Include(c => c.School);
+            modelItems = modelItems.Where(cr => cr.SchoolId == schoolId);
         }
 
         var result = PaginatedList<GetRecordDto>.Create(_mapper.Map<List<GetRecordDto>>(modelItems), pageNumber, pageSize);
@@ -68,7 +67,9 @@ public class RecordService : IRecordService
         if (dbModel == null)
             return ResponseHandler.NotFound<bool>();
 
-        await _recordsRepo.DeleteAsync(dbModel);
+        dbModel.Available = false;
+
+        var model = _recordsRepo.UpdateAsync(dbModel);
         return ResponseHandler.Deleted<bool>();
     }
 }

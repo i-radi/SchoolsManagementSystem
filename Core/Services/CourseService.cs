@@ -40,6 +40,11 @@ public class CourseService : ICourseService
     public async Task<Response<GetCourseDto>> Add(AddCourseDto dto)
     {
         var modelItem = _mapper.Map<Course>(dto);
+        modelItem.CourseDetails = new CourseDetails
+        {
+            ContentType = dto.ContentType,
+            Content = dto.Content ?? ""
+        };
 
         var model = await _coursesRepo.AddAsync(modelItem);
 
@@ -54,7 +59,11 @@ public class CourseService : ICourseService
             return ResponseHandler.NotFound<bool>();
 
         _mapper.Map(dto, modelItem);
-
+        if (modelItem.CourseDetails is not null)
+        {
+            modelItem.CourseDetails.ContentType = dto.ContentType;
+            modelItem.CourseDetails.Content = dto.Content ?? "";
+        }
         var model = _coursesRepo.UpdateAsync(modelItem);
 
         return ResponseHandler.Success(true);
