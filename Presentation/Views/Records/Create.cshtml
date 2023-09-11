@@ -18,8 +18,37 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="SchoolId" class="control-label"></label>
-                <select asp-for="SchoolId" class ="form-control" asp-items="ViewBag.SchoolId"></select>
+                <label asp-for="OrganizationId" class="control-label">Organization</label>
+                <select id="OrganizationId" name="OrganizationId" class="form-control" asp-items="ViewBag.OrganizationId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="SchoolId" class="control-label">School</label>
+                <select asp-for="SchoolId" id="SchoolId" name="SchoolId" class="form-control" asp-items="ViewBag.SchoolId"></select>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Available" /> @Html.DisplayNameFor(model => model.Available)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order" class="control-label"></label>
+                <input asp-for="Order" class="form-control" />
+                <span asp-validation-for="Order" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Points" class="control-label"></label>
+                <input asp-for="Points" class="form-control" />
+                <span asp-validation-for="Points" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="ForStudents" /> @Html.DisplayNameFor(model => model.ForStudents)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="ForTeachers" /> @Html.DisplayNameFor(model => model.ForTeachers)
+                </label>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -33,5 +62,8 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/Records/create.js"></script>
 }

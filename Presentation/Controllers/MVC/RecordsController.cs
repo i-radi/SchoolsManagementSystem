@@ -8,6 +8,7 @@ namespace Presentation.Controllers.MVC
         private readonly ISchoolRepo _schoolRepo;
         private readonly IRecordClassRepo _recordClassRepo;
         private readonly IClassroomRepo _classroomRepo;
+        private readonly IOrganizationRepo _organizationRepo;
         private readonly IMapper _mapper;
 
         public RecordsController(
@@ -15,12 +16,14 @@ namespace Presentation.Controllers.MVC
             ISchoolRepo schoolRepo,
             IRecordClassRepo recordClassRepo,
             IClassroomRepo classroomRepo,
+            IOrganizationRepo organizationRepo,
             IMapper mapper)
         {
             _recordRepo = recordRepo;
             _schoolRepo = schoolRepo;
             _recordClassRepo = recordClassRepo;
             _classroomRepo = classroomRepo;
+            _organizationRepo = organizationRepo;
             _mapper = mapper;
         }
 
@@ -38,6 +41,7 @@ namespace Presentation.Controllers.MVC
                 records = records.Where(g => g.SchoolId == schoolId);
             }
             var recordsVM = _mapper.Map<List<RecordViewModel>>(await records.ToListAsync());
+            ViewBag.SchoolsList = new SelectList(_schoolRepo.GetTableNoTracking(), "Id", "Name");
             return View(recordsVM);
         }
 
@@ -63,6 +67,7 @@ namespace Presentation.Controllers.MVC
         public IActionResult Create()
         {
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
+            ViewData["OrganizationId"] = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name");
             return View();
         }
 
