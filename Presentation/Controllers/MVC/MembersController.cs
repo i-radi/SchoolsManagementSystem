@@ -503,7 +503,6 @@ public class MembersController : Controller
         int fromSeasonId = 0,
         int fromGradeId = 0,
         int fromClassroomId = 0,
-        int fdromUsertypeId = 0,
         string searchUserName = "")
     {
         var userclass = _userClassRepo.GetTableNoTracking()
@@ -535,10 +534,6 @@ public class MembersController : Controller
         {
             userclass = userclass.Where(uc => uc.ClassroomId == fromClassroomId);
         }
-        if (fdromUsertypeId != 0)
-        {
-            userclass = userclass.Where(uc => uc.UserTypeId == fdromUsertypeId);
-        }
         if (!string.IsNullOrWhiteSpace(searchUserName))
         {
             userclass = userclass.Where(uc => uc.User!.Email!.ToLower().Contains(searchUserName.ToLower())
@@ -554,7 +549,7 @@ public class MembersController : Controller
 
         var fromClassMembers = PaginatedList<UserClassViewModel>.Create(_mapper.Map<List<UserClassViewModel>>(await userclass.ToListAsync()), pageNumber, pageSize);
 
-        if (fromClassroomId != 0)
+        if (fromClassroomId > 0 && fromSeasonId >0)
         {
             return View(new CopyUserClassViewModel
             {
@@ -571,10 +566,15 @@ public class MembersController : Controller
         {
             var selectedUserIds = model.SelectedUserIds.Split(',')
                                             .Select(id => int.Parse(id))
-                                            .ToList();
+                                            .ToList().Distinct();
 
+            if (selectedUserIds is null || !selectedUserIds.Any())
+            {
+                ModelState.AddModelError(string.Empty, "Please select users to copy.");
+                return View("Copy", model);
+            }
 
-            foreach (var userId in selectedUserIds)
+            foreach (var userId in selectedUserIds!)
             {
                 var userClass = await _userClassRepo
                     .GetTableNoTracking()
@@ -584,17 +584,14 @@ public class MembersController : Controller
 
                 if (userClass != null)
                 {
+                    userClass.Id = 0;
                     userClass.ClassroomId = model.ToClassroomId;
                     userClass.SeasonId = model.ToSeasonId;
 
-                    await _userClassRepo.UpdateAsync(userClass);
+                    await _userClassRepo.AddAsync(userClass);
                 }
             }
-            return RedirectToAction("Copy");
-        }
-        else
-        {
-            ModelState.AddModelError(string.Empty, "Please select users to copy.");
+            return RedirectToAction("Index");
         }
         return View("Copy", model);
     }

@@ -81,7 +81,11 @@
     </tbody>
 </table>
 
-
+<div class="row">
+    <div class="col-md-6">
+        <p>Total Pages: @Model.TotalPages</p>
+    </div>
+</div>
 <ul class="pagination">
     <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
         <a class="page-link" href="@Url.Action("Index", new { pageNumber = 1 })">First</a>

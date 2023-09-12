@@ -13,6 +13,7 @@
 
     $("#fromSeasonId").change(function () {
         $("#searchFromClass").submit();
+        $("#FromSeasonId").val($("#fromSeasonId").val());
     });
 
     $("#fromGradeId").change(function () {
@@ -21,30 +22,19 @@
 
     $("#fromClassroomId").change(function () {
         $("#searchFromClass").submit();
+        $("#FromClassroomId").val($("#fromClassroomId").val());
     });
 
     $("#fromUsertypeId").change(function () {
         $("#searchFromClass").submit();
     });
 
-    $("#toOrgId").change(function () {
-        $("#searchToClass").submit();
-    });
-
-    $("#toSchoolId").change(function () {
-        $("#searchToClass").submit();
-    });
-
     $("#toSeasonId").change(function () {
-        $("#searchToClass").submit();
-    });
-
-    $("#toGradeId").change(function () {
-        $("#searchToClass").submit();
+        $("#ToSeasonId").val($("#toSeasonId").val());
     });
 
     $("#toClassroomId").change(function () {
-        $("#searchToClass").submit();
+        $("#ToClassroomId").val($("#toClassroomId").val());
     });
 
     $("#copyButton").click(function () {
@@ -57,4 +47,25 @@
         $("#copy").submit();
     });
 
+    $('#selectAllCheckbox').change(function () {
+        var isChecked = $(this).is(':checked');
+        $('input[name="selectedUserIds"]').prop('checked', isChecked);
+    });
+
+    $("#copyButton").prop("disabled", true);
+
+    function checkSelections() {
+        var seasonId = $("#toSeasonId").val();
+        var classroomId = $("#toClassroomId").val();
+
+        if (seasonId && classroomId) {
+            $("#copyButton").prop("disabled", false);
+        } else {
+            $("#copyButton").prop("disabled", true);
+        }
+    }
+
+    $("#toSeasonId, #toClassroomId").change(function () {
+        checkSelections();
+    });
 });

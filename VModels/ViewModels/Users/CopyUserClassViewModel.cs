@@ -1,4 +1,6 @@
-﻿namespace VModels.ViewModels;
+﻿using Models.Helpers;
+
+namespace VModels.ViewModels;
 
 public class CopyUserClassViewModel
 {
@@ -7,5 +9,5 @@ public class CopyUserClassViewModel
     public int ToClassroomId { get; set; }
     public int ToSeasonId { get; set; }
     public string SelectedUserIds { get; set; }
-    public List<UserClassViewModel> From { get; set; }
+    public PaginatedList<UserClassViewModel> From { get; set; }
 }
