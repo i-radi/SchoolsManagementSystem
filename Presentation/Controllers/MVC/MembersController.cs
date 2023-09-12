@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Models.Entities.Identity;
+using Newtonsoft.Json;
 using System.Linq.Dynamic.Core;
 
 namespace Presentation.Controllers.MVC;
@@ -282,7 +283,7 @@ public class MembersController : Controller
     }
 
     // GET: Members/Assign
-    public async Task<IActionResult> Assign(int? orgid, int? schoolid, int? userId, int? gradeid)
+    public async Task<IActionResult> Assign(int? orgid, int? schoolid, int? gradeid,string? userIds)
     {
         var organizations = await _organizationRepo.GetTableNoTracking().ToListAsync();
         var schools = new List<School>();
@@ -291,17 +292,12 @@ public class MembersController : Controller
         var grades = new List<Grade>();
         var classrooms = new List<Classroom>();
         var usertypes = new List<UserType>();
-        var userclass = new UserClassViewModel();
+        var userclass = new MultipleUserClassViewModel();
 
         if (orgid is not null)
         {
             userclass.OrganizationId = (int)orgid;
             schools = _schoolRepo.GetTableNoTracking().Where(s => s.OrganizationId == orgid).ToList();
-        }
-
-        if (userId is not null)
-        {
-            userclass.UserId = (int)userId;
         }
 
         if (schoolid is not null)
@@ -313,13 +309,16 @@ public class MembersController : Controller
                 .Where(u => u.UserOrganizations.Any(uo => uo.OrganizationId == orgid))
                 .ToListAsync();
         }
+        if (userIds is not null)
+        {
+            userclass.SelectedUserIds = userIds.Split(',').Select(id => int.Parse(id)).ToList(); ;
+        }
 
         if (gradeid is not null)
         {
             userclass.GradeId = (int)gradeid;
             userclass.SchoolId = (int)schoolid!;
             userclass.OrganizationId = (int)orgid!;
-            userclass.UserId = userId ?? 0;
             seasons = _seasonRepo.GetTableNoTracking().Where(s => s.SchoolId == schoolid).ToList();
             classrooms = _classroomRepo.GetTableNoTracking().Where(s => s.GradeId == gradeid).ToList();
             usertypes = _userTypeRepo.GetTableNoTracking().ToList();
@@ -339,14 +338,25 @@ public class MembersController : Controller
     // POST: Members/Assign
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Assign(UserClassViewModel userClassVM)
+    public async Task<IActionResult> Assign(MultipleUserClassViewModel userClassVM)
     {
         userClassVM.Id = 0;
         var userClass = _mapper.Map<UserClass>(userClassVM);
-        await _userClassRepo.AddAsync(userClass);
+        var userClasses = new List<UserClass>();
+        foreach (var userId in userClassVM.SelectedUserIds)
+        {
+            userClasses.Add(
+                new UserClass
+                {
+                    ClassroomId = userClassVM.ClassroomId,
+                    SeasonId = userClassVM.SeasonId,
+                    UserTypeId = userClassVM.UserTypeId,
+                    UserId = userId
+                });
+        }
+        await _userClassRepo.AddRangeAsync(userClasses);
         TempData["SuccessMessage"] = "User assigned successfully.";
 
-        userClassVM.UserId = 0;
         ViewData["OrgId"] = new SelectList(_organizationRepo.GetTableNoTracking(), "Id", "Name");
         ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking(), "Id", "Name");
         ViewData["UserId"] = new SelectList(await _userManager.Users

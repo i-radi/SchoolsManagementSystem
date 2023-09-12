@@ -1,4 +1,4 @@
-﻿@model UserClassViewModel
+﻿@model MultipleUserClassViewModel
 
 @{
     ViewData["Title"] = "Assign";
@@ -25,12 +25,16 @@
                 </select>
             </div>
             <div class="form-group">
-                <label asp-for="UserId" class="control-label">User</label>
-                <input type="text" id="userSearch" class="form-control" placeholder="Search by user name">
-                <select id="userDropdown" asp-for="UserId" class="form-control" asp-items="ViewBag.UserId">
-                    <option value="">-- Select Member --</option>
+                <label asp-for="SelectedUserIds">Users</label>
+                <select id="UserIds" asp-for="SelectedUserIds" class="form-control select2-multi" multiple>
+                    @foreach (var user in ViewBag.UserId)
+                    {
+                        <option value="@user.Value">@user.Text</option>
+                    }
                 </select>
+                <span class="text-danger">@Html.ValidationMessageFor(m => m.SelectedUserIds)</span>
             </div>
+
             <div class="form-group">
                 <label asp-for="GradeId" class="control-label">Grade</label>
                 <select id="gradeDropdown" asp-for="GradeId" class="form-control" asp-items="ViewBag.GradeId">
@@ -68,16 +72,25 @@
 
 @section Styles{
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" asp-append-version="true" />
 }
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script src="~/js/members/assign.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         var successMessage = '@TempData["SuccessMessage"]';
         if (successMessage) {
             toastr.success(successMessage); 
         }
+    </script>
+
+    <script src="~/lib/select2/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.select2-multi').select2();
+        });
     </script>
 }

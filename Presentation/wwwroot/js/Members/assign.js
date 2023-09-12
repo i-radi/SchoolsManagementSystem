@@ -38,10 +38,20 @@ $(document).ready(function () {
     $('#gradeDropdown').on('change', function () {
         const selectedOrganizationId = $('#organizationDropdown').val();
         const selectedSchoolId = $('#schoolDropdown').val();
-        const selectedUserId = $('#userDropdown').val();
+        const selectedUserId = $('#UserIds').val();
         const selectedGradeId = $(this).val();
-        const url = `/Members/Assign?orgid=${selectedOrganizationId}&schoolid=${selectedSchoolId}&userId=${selectedUserId}&gradeid=${selectedGradeId}`;
+        const url = `/Members/Assign?orgid=${selectedOrganizationId}&schoolid=${selectedSchoolId}&userIds=${selectedUserId}&gradeid=${selectedGradeId}`;
 
         window.location.href = url;
+    });
+});
+
+$(document).ready(function () {
+    $('#userDropdown').multiselect({
+        enableFiltering: true,  
+        filterPlaceholder: 'Search for users', 
+        nonSelectedText: '-- Select Member --', 
+        maxHeight: 300, 
+        includeSelectAllOption: true  
     });
 });

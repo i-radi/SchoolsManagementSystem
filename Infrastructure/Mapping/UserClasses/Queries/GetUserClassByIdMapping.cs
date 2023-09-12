@@ -11,5 +11,6 @@ public partial class UserClassProfile
             .ForMember(dest => dest.Season, opt => opt.MapFrom(src => src.Season!.From.ToShortDateString()));
 
         CreateMap<UserClass, UserClassViewModel>().ReverseMap();
+        CreateMap<UserClass, MultipleUserClassViewModel>().ReverseMap();
     }
 }
