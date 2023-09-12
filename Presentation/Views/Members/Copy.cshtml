@@ -1,0 +1,97 @@
+﻿@model CopyUserClassViewModel
+
+@{
+    ViewData["Title"] = "Copy";
+}
+<div class="container">
+    <h1 class="display-4">Copy Class Members</h1>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <h1 class="display-6">From</h1>
+            @using (Html.BeginForm("Copy", "Members", FormMethod.Get, new { id = "searchFromClass" }))
+            {
+                <p>
+                    @Html.TextBox("searchUserName", ViewBag.CurrentFilter as string, new { placeholder = "Search by username" })
+
+                    @Html.DropDownList("fromOrgId", ViewBag.OrganizationsList as SelectList, "All Organizations", new { placeholder = "Filter by organization" })
+                    @Html.DropDownList("fromSchoolId", ViewBag.SchoolsList as SelectList, "All Schools", new { placeholder = "Filter by school" })
+                    @Html.DropDownList("fromSeasonId", ViewBag.SeasonsList as SelectList, "All Seasons", new { placeholder = "Filter by season" })
+                    @Html.DropDownList("fromGradeId", ViewBag.GradesList as SelectList, "All Grades", new { placeholder = "Filter by grade" })
+                    @Html.DropDownList("fromClassroomId", ViewBag.ClassroomsList as SelectList, "All Classrooms", new { placeholder = "Filter by classroom" })
+                    @Html.DropDownList("fromUsertypeId", ViewBag.UserTypesList as SelectList, "All UserTypes", new { placeholder = "Filter by usertype" })
+
+                    <input type="submit" value="Search" hidden />
+                </p>
+            }
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>ClassRoom</th>
+                        <th>User</th>
+                        <th>User Type</th>
+                        <th>Season</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.From != null && Model.From.Any())
+                    {
+                        @foreach (var item in Model.From)
+                        {
+                            <tr>
+                                <td><input type="checkbox" name="selectedUserIds" value="@item.UserId" /></td>
+                                <td>@Html.DisplayFor(modelItem => item.Classroom.Name)</td>
+                                <td>@Html.DisplayFor(modelItem => item.User.Name)</td>
+                                <td>@Html.DisplayFor(modelItem => item.UserType.Name)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Season.Name)</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-md-6">
+            <h1 class="display-6">To</h1>
+            @using (Html.BeginForm("Copy", "Members", FormMethod.Get, new { id = "searchToClass" }))
+            {
+                <p>
+                    @Html.DropDownList("toOrgId", ViewBag.OrganizationsList as SelectList, "All Organizations", new { placeholder = "Filter by organization" })
+                    @Html.DropDownList("toSchoolId", ViewBag.SchoolsList as SelectList, "All Schools", new { placeholder = "Filter by school" })
+                    @Html.DropDownList("toSeasonId", ViewBag.SeasonsList as SelectList, "All Seasons", new { placeholder = "Filter by season" })
+                    <br />
+                    @Html.DropDownList("toGradeId", ViewBag.GradesList as SelectList, "All Grades", new { placeholder = "Filter by grade" })
+                    @Html.DropDownList("toClassroomId", ViewBag.ClassroomsList as SelectList, "All Classrooms", new { placeholder = "Filter by classroom" })
+
+                    <input type="submit" value="Search" hidden />
+                </p>
+            }
+
+            <form asp-action="Copy" asp-controller="Members" method="post">
+                @if (Model.From != null && Model.From.Any() && Model.ToSeasonId > 0 && Model.ToClassroomId > 0)
+                {
+                    <button class="btn btn-primary" id="copyButton">Copy Selected Users</button>
+                }
+                else
+                {
+                    <button disabled class="btn btn-primary" id="copyButton">Copy Selected Users</button>
+                }
+                <input type="submit" value="Copy" id="copy" hidden />
+            </form>
+
+        </div>
+    </div>
+</div>
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/members/copy.js"></script>
+}

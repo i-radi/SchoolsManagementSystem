@@ -7,7 +7,8 @@
 <h1>Class Members</h1>
 
 <p>
-    <a asp-action="Assign">Assign New Member</a>
+    <a asp-action="Assign">Assign New Member</a> | 
+    @* <a asp-action="Copy">Copy Class Members</a>   *@
 </p>
 
 @using (Html.BeginForm("Index", "Members", FormMethod.Get, new { id = "searchForm" }))
