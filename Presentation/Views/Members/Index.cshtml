@@ -85,11 +85,14 @@
     <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
         <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageIndex - 1 })">Previous</a>
     </li>
-    @for (int i = 1; i <= Model.TotalPages; i++)
+    @for (int i = Model.PageIndex - 3; i <= Model.PageIndex + 3 && i <= Model.TotalPages; i++)
     {
-        <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-            <a class="page-link" href="@Url.Action("Index", new { pageNumber = i })">@i</a>
-        </li>
+        if (i > 0)
+        {
+            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { pageNumber = i })">@i</a>
+            </li>
+        }
     }
     <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
         <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageIndex + 1 })">Next</a>
@@ -99,21 +102,6 @@
     </li>
 </ul>
 
-@{
-    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
-}
-
-<a asp-action="Index"
-   asp-route-pageNumber="@(Model.PageIndex - 1)"
-   class="btn btn-default @prevDisabled">
-    Previous
-</a>
-<a asp-action="Index"
-   asp-route-pageNumber="@(Model.PageIndex + 1)"
-   class="btn btn-default @nextDisabled">
-    Next
-</a>
 
 @section Scripts {
     @{
