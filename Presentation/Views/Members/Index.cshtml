@@ -3,13 +3,24 @@
 @{
     ViewData["Title"] = "Index";
 }
-
+<form id="downloadQrImagesForm" method="post" action="@Url.Action("DownloadQrImages", "Members")">
+    <input type="hidden" name="userIds" id="userIdsInput" />
+</form>
 <h1>Class Members</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <p>
+                <a asp-action="Assign">Assign New Member</a> |
+                <a asp-action="Copy">Copy Class Members</a>
+            </p>
+        </div>
+        <div class="col-md-6">
+            <button type="submit" id="downloadQrImagesButton" class="btn btn-secondary">Download Users QR Code & Images</button>
+        </div>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Assign">Assign New Member</a> | 
-    <a asp-action="Copy">Copy Class Members</a>  
-</p>
 
 @using (Html.BeginForm("Index", "Members", FormMethod.Get, new { id = "searchForm" }))
 {
@@ -69,7 +80,7 @@
                 </td>
                 <td>
                     <a asp-action="Index" asp-controller="UserRecords" asp-route-userId="@item.UserId">Manage Record</a> |
-                    @Html.ActionLink("Edit", "Edit", new {  id=item.Id }) | 
+                    @Html.ActionLink("Edit", "Edit", new {  id=item.Id }) |
                     @Html.ActionLink("Details", "Details", new { id=item.Id }) |
                     @Html.ActionLink("Delete", "Delete", new { id=item.Id })
                 </td>
@@ -112,6 +123,15 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        $(function () {
+            $("#downloadQrImagesButton").click(function (e) {
+                var selectedUserIds = @Html.Raw(Json.Serialize(Model.Select(item => item.UserId).ToList()))
+                $("#userIdsInput").val(selectedUserIds.join(','));
+                $("#downloadQrImagesForm").submit();
+            });
+        });
+    </script>
     <script src="~/js/members/index.js"></script>
 }
 

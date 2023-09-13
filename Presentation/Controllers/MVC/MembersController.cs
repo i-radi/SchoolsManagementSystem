@@ -1,5 +1,8 @@
-﻿using Models.Entities.Identity;
+﻿using Microsoft.AspNetCore.Hosting;
+using Models.Entities.Identity;
 using Newtonsoft.Json;
+using System.IO;
+using System.IO.Compression;
 using System.Linq.Dynamic.Core;
 
 namespace Presentation.Controllers.MVC;
@@ -21,6 +24,7 @@ public class MembersController : Controller
     private readonly IExportService<UserViewModel> _exportService;
     private readonly IMapper _mapper;
     private readonly ApplicationDBContext _context;
+    private readonly BaseSettings _baseSettings;
     private readonly IWebHostEnvironment _webHostEnvironment;
 
     public MembersController(
@@ -39,6 +43,7 @@ public class MembersController : Controller
         IExportService<UserViewModel> exportService,
         IMapper mapper,
         ApplicationDBContext context,
+        BaseSettings baseSettings,
         IWebHostEnvironment webHostEnvironment)
     {
         _userManager = userManager;
@@ -56,6 +61,7 @@ public class MembersController : Controller
         _exportService = exportService;
         _mapper = mapper;
         _context = context;
+        _baseSettings = baseSettings;
         _webHostEnvironment = webHostEnvironment;
     }
 
@@ -283,7 +289,7 @@ public class MembersController : Controller
     }
 
     // GET: Members/Assign
-    public async Task<IActionResult> Assign(int? orgid, int? schoolid, int? gradeid,string? userIds)
+    public async Task<IActionResult> Assign(int? orgid, int? schoolid, int? gradeid, string? userIds)
     {
         var organizations = await _organizationRepo.GetTableNoTracking().ToListAsync();
         var schools = new List<School>();
@@ -549,7 +555,7 @@ public class MembersController : Controller
 
         var fromClassMembers = PaginatedList<UserClassViewModel>.Create(_mapper.Map<List<UserClassViewModel>>(await userclass.ToListAsync()), pageNumber, pageSize);
 
-        if (fromClassroomId > 0 && fromSeasonId >0)
+        if (fromClassroomId > 0 && fromSeasonId > 0)
         {
             return View(new CopyUserClassViewModel
             {
@@ -594,6 +600,71 @@ public class MembersController : Controller
             return RedirectToAction("Index");
         }
         return View("Copy", model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DownloadQrImages(string userIds)
+    {
+        try
+        {
+            var selectedUserIds = userIds.Split(',')
+                .Select(id => int.Parse(id))
+                .Distinct()
+                .ToList();
+
+            var userImages = await GetUserImagesAsync(selectedUserIds);
+            if (userImages.Count == 0)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var zipFilePath = CreateZipFile(userImages);
+
+            return DownloadZipFile(zipFilePath);
+        }
+        catch (Exception)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
+    private async Task<List<UserImages>> GetUserImagesAsync(List<int> selectedUserIds)
+    {
+        return await _userManager
+            .Users
+            .Where(u => selectedUserIds.Contains(u.Id))
+            .Select(u => new UserImages
+            {
+                ProfilePictureUrl = Path.Combine(_webHostEnvironment.WebRootPath, _baseSettings.usersPath, u.ProfilePicturePath),
+                QRCodeUrl = Path.Combine(_webHostEnvironment.WebRootPath, _baseSettings.qrcodesPath, u.Id + ".png")
+            })
+            .ToListAsync();
+    }
+
+    private string CreateZipFile(List<UserImages> userImages)
+    {
+        var zipFileName = $"images_{DateTime.Now:yyyyMMddHHmmss}.zip";
+        var zipFilePath = Path.Combine(_webHostEnvironment.WebRootPath, _baseSettings.downloadsPath, zipFileName);
+
+        using (var archive = new ZipArchive(new FileStream(zipFilePath, FileMode.Create), ZipArchiveMode.Create))
+        {
+            foreach (var userImage in userImages)
+            {
+                if (!userImage.IsProfilePictureEmpty)
+                {
+                    archive.CreateEntryFromFile(userImage.ProfilePictureUrl, Path.GetFileName(userImage.ProfilePictureUrl));
+                }
+                archive.CreateEntryFromFile(userImage.QRCodeUrl, Path.GetFileName(userImage.QRCodeUrl));
+            }
+        }
+
+        return zipFilePath;
+    }
+
+    private IActionResult DownloadZipFile(string zipFilePath)
+    {
+        byte[] fileBytes = System.IO.File.ReadAllBytes(zipFilePath);
+        return File(fileBytes, "application/zip", Path.GetFileName(zipFilePath));
     }
 
 }

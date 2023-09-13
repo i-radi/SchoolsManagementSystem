@@ -9,4 +9,5 @@ public class BaseSettings
     public string classroomsPath { get; set; } = string.Empty;
     public string usersPath { get; set; } = string.Empty;
     public string attachmentsPath { get; set; } = string.Empty;
+    public string downloadsPath { get; set; } = string.Empty;
 }
