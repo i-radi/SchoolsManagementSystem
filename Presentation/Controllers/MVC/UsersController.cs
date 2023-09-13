@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Utilities;
+using Models.Entities.Identity;
 using NuGet.Packaging;
 using OfficeOpenXml;
 
@@ -14,8 +15,13 @@ public class UsersController : Controller
     private readonly IOrganizationRepo _organizationRepo;
     private readonly IUserOrganizationRepo _userOrganizationRepo;
     private readonly IUserRoleRepo _userRoleRepo;
+    private readonly IUserClassRepo _userClassRepo;
     private readonly ISchoolRepo _schoolRepo;
     private readonly IActivityRepo _activityRepo;
+    private readonly ISeasonRepo _seasonRepo;
+    private readonly IGradeRepo _gradeRepo;
+    private readonly IClassroomRepo _classroomRepo;
+    private readonly IUserTypeRepo _userTypeRepo;
     private readonly IAuthService _authService;
     private readonly IMapper _mapper;
     private readonly ApplicationDBContext _context;
@@ -31,8 +37,13 @@ public class UsersController : Controller
         IOrganizationRepo organizationRepo,
         IUserOrganizationRepo userOrganizationRepo,
         IUserRoleRepo userRoleRepo,
+        IUserClassRepo userClassRepo,
         ISchoolRepo schoolRepo,
         IActivityRepo activityRepo,
+        ISeasonRepo seasonRepo,
+        IGradeRepo gradeRepo,
+        IClassroomRepo classroomRepo,
+        IUserTypeRepo userTypeRepo,
         IAuthService authService,
         IMapper mapper,
         ApplicationDBContext context,
@@ -45,8 +56,13 @@ public class UsersController : Controller
         _organizationRepo = organizationRepo;
         _userOrganizationRepo = userOrganizationRepo;
         _userRoleRepo = userRoleRepo;
+        _userClassRepo = userClassRepo;
         _schoolRepo = schoolRepo;
         _activityRepo = activityRepo;
+        _seasonRepo = seasonRepo;
+        _gradeRepo = gradeRepo;
+        _classroomRepo = classroomRepo;
+        _userTypeRepo = userTypeRepo;
         _logger = logger;
         _signInManager = signInManager;
         _authService = authService;
@@ -524,43 +540,57 @@ public class UsersController : Controller
     }
 
     // GET: Users/AddBulk/
-    public IActionResult AddBulk()
+    public async Task<IActionResult> AddBulk()
     {
-        return View();
+        ViewBag.OrganizationsList = new SelectList(await _organizationRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+        ViewBag.SchoolsList = new SelectList(await _schoolRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+        ViewBag.SeasonsList = new SelectList(await _seasonRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+        ViewBag.GradesList = new SelectList(await _gradeRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+        ViewBag.ClassroomsList = new SelectList(await _classroomRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+        ViewBag.UserTypesList = new SelectList(await _userTypeRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+        return View(new BulkUserClassViewModel());
     }
 
     [HttpPost]
-    public async Task<IActionResult> UploadUserExcel(IFormFile uploadedFile)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddBulk(BulkUserClassViewModel viewModel)
     {
+        ViewBag.OrganizationsList = new SelectList(await _organizationRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+        ViewBag.SchoolsList = new SelectList(await _schoolRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+        ViewBag.SeasonsList = new SelectList(await _seasonRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+        ViewBag.GradesList = new SelectList(await _gradeRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+        ViewBag.ClassroomsList = new SelectList(await _classroomRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
+        ViewBag.UserTypesList = new SelectList(await _userTypeRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
         try
         {
-            var result = new Response<List<UserFormViewModel>>();
+            var result = new Response<List<User>>();
             var allUsers = new List<UserFormViewModel>();
 
-            if (uploadedFile is null || uploadedFile.Length < 1)
+            if (viewModel.Attachment is null || viewModel.Attachment.Length < 1)
             {
                 result.Succeeded = false;
                 result.StatusCode = System.Net.HttpStatusCode.BadRequest;
-                result.Errors.Add("Empty File!");
-                return BadRequest(result);
+                result.Errors.Add("Empty File!!");
+                ModelState.AddModelError(string.Empty, string.Join(", ", result.Errors));
+                return View(viewModel);
             }
 
-            Stream stream = uploadedFile.OpenReadStream();
+            Stream stream = viewModel.Attachment!.OpenReadStream();
             ExcelPackage.LicenseContext = LicenseContext.Commercial;
             using (ExcelPackage package = new ExcelPackage(stream))
             {
                 ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
                 worksheet.TrimLastEmptyRows();
-                int colCount = worksheet.Dimension.Columns;  //get Column Count
-                int rowCount = worksheet.Dimension.Rows;     //get row count
+                int colCount = worksheet.Dimension.Columns;
+                int rowCount = worksheet.Dimension.Rows;
                 if (rowCount < 2)
                 {
                     result.Succeeded = false;
                     result.StatusCode = System.Net.HttpStatusCode.BadRequest;
-                    result.Errors.Add("Empty Sheet!");
-                    return BadRequest(result);
+                    ModelState.AddModelError(string.Empty, "No rows Added!!");
+                    return View(viewModel);
                 }
-                var validationResult = await ValidateSheetAsync(worksheet);
+                var validationResult = ValidateSheetAsync(worksheet);
 
                 if (!validationResult.isValid)
                 {
@@ -568,26 +598,45 @@ public class UsersController : Controller
                     result.StatusCode = System.Net.HttpStatusCode.BadRequest;
                     var errors = validationResult.errors?.ToList();
                     result.Errors = errors!;
-                    return BadRequest(result);
+                    ModelState.AddModelError(string.Empty, string.Join(", ", result.Errors));
+                    return View(viewModel);
                 }
                 allUsers = validationResult.usersInfos;
             }
 
             result = await AddUsersInDataBaseAsync(allUsers!);
-            if (result.StatusCode == System.Net.HttpStatusCode.OK
-                || result.StatusCode == System.Net.HttpStatusCode.MultiStatus)
+            if (!(result.StatusCode == System.Net.HttpStatusCode.OK
+                || result.StatusCode == System.Net.HttpStatusCode.MultiStatus))
             {
-                return Ok(result);
+                ModelState.AddModelError(string.Empty, string.Join(", ", result.Errors));
+                return View(viewModel);
             }
-            return Ok(result);
+
+            if (IsAssignToOrganization(viewModel))
+            {
+                await AssignOrganization(result.Data, viewModel.OrganizationId);
+            }
+
+            if (IsAssignToClassroom(viewModel))
+            {
+                await AssignClassroom(result.Data, viewModel);
+            }
+
+            TempData["SuccessMessage"] = "Users added " +
+                (IsAssignToOrganization(viewModel) ? ", assign to organization " : "") +
+                (IsAssignToClassroom(viewModel) ? "and assign to classroom " : "") +
+                "successfully.";
+
+            return RedirectToAction();
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            ModelState.AddModelError(string.Empty, e.Message);
+            return View(viewModel);
         }
     }
 
-    private async Task<(bool isValid, List<UserFormViewModel>? usersInfos, List<string>? errors)> ValidateSheetAsync(ExcelWorksheet worksheet)
+    private (bool isValid, List<UserFormViewModel>? usersInfos, List<string>? errors) ValidateSheetAsync(ExcelWorksheet worksheet)
     {
         var users = new List<UserFormViewModel>();
         int colCount = worksheet.Dimension.Columns;
@@ -633,30 +682,12 @@ public class UsersController : Controller
             {
                 allErrors.Add($"Required [Name] field is missing in row ({row})");
             }
-            if (worksheet.Cells[row, 3].Value != null)
-            {
-                var organizations = (worksheet.Cells[row, 3].Value?.ToString()?.Trim() ?? "").Split(',');
-                foreach (var orgName in organizations)
-                {
-                    var org = await _organizationRepo
-                        .GetTableNoTracking()
-                        .FirstOrDefaultAsync(o => o.Name == orgName);
-                    if (org is null)
-                    {
-                        allErrors.Add($"organization name ({orgName}) is not found in row ({row})");
-                    }
-                    else
-                    {
-                        user.SelectedOrganizationIds.Add(org.Id);
-                    }
-                }
-            }
-            user.Address = worksheet.Cells[row, 4].Value?.ToString()?.Trim();
-            user.Gender = worksheet.Cells[row, 5].Value?.ToString()?.Trim();
-            if (worksheet.Cells[row, 6].Value != null)
+            user.Address = worksheet.Cells[row, 3].Value?.ToString()?.Trim();
+            user.Gender = worksheet.Cells[row, 4].Value?.ToString()?.Trim();
+            if (worksheet.Cells[row, 5].Value != null)
             {
                 DateTime birthdate;
-                if (DateTime.TryParse(worksheet.Cells[row, 6].Value?.ToString()?.Trim(), out birthdate))
+                if (DateTime.TryParse(worksheet.Cells[row, 5].Value?.ToString()?.Trim(), out birthdate))
                 {
                     user.Birthdate = birthdate;
                 }
@@ -665,14 +696,14 @@ public class UsersController : Controller
                     allErrors.Add($"Invalid date in row ({row})");
                 }
             }
-            user.SchoolUniversityJob = worksheet.Cells[row, 7].Value?.ToString()?.Trim();
-            user.GpsLocation = worksheet.Cells[row, 8].Value?.ToString()?.Trim();
-            user.NationalID = worksheet.Cells[row, 9].Value?.ToString()?.Trim();
-            user.MentorName = worksheet.Cells[row, 10].Value?.ToString()?.Trim();
-            user.FirstMobile = worksheet.Cells[row, 11].Value?.ToString()?.Trim();
-            user.SecondMobile = worksheet.Cells[row, 12].Value?.ToString()?.Trim();
-            user.FatherMobile = worksheet.Cells[row, 13].Value?.ToString()?.Trim();
-            user.MotherMobile = worksheet.Cells[row, 14].Value?.ToString()?.Trim();
+            user.SchoolUniversityJob = worksheet.Cells[row, 6].Value?.ToString()?.Trim();
+            user.GpsLocation = worksheet.Cells[row, 7].Value?.ToString()?.Trim();
+            user.NationalID = worksheet.Cells[row, 8].Value?.ToString()?.Trim();
+            user.MentorName = worksheet.Cells[row, 9].Value?.ToString()?.Trim();
+            user.FirstMobile = worksheet.Cells[row, 10].Value?.ToString()?.Trim();
+            user.SecondMobile = worksheet.Cells[row, 11].Value?.ToString()?.Trim();
+            user.FatherMobile = worksheet.Cells[row, 12].Value?.ToString()?.Trim();
+            user.MotherMobile = worksheet.Cells[row, 13].Value?.ToString()?.Trim();
 
             users.Add(user);
         }
@@ -685,9 +716,10 @@ public class UsersController : Controller
         return (isValid: true, usersInfos: users, errors: null);
     }
 
-    private async Task<Response<List<UserFormViewModel>>> AddUsersInDataBaseAsync(List<UserFormViewModel> users)
+    private async Task<Response<List<User>>> AddUsersInDataBaseAsync(List<UserFormViewModel> users)
     {
-        Response<List<UserFormViewModel>> result = new();
+        Response<List<User>> result = new();
+        result.Data = new List<User>();
         foreach (var user in users)
         {
             var userResult = await AddUserAsync(user);
@@ -698,15 +730,15 @@ public class UsersController : Controller
                 result.StatusCode = userResult.StatusCode;
                 return result;
             }
+            result.Data.Add(userResult.Data);
         }
 
         result.Succeeded = true;
         result.StatusCode = System.Net.HttpStatusCode.OK;
-        result.Data = users;
         return result;
     }
 
-    public async Task<Response<User>> AddUserAsync(UserFormViewModel user)
+    private async Task<Response<User>> AddUserAsync(UserFormViewModel user)
     {
         Response<User> resultUser = new();
 
@@ -749,41 +781,59 @@ public class UsersController : Controller
         _context.User.Update(createdUser);
         await _context.SaveChangesAsync();
 
-        foreach (var selectedOrgId in user.SelectedOrganizationIds)
-        {
-            var userOrg = new UserOrganization
-            {
-                UserId = createdUser.Id,
-                OrganizationId = selectedOrgId
-            };
-            await _userOrganizationRepo.AddAsync(userOrg);
-        }
-
         resultUser.Succeeded = true;
         resultUser.StatusCode = System.Net.HttpStatusCode.OK;
         resultUser.Data = createdUser;
         return resultUser;
     }
 
-    public async Task<IActionResult> DownloadExcelSheet()
+    private async Task<bool> AssignOrganization(List<User> users, int organizationId)
+    {
+        foreach (var user in users)
+        {
+            var userOrg = new UserOrganization
+            {
+                UserId = user.Id,
+                OrganizationId = organizationId
+            };
+            await _userOrganizationRepo.AddAsync(userOrg);
+        }
+        return true;
+    }
+
+    private bool IsAssignToOrganization(BulkUserClassViewModel viewModel)
+    {
+        return viewModel.OrganizationId > 0;
+    }
+
+    private async Task<bool> AssignClassroom(List<User> users, BulkUserClassViewModel viewmodel)
+    {
+        foreach (var user in users)
+        {
+            var userClass = new UserClass
+            {
+                UserId = user.Id,
+                ClassroomId = viewmodel.ClassroomId,
+                SeasonId = viewmodel.SeasonId,
+                UserTypeId = viewmodel.UserTypeId,
+            };
+            await _userClassRepo.AddAsync(userClass);
+        }
+        return true;
+    }
+
+    private bool IsAssignToClassroom(BulkUserClassViewModel viewModel)
+    {
+        return viewModel.ClassroomId > 0 && viewModel.SeasonId > 0 && viewModel.UserTypeId > 0;
+    }
+
+    public IActionResult DownloadExcelSheet()
     {
         var templateFilePath = Path.Combine(_webHostEnvironment.WebRootPath, "files", "Multiple Users Template.xlsx");
 
         ExcelPackage.LicenseContext = LicenseContext.Commercial;
         using (var package = new ExcelPackage(new FileInfo(templateFilePath)))
         {
-            var worksheet = package.Workbook.Worksheets["Sheet1"];
-
-            var validation = worksheet.DataValidations.AddListValidation("C2:C1001");
-            var dropDownValues = await _organizationRepo.GetTableNoTracking().Select(o => o.Name).ToListAsync();
-            var joinedValues = string.Join(",", dropDownValues);
-            validation.Formula.Values.Add(joinedValues);
-            validation.AllowBlank = true;
-            //validation.Formula.ExcelFormula = $"\"{joinedValues}\"";
-            //validation.ShowErrorMessage = true;
-            //validation.ErrorTitle = "Invalid Entry";
-            //validation.Error = "Please select a valid organization name from the list.";
-
             var stream = new MemoryStream(package.GetAsByteArray());
 
             Response.Clear();
@@ -795,6 +845,71 @@ public class UsersController : Controller
         return new EmptyResult();
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetSchoolsByOrganization(int organizationId)
+    {
+        List<School> schools = await _schoolRepo
+            .GetTableNoTracking()
+            .Where(s => s.OrganizationId == organizationId)
+            .ToListAsync();
 
+        var schoolList = schools.Select(school => new SelectListItem
+        {
+            Value = school.Id.ToString(),
+            Text = school.Name
+        }).ToList();
 
+        return Json(schoolList);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetSeasonsBySchool(int schoolId)
+    {
+        var seasons = await _seasonRepo
+            .GetTableNoTracking()
+            .Where(s => s.SchoolId == schoolId)
+            .ToListAsync();
+
+        var seasonsList = seasons.Select(season => new SelectListItem
+        {
+            Value = season.Id.ToString(),
+            Text = season.Name
+        }).ToList();
+
+        return Json(seasonsList);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetGradesBySchool(int schoolId)
+    {
+        var grades = await _gradeRepo
+            .GetTableNoTracking()
+            .Where(s => s.SchoolId == schoolId)
+            .ToListAsync();
+
+        var gradeList = grades.Select(grade => new SelectListItem
+        {
+            Value = grade.Id.ToString(),
+            Text = grade.Name
+        }).ToList();
+
+        return Json(gradeList);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetClassroomsByGrade(int gradeId)
+    {
+        var grades = await _classroomRepo
+            .GetTableNoTracking()
+            .Where(s => s.GradeId == gradeId)
+            .ToListAsync();
+
+        var gradeList = grades.Select(grade => new SelectListItem
+        {
+            Value = grade.Id.ToString(),
+            Text = grade.Name
+        }).ToList();
+
+        return Json(gradeList);
+    }
 }
