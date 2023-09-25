@@ -7,5 +7,6 @@ public partial class UserRoleProfile
     public void GetUserRoleByIdMapping()
     {
         CreateMap<UserRole, GetUserRoleDto>();
+        CreateMap<UserRole, UserRoleViewModel>().ReverseMap();
     }
 }

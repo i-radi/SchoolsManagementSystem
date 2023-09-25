@@ -8,7 +8,6 @@ public partial class UserProfile
     {
         CreateMap<User, GetUserDto>();
         CreateMap<User, GetProfileDto>();
-        CreateMap<User, UserViewModel>()
-            .ReverseMap();
+        CreateMap<User, UserViewModel>().ReverseMap();
     }
 }

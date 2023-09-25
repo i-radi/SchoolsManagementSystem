@@ -6,7 +6,7 @@ public class ActivityTimeViewModel
 {
     public int Id { get; set; }
     public int ActivityId { get; set; }
-    public virtual Activity? Activity { get; set; }
+    public virtual ActivityViewModel? Activity { get; set; }
     public string Day { get; set; } = string.Empty;
     [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime FromTime { get; set; }

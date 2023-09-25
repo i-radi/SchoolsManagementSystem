@@ -11,7 +11,7 @@ public class ClassroomViewModel
     public string? StudentImagePath { get; set; }
     public string? PicturePath { get; set; }
     public int GradeId { get; set; }
-    public virtual Grade? Grade { get; set; }
-    public virtual ICollection<UserClass> UserClasses { get; set; } = new HashSet<UserClass>();
-    public virtual ICollection<ActivityClassroom> ActivityClassrooms { get; set; } = new HashSet<ActivityClassroom>();
+    public virtual GradeViewModel? Grade { get; set; }
+    public virtual ICollection<UserClassViewModel> UserClasses { get; set; } = new HashSet<UserClassViewModel>();
+    public virtual ICollection<ActivityClassroomViewModel> ActivityClassrooms { get; set; } = new HashSet<ActivityClassroomViewModel>();
 }

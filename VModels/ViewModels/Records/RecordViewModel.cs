@@ -1,4 +1,6 @@
-﻿namespace Models.Entities;
+﻿using VModels.ViewModels;
+
+namespace Models.Entities;
 
 public class RecordViewModel
 {
@@ -12,7 +14,7 @@ public class RecordViewModel
     public bool ForStudents { get; set; }
     public int SchoolId { get; set; }
     public int OrganizationId { get; set; }
-    public virtual School? School { get; set; }
-    public virtual ICollection<RecordClass> RecordClasses { get; set; } = new HashSet<RecordClass>();
-    public virtual ICollection<UserRecord> UserRecords { get; set; } = new HashSet<UserRecord>();
+    public virtual SchoolViewModel? School { get; set; }
+    public virtual ICollection<RecordClassViewModel> RecordClasses { get; set; } = new HashSet<RecordClassViewModel>();
+    public virtual ICollection<UserRecordViewModel> UserRecords { get; set; } = new HashSet<UserRecordViewModel>();
 }
