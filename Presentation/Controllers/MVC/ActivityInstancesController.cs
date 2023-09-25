@@ -19,7 +19,6 @@
             _mapper = mapper;
         }
 
-        // GET: ActivityInstances
         public async Task<IActionResult> Index(int? activityId, int? id)
         {
             var models = _activityInstanceRepo.GetTableNoTracking()
@@ -39,7 +38,6 @@
             return View(viewmodels);
         }
 
-        // GET: ActivityInstances/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _activityInstanceRepo.GetTableNoTracking().ToList() == null)
@@ -60,7 +58,6 @@
             return View(activityInstanceVM);
         }
 
-        // GET: ActivityInstances/Create
         public IActionResult Create()
         {
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name");
@@ -68,7 +65,6 @@
             return View();
         }
 
-        // POST: ActivityInstances/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ActivityInstanceViewModel activityInstanceVM)
@@ -84,7 +80,6 @@
             return View(activityInstanceVM);
         }
 
-        // GET: ActivityInstances/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _activityInstanceRepo.GetTableNoTracking().ToList() == null)
@@ -103,7 +98,6 @@
             return View(activityInstanceVM);
         }
 
-        // POST: ActivityInstances/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ActivityInstanceViewModel activityInstanceVM)
@@ -138,7 +132,6 @@
             return View(activityInstanceVM);
         }
 
-        // GET: ActivityInstances/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _activityInstanceRepo.GetTableNoTracking().ToList() == null)
@@ -159,7 +152,6 @@
             return View(activityInstanceVM);
         }
 
-        // POST: ActivityInstances/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

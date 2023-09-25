@@ -16,7 +16,6 @@
             _mapper = mapper;
         }
 
-        // GET: Activities
         public async Task<IActionResult> Index()
         {
             var models = await _activityRepo.GetTableNoTracking().Include(a => a.School).ToListAsync();
@@ -24,7 +23,6 @@
             return View(viewmodels);
         }
 
-        // GET: Activities/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _activityRepo.GetTableNoTracking() == null)
@@ -44,14 +42,12 @@
             return View(viewmodel);
         }
 
-        // GET: Activities/Create
         public IActionResult Create()
         {
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
             return View();
         }
 
-        // POST: Activities/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ActivityViewModel activityVM)
@@ -66,7 +62,6 @@
             return View(activityVM);
         }
 
-        // GET: Activities/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _activityRepo.GetTableNoTracking().ToList() == null)
@@ -84,7 +79,6 @@
             return View(activityVM);
         }
 
-        // POST: Activities/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ActivityViewModel activityVM)
@@ -118,7 +112,6 @@
             return View(activityVM);
         }
 
-        // GET: Activities/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _schoolRepo.GetTableNoTracking().ToList() == null)
@@ -136,7 +129,6 @@
             return View(viewmodel);
         }
 
-        // POST: Activities/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

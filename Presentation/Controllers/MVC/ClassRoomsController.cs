@@ -28,7 +28,6 @@
             _attachmentService = attachmentService;
         }
 
-        // GET: Classrooms
         public async Task<IActionResult> Index(int gradeId)
         {
             var classrooms = _classroomRepo
@@ -47,7 +46,6 @@
             return View(gradesVM);
         }
 
-        // GET: Classrooms/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -65,14 +63,12 @@
             return View(classroomVM);
         }
 
-        // GET: Classrooms/Create
         public IActionResult Create()
         {
             ViewData["GradeId"] = new SelectList(_gradeRepo.GetTableAsTracking().ToList(), "Id", "Name");
             return View();
         }
 
-        // POST: Classrooms/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ClassroomFormViewModel viewmodel)
@@ -134,7 +130,6 @@
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Classrooms/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -163,7 +158,6 @@
             return View(viewModel);
         }
 
-        // POST: Classrooms/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ClassroomFormViewModel classroomVM)
@@ -240,7 +234,6 @@
             return View(classroomVM);
         }
 
-        // GET: Classrooms/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -258,7 +251,6 @@
             return View(classroomVM);
         }
 
-        // POST: Classrooms/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

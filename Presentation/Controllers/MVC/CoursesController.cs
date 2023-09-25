@@ -31,7 +31,6 @@
             _attachmentService = attachmentService;
         }
 
-        // GET: Courses
         public async Task<IActionResult> Index(int schoolId = 0)
         {
             var courses = _courseRepo
@@ -50,7 +49,6 @@
             return View(coursesVM);
         }
 
-        // GET: Courses/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -68,7 +66,6 @@
             return View(courseVM);
         }
 
-        // GET: Courses/Create
         public IActionResult Create()
         {
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
@@ -76,7 +73,6 @@
             return View(new CourseViewModel());
         }
 
-        // POST: Courses/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CourseViewModel courseVM)
@@ -87,7 +83,7 @@
                 course.CourseDetails = new CourseDetails
                 {
                     ContentType = courseVM.ContentType,
-                    Content = courseVM.Content,
+                    Content = courseVM.Content ?? "",
                 };
                 if (courseVM.Attachment is not null)
                 {
@@ -105,7 +101,6 @@
             return View(courseVM);
         }
 
-        // GET: Courses/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -123,7 +118,6 @@
             return View(courseVM);
         }
 
-        // POST: Courses/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, CourseViewModel courseVM)
@@ -178,7 +172,6 @@
             return View(courseVM);
         }
 
-        // GET: Courses/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -196,7 +189,6 @@
             return View(courseVM);
         }
 
-        // POST: Courses/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

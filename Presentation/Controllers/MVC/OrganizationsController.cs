@@ -17,7 +17,6 @@
             _webHostEnvironment = webHostEnvironment;
         }
 
-        // GET: Organizations
         public IActionResult Index(int page = 1, int pageSize = 10, string searchName = "")
         {
             var modelItems = _organizationRepo.GetTableNoTracking();
@@ -32,7 +31,6 @@
             return View(result);
         }
 
-        // GET: Organizations/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -50,13 +48,11 @@
             return View(dto);
         }
 
-        // GET: Organizations/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Organizations/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(OrganizationFormViewModel viewmodel)
@@ -76,7 +72,6 @@
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Organizations/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -98,7 +93,6 @@
             return View(viewModel);
         }
 
-        // POST: Organizations/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, OrganizationFormViewModel organization)
@@ -131,7 +125,6 @@
             return View(organization);
         }
 
-        // GET: Organizations/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -149,7 +142,6 @@
             return View(dto);
         }
 
-        // POST: Organizations/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

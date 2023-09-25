@@ -1,5 +1,4 @@
 ﻿using Infrastructure.Utilities;
-using Models.Entities.Identity;
 using NuGet.Packaging;
 using OfficeOpenXml;
 
@@ -74,7 +73,6 @@ public class UsersController : Controller
     }
 
 
-    // GET: Users
     public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10, string searchName = "", string searchRole = "", int searchOrg = 0)
     {
         IQueryable<User> usersQuery = _userManager.Users
@@ -108,7 +106,6 @@ public class UsersController : Controller
         return View(result);
     }
 
-    // GET: Users/Create
     public IActionResult Create()
     {
         ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
@@ -117,7 +114,6 @@ public class UsersController : Controller
         return View();
     }
 
-    // POST: Users/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(UserFormViewModel user)
@@ -184,7 +180,6 @@ public class UsersController : Controller
         return RedirectToAction(nameof(Index), "Users");
     }
 
-    // GET: Members/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -221,7 +216,6 @@ public class UsersController : Controller
         return View(viewModel);
     }
 
-    // POST: Members/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, UserFormViewModel userVM)
@@ -286,7 +280,6 @@ public class UsersController : Controller
 
     }
 
-    // GET: Users/Details/5
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -306,7 +299,6 @@ public class UsersController : Controller
         return View(result);
     }
 
-    // GET: Users/Delete/5
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
@@ -326,7 +318,6 @@ public class UsersController : Controller
         return View(result);
     }
 
-    // POST: Users/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
@@ -539,7 +530,6 @@ public class UsersController : Controller
         return BadRequest();
     }
 
-    // GET: Users/AddBulk/
     public async Task<IActionResult> AddBulk()
     {
         ViewBag.OrganizationsList = new SelectList(await _organizationRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");

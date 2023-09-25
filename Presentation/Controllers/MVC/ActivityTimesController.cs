@@ -16,7 +16,6 @@
             _mapper = mapper;
         }
 
-        // GET: ActivityTimes
         public async Task<IActionResult> Index(int? activityId)
         {
             var models = _activityTimeRepo.GetTableNoTracking().Include(a => a.Activity).AsQueryable();
@@ -28,7 +27,6 @@
             return View(viewmodels);
         }
 
-        // GET: ActivityTimes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _activityTimeRepo.GetTableNoTracking().ToList() == null)
@@ -48,14 +46,12 @@
             return View(activityTimeVM);
         }
 
-        // GET: ActivityTimes/Create
         public IActionResult Create()
         {
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name");
             return View();
         }
 
-        // POST: ActivityTimes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ActivityTimeViewModel activityTimeVM)
@@ -70,7 +66,6 @@
             return View(activityTimeVM);
         }
 
-        // GET: ActivityTimes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _activityTimeRepo.GetTableNoTracking().ToList() == null)
@@ -88,7 +83,6 @@
             return View(activityTimeVM);
         }
 
-        // POST: ActivityTimes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ActivityTimeViewModel activityTimeVM)
@@ -122,7 +116,6 @@
             return View(activityTimeVM);
         }
 
-        // GET: ActivityTimes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _activityTimeRepo.GetTableNoTracking().ToList() == null)
@@ -142,7 +135,6 @@
             return View(activityTimeVM);
         }
 
-        // POST: ActivityTimes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

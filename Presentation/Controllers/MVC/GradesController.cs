@@ -16,7 +16,6 @@
             _mapper = mapper;
         }
 
-        // GET: Grades
         public async Task<IActionResult> Index(int schoolId)
         {
             var grades = _gradeRepo
@@ -34,7 +33,6 @@
             return View(gradesVM);
         }
 
-        // GET: Grades/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -52,14 +50,12 @@
             return View(gradeVM);
         }
 
-        // GET: Grades/Create
         public IActionResult Create()
         {
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
             return View();
         }
 
-        // POST: Grades/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(GradeViewModel gradeVM)
@@ -75,7 +71,6 @@
             return View(gradeVM);
         }
 
-        // GET: Grades/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -93,7 +88,6 @@
             return View(gradeVM);
         }
 
-        // POST: Grades/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, GradeViewModel gradeVM)
@@ -127,7 +121,6 @@
             return View(gradeVM);
         }
 
-        // GET: Grades/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -145,7 +138,6 @@
             return View(gradeVM);
         }
 
-        // POST: Grades/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

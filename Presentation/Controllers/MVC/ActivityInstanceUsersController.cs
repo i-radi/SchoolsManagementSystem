@@ -19,7 +19,6 @@
             _mapper = mapper;
         }
 
-        // GET: ActivityInstanceUsers
         public async Task<IActionResult> Index(int? instanceId)
         {
             var models = _context.ActivityInstanceUsers.Include(a => a.ActivityInstance).Include(a => a.User).AsQueryable();
@@ -33,7 +32,6 @@
             return View(viewmodels);
         }
 
-        // GET: ActivityInstanceUsers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.ActivityInstanceUsers == null)
@@ -53,7 +51,6 @@
             return View(activityInstanceUserVM);
         }
 
-        // GET: ActivityInstanceUsers/Create
         public async Task<IActionResult> Create(int instanceId)
         {
             var activityInstance = await _context.ActivityInstances
@@ -80,7 +77,6 @@
             return View(new ActivityInstanceUserViewModel());
         }
 
-        // POST: ActivityInstanceUsers/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ActivityInstanceUserViewModel activityInstanceUserVM)
@@ -97,7 +93,6 @@
             return View(activityInstanceUserVM);
         }
 
-        // GET: ActivityInstanceUsers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.ActivityInstanceUsers == null)
@@ -116,7 +111,6 @@
             return View(activityInstanceUserVM);
         }
 
-        // POST: ActivityInstanceUsers/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ActivityInstanceUserViewModel activityInstanceUserVM)
@@ -152,7 +146,6 @@
             return View(activityInstanceUserVM);
         }
 
-        // GET: ActivityInstanceUsers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.ActivityInstanceUsers == null)
@@ -173,7 +166,6 @@
             return View(activityInstanceUserVM);
         }
 
-        // POST: ActivityInstanceUsers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

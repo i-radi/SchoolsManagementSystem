@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Models.Entities.Identity;
-using Newtonsoft.Json;
-using System.IO;
+﻿using Newtonsoft.Json;
 using System.IO.Compression;
 using System.Linq.Dynamic.Core;
 
@@ -65,7 +62,6 @@ public class MembersController : Controller
         _webHostEnvironment = webHostEnvironment;
     }
 
-    // GET: Members
     public async Task<IActionResult> Index(
         int pageNumber = 1,
         int pageSize = 10,
@@ -127,7 +123,6 @@ public class MembersController : Controller
         return View(result);
     }
 
-    // GET: Members/Details/5
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -159,7 +154,6 @@ public class MembersController : Controller
         return View(userclassVM);
     }
 
-    // GET: Members/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -207,7 +201,6 @@ public class MembersController : Controller
         return View(viewModel);
     }
 
-    // POST: Members/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, UserClassViewModel viewModel)
@@ -237,7 +230,6 @@ public class MembersController : Controller
         return View(viewModel);
     }
 
-    // GET: Members/Delete/5
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
@@ -269,7 +261,6 @@ public class MembersController : Controller
         return View(userclassVM);
     }
 
-    // POST: Members/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
@@ -288,7 +279,6 @@ public class MembersController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // GET: Members/Assign
     public async Task<IActionResult> Assign(int? orgid, int? schoolid, int? gradeid, string? userIds)
     {
         var organizations = await _organizationRepo.GetTableNoTracking().ToListAsync();
@@ -341,7 +331,6 @@ public class MembersController : Controller
         return View(userclass);
     }
 
-    // POST: Members/Assign
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Assign(MultipleUserClassViewModel userClassVM)

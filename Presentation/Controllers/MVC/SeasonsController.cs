@@ -16,7 +16,6 @@
             _mapper = mapper;
         }
 
-        // GET: Seasons
         public async Task<IActionResult> Index(int schoolId)
         {
             var seasons = _seasonRepo.GetTableNoTracking().Include(s => s.School).AsQueryable();
@@ -28,7 +27,6 @@
             return View(seasonsVM);
         }
 
-        // GET: Seasons/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -46,14 +44,12 @@
             return View(seasonVM);
         }
 
-        // GET: Seasons/Create
         public IActionResult Create()
         {
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
             return View();
         }
 
-        // POST: Seasons/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SeasonViewModel seasonVM)
@@ -68,7 +64,6 @@
             return View(seasonVM);
         }
 
-        // GET: Seasons/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -86,7 +81,6 @@
             return View(seasonVM);
         }
 
-        // POST: Seasons/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, SeasonViewModel seasonVM)
@@ -120,7 +114,6 @@
             return View(seasonVM);
         }
 
-        // GET: Seasons/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -138,7 +131,6 @@
             return View(seasonVM);
         }
 
-        // POST: Seasons/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

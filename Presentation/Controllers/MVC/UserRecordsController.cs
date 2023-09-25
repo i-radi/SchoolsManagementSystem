@@ -22,7 +22,6 @@
             _mapper = mapper;
         }
 
-        // GET: UserRecords
         public async Task<IActionResult> Index(string searchUserName = "", int userId = 0)
         {
             var userRecords = _userRecordRepo
@@ -46,7 +45,6 @@
             return View(userRecordsVM);
         }
 
-        // GET: UserRecords/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -64,7 +62,6 @@
             return View(userRecordVM);
         }
 
-        // GET: UserRecords/Create
         public IActionResult Create(int userId = 0)
         {
             ViewData["RecordId"] = new SelectList(_recordRepo.GetTableNoTracking().Where(r => r.Available).ToList(), "Id", "Name");
@@ -81,7 +78,6 @@
             return View(new UserRecordViewModel { UserId = userId });
         }
 
-        // POST: UserRecords/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserRecordViewModel userRecordVM)
@@ -97,7 +93,6 @@
             return View(userRecordVM);
         }
 
-        // GET: UserRecords/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -116,7 +111,6 @@
             return View(userRecordVM);
         }
 
-        // POST: UserRecords/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, UserRecordViewModel userRecordVM)
@@ -150,7 +144,6 @@
             return View(userRecordVM);
         }
 
-        // GET: UserRecords/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -168,7 +161,6 @@
             return View(userRecordVM);
         }
 
-        // POST: UserRecords/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

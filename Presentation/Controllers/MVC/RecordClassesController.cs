@@ -21,7 +21,6 @@ namespace Presentation.Controllers.MVC
             _recordClassRepo = recordClassRepo;
         }
 
-        // GET: RecordClass
         public IActionResult Index(int? recordId)
         {
             var recordClass = _recordClassRepo.GetTableNoTracking()
@@ -42,7 +41,6 @@ namespace Presentation.Controllers.MVC
             return View(result);
         }
 
-        // GET: RecordClass/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -68,7 +66,6 @@ namespace Presentation.Controllers.MVC
             return View(recordClassVM);
         }
 
-        // GET: RecordClass/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -99,7 +96,6 @@ namespace Presentation.Controllers.MVC
             return View(viewModel);
         }
 
-        // POST: RecordClass/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, RecordClassViewModel viewModel)
@@ -127,7 +123,6 @@ namespace Presentation.Controllers.MVC
             return View(viewModel);
         }
 
-        // GET: RecordClass/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -152,7 +147,6 @@ namespace Presentation.Controllers.MVC
             return View(recordClassVM);
         }
 
-        // POST: RecordClass/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -171,7 +165,6 @@ namespace Presentation.Controllers.MVC
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: RecordClass/Assign
         public async Task<IActionResult> Assign(int? recordId)
         {
             ViewBag.ClassroomId = new SelectList(_classroomRepo.GetTableNoTracking(), "Id", "Name");
@@ -186,7 +179,6 @@ namespace Presentation.Controllers.MVC
             return View(recordClass);
         }
 
-        // POST: RecordClass/Assign
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Assign(RecordClassViewModel userClassVM)

@@ -19,7 +19,6 @@
             _mapper = mapper;
         }
 
-        // GET: ActivityClassrooms
         public async Task<IActionResult> Index(int? activityId)
         {
             var models = _activityClassroomRepo.GetTableNoTracking().Include(a => a.Activity).Include(a => a.Classroom).AsQueryable();
@@ -32,7 +31,6 @@
             return View(viewmodels);
         }
 
-        // GET: ActivityClassrooms/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _activityClassroomRepo.GetTableNoTracking().ToList() == null)
@@ -52,7 +50,6 @@
             return View(activityClassroomVM);
         }
 
-        // GET: ActivityClassrooms/Create
         public IActionResult Create()
         {
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name");
@@ -60,7 +57,6 @@
             return View();
         }
 
-        // POST: ActivityClassrooms/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ActivityClassroomViewModel activityClassroomVM)
@@ -76,7 +72,6 @@
             return View(activityClassroomVM);
         }
 
-        // GET: ActivityClassrooms/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _activityClassroomRepo.GetTableNoTracking().ToList() == null)
@@ -95,7 +90,6 @@
             return View(activityClassroomVM);
         }
 
-        // POST: ActivityClassrooms/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ActivityClassroomViewModel activityClassroomVM)
@@ -131,7 +125,6 @@
             return View(activityClassroomVM);
         }
 
-        // GET: ActivityClassrooms/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _activityClassroomRepo.GetTableNoTracking().ToList() == null)
@@ -152,7 +145,6 @@
             return View(activityClassroomVM);
         }
 
-        // POST: ActivityClassrooms/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
