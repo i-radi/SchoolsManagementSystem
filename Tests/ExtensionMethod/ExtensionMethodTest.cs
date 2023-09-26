@@ -1,10 +1,7 @@
-﻿
-using Elfie.Serialization;
-using EntityFrameworkCore.Testing.Common;
+﻿using EntityFrameworkCore.Testing.Common;
 using FluentAssertions;
 using Models.Entities;
 using Models.Entities.Identity;
-using Moq;
 using Tests.Wrappers.Interfaces;
 
 namespace Tests.ExtensionMethod

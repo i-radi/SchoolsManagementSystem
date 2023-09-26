@@ -1,6 +1,4 @@
-﻿using Models.Helpers;
-
-namespace Tests.Wrappers.Interfaces
+﻿namespace Tests.Wrappers.Interfaces
 {
     public interface IPaginatedService<T>
     {

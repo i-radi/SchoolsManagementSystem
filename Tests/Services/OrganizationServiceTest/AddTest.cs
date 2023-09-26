@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Humanizer;
 using Models.Entities;
 
 namespace Test.Services.OrganizationServiceTest;
