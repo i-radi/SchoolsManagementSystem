@@ -22,7 +22,7 @@ public class UpdateTest
     public async Task Update_ValidItem_ReturnsSuccess(int id)
     {
         //Arrange
-        var recordClass = new RecordClass() {Id = 1, RecordId = 1, ClassroomId = 1 };
+        var recordClass = new RecordClass() { Id = 1, RecordId = 1, ClassroomId = 1 };
         _recordClassRepoMock.Setup(x => x.GetByIdAsync(id)).Returns(Task.FromResult(recordClass));
 
         var recordClassDto = new UpdateRecordClassDto() { Id = 1, RecordId = 1, ClassroomId = 2 };

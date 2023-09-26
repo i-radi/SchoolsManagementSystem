@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Models.Entities;
 
 namespace Tests.Services.Records;
 
