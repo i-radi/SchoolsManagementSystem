@@ -1,7 +1,7 @@
 ﻿using Infrastructure.Mapping;
 using System.Reflection;
 
-namespace Test;
+namespace Tests;
 
 public static class MapperMock
 {

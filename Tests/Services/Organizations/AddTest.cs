@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Models.Entities;
 
-namespace Test.Services.OrganizationServiceTest;
+namespace Tests.Services.Organizations;
 
 public class AddTest
 {

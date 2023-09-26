@@ -4,12 +4,12 @@ using Models.Entities;
 using Models.Entities.Identity;
 using Tests.Wrappers.Interfaces;
 
-namespace Tests.ExtensionMethod
+namespace Tests.ExtensionMethods
 {
-    public class ExtensionMethodTest
+    public class PaginatedMethodTest
     {
         private readonly Mock<IPaginatedService<User>> _paginatedServiceMock;
-        public ExtensionMethodTest()
+        public PaginatedMethodTest()
         {
             _paginatedServiceMock = new();
         }

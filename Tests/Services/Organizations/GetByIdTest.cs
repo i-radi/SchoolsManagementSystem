@@ -2,7 +2,7 @@
 using Models.Entities;
 using Tests.PassData;
 
-namespace Test.Services.OrganizationServiceTest;
+namespace Tests.Services.Organizations;
 
 public class GetByIdTest
 {
