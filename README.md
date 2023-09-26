@@ -1,8 +1,8 @@
 # SchoolsManagementSystem
-ASP.NET 6 API Project
+ASP.NET 7 API Project
 
 ## Prerequisites
-.net 6 SDK, sql server
+.net 7 SDK, sql server
 
 ## How to run porject?
 1- change your database connection string in *appsettings (Presentation Layer)*
