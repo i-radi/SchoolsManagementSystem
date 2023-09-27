@@ -2,6 +2,7 @@
 
 public class JwtAuthResult
 {
+    public int Id { get; set; }
     public string Email { get; set; } = string.Empty;
     public bool IsSuperAdmin { get; set; }
     public List<RoleResult> Roles { get; set; } = new List<RoleResult>();

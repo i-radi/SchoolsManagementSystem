@@ -214,6 +214,7 @@ public class AuthService : IAuthService
 
         var response = new JwtAuthResult
         {
+            Id = user.Id,
             AccessToken = accessToken,
             AccessTokenExpiryDate = expireDate,
             RefreshToken = refreshToken,
