@@ -11,14 +11,21 @@ public class UserClassService : IUserClassService
         _mapper = mapper;
     }
 
-    public Response<List<GetUserClassDto>> GetAll(int pageNumber, int pageSize)
+    public Response<List<GetUserClassDto>> GetAll(int pageNumber, int pageSize, int userId = 0)
     {
         var modelItems = _userClassesRepo.GetTableNoTracking()
             .Include(m => m.Classroom)
             .Include(m => m.User)
             .Include(m => m.Season)
-            .Include(m => m.UserType);
-        var result = PaginatedList<GetUserClassDto>.Create(_mapper.Map<List<GetUserClassDto>>(modelItems), pageNumber, pageSize);
+            .Include(m => m.UserType)
+            .AsQueryable();
+
+        if (userId > 0)
+        {
+            modelItems = modelItems.Where(m => m.UserId == userId);
+        }
+
+        var result = PaginatedList<GetUserClassDto>.Create(_mapper.Map<List<GetUserClassDto>>(modelItems.ToList()), pageNumber, pageSize);
 
         return ResponseHandler.Success(_mapper.Map<List<GetUserClassDto>>(result));
     }

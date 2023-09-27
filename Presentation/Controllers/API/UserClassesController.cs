@@ -1,6 +1,9 @@
-﻿namespace Presentation.Controllers.API;
+﻿using Humanizer;
+using Microsoft.IdentityModel.Tokens;
 
-[Authorize]
+namespace Presentation.Controllers.API;
+
+//[Authorize]
 [Route("api/user-classes")]
 [ApiController]
 public class UserClassesController : ControllerBase
@@ -16,6 +19,22 @@ public class UserClassesController : ControllerBase
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
         return Ok(_userClassService.GetAll(pageNumber, pageSize));
+    }
+
+    [HttpGet("by-user")]
+    public IActionResult GetAllByUserId(int pageNumber = 1, int pageSize = 10, int userId = 0)
+    {
+        if (userId <= 0)
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("Invalid User Id."));
+        }
+
+        var dtos = _userClassService.GetAll(pageNumber, pageSize, userId);
+        
+        if (dtos.Data.IsNullOrEmpty())
+            return BadRequest(ResponseHandler.BadRequest<string>("Not Found UserClasses."));
+
+        return Ok(dtos);
     }
 
     [HttpGet("{id}")]
