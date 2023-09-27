@@ -6,12 +6,18 @@ public class SchoolService : ISchoolService
 {
     private readonly ISeasonRepo _seasonRepo;
     private readonly ISchoolRepo _schoolsRepo;
+    private readonly BaseSettings _baseSettings;
     private readonly IMapper _mapper;
 
-    public SchoolService(ISeasonRepo seasonRepo, ISchoolRepo schoolsRepo, IMapper mapper)
+    public SchoolService(
+        ISeasonRepo seasonRepo,
+        ISchoolRepo schoolsRepo,
+        BaseSettings baseSettings,
+        IMapper mapper)
     {
         _seasonRepo = seasonRepo;
         _schoolsRepo = schoolsRepo;
+        _baseSettings = baseSettings;
         _mapper = mapper;
     }
 
@@ -91,12 +97,27 @@ public class SchoolService : ISchoolService
                                 {
                                     classDto.Users.Add(new UserDto
                                     {
-                                        UserEmail = userclass.User!.Email!,
+                                        Id = userclass.User!.Id,
+                                        Email = userclass.User.Email!,
                                         UserName = userclass.User.Name,
                                         Gender = userclass.User.Gender,
+                                        Name = userclass.User.Name,
+                                        PhoneNumber = userclass.User.PhoneNumber!,
+                                        Address = userclass.User.Address,
+                                        Birthdate = userclass.User.Birthdate,
+                                        PositionType = userclass.User.PositionType,
+                                        SchoolUniversityJob = userclass.User.SchoolUniversityJob,
+                                        UserTypeId = userclass.UserTypeId,
+                                        FirstMobile = userclass.User.FirstMobile,
+                                        SecondMobile = userclass.User.SecondMobile,
+                                        FatherMobile = userclass.User.FatherMobile,
+                                        MotherMobile = userclass.User.MotherMobile,
+                                        MentorName = userclass.User.MentorName,
+                                        GpsLocation = userclass.User.GpsLocation,
+                                        Notes = userclass.User.Notes,
+                                        ParticipationNumber = userclass.User.ParticipationNumber,
                                         NationalID = userclass.User.NationalID,
-                                        ProfilePicturePath = userclass.User.ProfilePicturePath,
-                                        UserTypeId = userclass.UserTypeId
+                                        ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{userclass.User.ProfilePicturePath}"
                                     });
                                 }
                             }

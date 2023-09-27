@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Presentation.Controllers.API;
 
-//[Authorize]
+[Authorize]
 [Route("api/user-classes")]
 [ApiController]
 public class UserClassesController : ControllerBase
