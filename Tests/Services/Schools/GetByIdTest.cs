@@ -16,7 +16,7 @@ public class GetByIdTest
         _mapperMock = MapperMock.GetAllProfile();
         _schoolRepoMock = new();
         _seasonRepoMock = new();
-        _schoolService = new(_seasonRepoMock.Object, _schoolRepoMock.Object, _mapperMock);
+        _schoolService = new(_seasonRepoMock.Object, _schoolRepoMock.Object, null, _mapperMock);
     }
 
     [Theory]
