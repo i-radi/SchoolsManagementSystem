@@ -18,6 +18,7 @@ public class AuthService : IAuthService
     private readonly UserManager<User> _userManager;
     private readonly ApplicationDBContext _applicationDBContext;
     private readonly IUserRoleRepo _userRoleRepo;
+    private readonly IUserClassRepo _userClassRepo;
     private readonly IMapper _mapper;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly BaseSettings _baseSettings;
@@ -29,6 +30,7 @@ public class AuthService : IAuthService
         UserManager<User> userManager,
         ApplicationDBContext applicationDBContext,
         IUserRoleRepo userRoleRepo,
+        IUserClassRepo userClassRepo,
         IMapper mapper,
         IWebHostEnvironment webHostEnvironment,
         BaseSettings baseSettings
@@ -38,6 +40,7 @@ public class AuthService : IAuthService
         _userManager = userManager;
         _applicationDBContext = applicationDBContext;
         _userRoleRepo = userRoleRepo;
+        _userClassRepo = userClassRepo;
         _mapper = mapper;
         _webHostEnvironment = webHostEnvironment;
         _baseSettings = baseSettings;
@@ -213,7 +216,9 @@ public class AuthService : IAuthService
 
         var (accessToken, expireDate) = await GenerateJWTToken(user);
         var response = CreateJwtResponse(user, refreshToken, userroles, accessToken, expireDate);
-        await AddRolesToJwtAuthResult(userroles, response);
+        SetUserInformations(user, response);
+        await SetRoles(userroles, response);
+        await SetClassrooms(user, response);
 
         var updatedUser = await UpdateAccessAndRefreshToken(user, response);
         if (!updatedUser.Succeeded)
@@ -221,15 +226,6 @@ public class AuthService : IAuthService
             return new JwtAuthResult { IsAuthenticated = false };
         }
         return response;
-    }
-
-    private async Task<IdentityResult> UpdateAccessAndRefreshToken(User user, JwtAuthResult response)
-    {
-        user.AccessToken = response.AccessToken;
-        user.RefreshToken = response.RefreshToken;
-        user.RefreshTokenExpiryDate = response.RefreshTokenExpiryDate;
-        var updatedUser = await _userManager.UpdateAsync(user);
-        return updatedUser;
     }
 
     private JwtAuthResult CreateJwtResponse(User user, Guid refreshToken, List<UserRole> userroles, string accessToken, DateTime expireDate)
@@ -242,12 +238,34 @@ public class AuthService : IAuthService
             RefreshToken = refreshToken,
             RefreshTokenExpiryDate = DateTime.Now.AddMinutes(_jwtSettings.RefreshTokenExpireDate),
             IsAuthenticated = true,
-            Email = user.Email ?? string.Empty,
             IsSuperAdmin = userroles.Any(r => r.Role!.Name == "SuperAdmin"),
         };
     }
 
-    private async Task AddRolesToJwtAuthResult(List<UserRole> userroles, JwtAuthResult response)
+    private void SetUserInformations(User user, JwtAuthResult response)
+    {
+        response.UserInformations.Name = user.Name;
+        response.UserInformations.Email = user.Email!;
+        response.UserInformations.Birthdate = user.Birthdate;
+        response.UserInformations.Address = user.Address;
+        response.UserInformations.PhoneNumber = user.PhoneNumber!;
+        response.UserInformations.UserName = user.UserName!;
+        response.UserInformations.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{user.ProfilePicturePath}";
+        response.UserInformations.FatherMobile = user.FatherMobile;
+        response.UserInformations.MotherMobile = user.MotherMobile;
+        response.UserInformations.FirstMobile = user.FirstMobile;
+        response.UserInformations.SecondMobile = user.SecondMobile;
+        response.UserInformations.Gender = user.Gender;
+        response.UserInformations.GpsLocation = user.GpsLocation;
+        response.UserInformations.MentorName = user.MentorName;
+        response.UserInformations.NationalID = user.NationalID;
+        response.UserInformations.Notes = user.Notes;
+        response.UserInformations.SchoolUniversityJob = user.SchoolUniversityJob;
+        response.UserInformations.PositionType = user.PositionType;
+        response.UserInformations.ParticipationNumber = user.ParticipationNumber;
+    }
+
+    private async Task SetRoles(List<UserRole> userroles, JwtAuthResult response)
     {
         foreach (var role in userroles)
         {
@@ -262,6 +280,77 @@ public class AuthService : IAuthService
                 Activity = (await _applicationDBContext.Activities.FirstOrDefaultAsync(o => o.Id == role.ActivityId))?.Name!,
             });
         }
+    }
+
+    private async Task SetClassrooms(User user, JwtAuthResult response)
+    {
+        var userClassrooms = await _userClassRepo
+            .GetTableNoTracking()
+            .Include(ur => ur.Season)
+            .Include(ur => ur.UserType)
+            .Include(ur => ur.Classroom)
+            .ThenInclude(c => c.Grade)
+            .ThenInclude(g => g.School)
+            .ThenInclude(s => s.Organization)
+            .AsSplitQuery()
+            .Where(ur => ur.UserId == user.Id)
+            .ToListAsync();
+
+        foreach (var item in userClassrooms)
+        {
+            response.Classrooms.Add(
+                new ClassroomResult
+                {
+                    Id = item.ClassroomId,
+                    Name = item.Classroom.Name,
+                    PicturePath = item.Classroom.PicturePath,
+                    Location = item.Classroom.Location,
+                    Order = item.Classroom.Order,
+                    StudentImagePath = item.Classroom.StudentImagePath,
+                    TeacherImagePath = item.Classroom.TeacherImagePath,
+                    Grade = new GradeResult
+                    {
+                        Id = item.Classroom.GradeId,
+                        Name = item.Classroom.Grade.Name,
+                        Description = item.Classroom.Grade.Description
+                    },
+                    Season = new SeasonResult
+                    {
+                        Id = item.SeasonId,
+                        Name = item.Season.Name,
+                        From = item.Season.From,
+                        To = item.Season.To,
+                        IsCurrent = item.Season.IsCurrent,
+                    },
+                    UserType = new UserTypeResult 
+                    { 
+                        Id = item.UserTypeId,
+                        Name = item.UserType.Name
+                    },
+                    School = new SchoolResult
+                    {
+                        Id = item.Classroom.Grade.SchoolId,
+                        Name = item.Classroom.Grade.School.Name,
+                        PicturePath = item.Classroom.Grade.School.PicturePath,
+                        Description = item.Classroom.Grade.School.Description
+                    },
+                    Organization = new OrganizationResult
+                    {
+                        Id = item.Classroom.Grade.School.OrganizationId,
+                        Name = item.Classroom.Grade.School.Organization.Name,
+                        PicturePath = item.Classroom.Grade.School.Organization.PicturePath,
+                    }
+                });
+        }
+    }
+
+    private async Task<IdentityResult> UpdateAccessAndRefreshToken(User user, JwtAuthResult response)
+    {
+        user.AccessToken = response.AccessToken;
+        user.RefreshToken = response.RefreshToken;
+        user.RefreshTokenExpiryDate = response.RefreshTokenExpiryDate;
+        var updatedUser = await _userManager.UpdateAsync(user);
+        return updatedUser;
     }
 
     private async Task<(string accessToken, DateTime expiryDate)> GenerateJWTToken(User user)
