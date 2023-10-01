@@ -210,9 +210,31 @@ public class AuthService : IAuthService
             .Include(ur => ur.Role)
             .Where(ur => ur.UserId == user.Id)
             .ToListAsync();
-        var (accessToken, expireDate) = await GenerateJWTToken(user);
 
-        var response = new JwtAuthResult
+        var (accessToken, expireDate) = await GenerateJWTToken(user);
+        var response = CreateJwtResponse(user, refreshToken, userroles, accessToken, expireDate);
+        await AddRolesToJwtAuthResult(userroles, response);
+
+        var updatedUser = await UpdateAccessAndRefreshToken(user, response);
+        if (!updatedUser.Succeeded)
+        {
+            return new JwtAuthResult { IsAuthenticated = false };
+        }
+        return response;
+    }
+
+    private async Task<IdentityResult> UpdateAccessAndRefreshToken(User user, JwtAuthResult response)
+    {
+        user.AccessToken = response.AccessToken;
+        user.RefreshToken = response.RefreshToken;
+        user.RefreshTokenExpiryDate = response.RefreshTokenExpiryDate;
+        var updatedUser = await _userManager.UpdateAsync(user);
+        return updatedUser;
+    }
+
+    private JwtAuthResult CreateJwtResponse(User user, Guid refreshToken, List<UserRole> userroles, string accessToken, DateTime expireDate)
+    {
+        return new JwtAuthResult
         {
             Id = user.Id,
             AccessToken = accessToken,
@@ -223,6 +245,10 @@ public class AuthService : IAuthService
             Email = user.Email ?? string.Empty,
             IsSuperAdmin = userroles.Any(r => r.Role!.Name == "SuperAdmin"),
         };
+    }
+
+    private async Task AddRolesToJwtAuthResult(List<UserRole> userroles, JwtAuthResult response)
+    {
         foreach (var role in userroles)
         {
             response.Roles.Add(new()
@@ -236,16 +262,6 @@ public class AuthService : IAuthService
                 Activity = (await _applicationDBContext.Activities.FirstOrDefaultAsync(o => o.Id == role.ActivityId))?.Name!,
             });
         }
-
-        user.AccessToken = response.AccessToken;
-        user.RefreshToken = response.RefreshToken;
-        user.RefreshTokenExpiryDate = response.RefreshTokenExpiryDate;
-        var updatedUser = await _userManager.UpdateAsync(user);
-        if (!updatedUser.Succeeded)
-        {
-            return new JwtAuthResult { IsAuthenticated = false };
-        }
-        return response;
     }
 
     private async Task<(string accessToken, DateTime expiryDate)> GenerateJWTToken(User user)

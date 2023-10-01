@@ -58,7 +58,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-#region Seed 3 roles and superAdmin user only first time
+#region Intiate database
 
 using (var scope = app.Services.CreateScope())
 {
