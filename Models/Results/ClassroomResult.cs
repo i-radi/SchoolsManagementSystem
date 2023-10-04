@@ -9,11 +9,16 @@ public class ClassroomResult
     public string? PicturePath { get; set; }
     public string? TeacherImagePath { get; set; }
     public string? StudentImagePath { get; set; }
-    public UserTypeResult? UserType { get; set; }
-    public GradeResult? Grade { get; set; }
-    public SeasonResult? Season { get; set; }
-    public SchoolResult? School { get; set; }
-    public OrganizationResult? Organization { get; set; }
+    public int UserTypeId { get; set; }
+    public string? UserTypeName { get; set; }
+    public int GradeId { get; set; }
+    public string? GradeName { get; set; }
+    public int SeasonId { get; set; }
+    public string? SeasonName { get; set; }
+    public int SchoolId { get; set; }
+    public string? SchoolName { get; set; }
+    public int OrganizationId { get; set; }
+    public string? OrganizationName { get; set; }
 }
 
 public class GradeResult

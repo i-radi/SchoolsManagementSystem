@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Models.Entities;
 using Models.Entities.Identity;
 using Persistance.Context;
 using System.IdentityModel.Tokens.Jwt;
@@ -293,7 +294,7 @@ public class AuthService : IAuthService
             .ThenInclude(g => g.School)
             .ThenInclude(s => s.Organization)
             .AsSplitQuery()
-            .Where(ur => ur.UserId == user.Id)
+            .Where(ur => ur.UserId == user.Id && ur.Season.IsCurrent)
             .ToListAsync();
 
         foreach (var item in userClassrooms)
@@ -308,38 +309,16 @@ public class AuthService : IAuthService
                     Order = item.Classroom.Order,
                     StudentImagePath = item.Classroom.StudentImagePath,
                     TeacherImagePath = item.Classroom.TeacherImagePath,
-                    Grade = new GradeResult
-                    {
-                        Id = item.Classroom.GradeId,
-                        Name = item.Classroom.Grade.Name,
-                        Description = item.Classroom.Grade.Description
-                    },
-                    Season = new SeasonResult
-                    {
-                        Id = item.SeasonId,
-                        Name = item.Season.Name,
-                        From = item.Season.From,
-                        To = item.Season.To,
-                        IsCurrent = item.Season.IsCurrent,
-                    },
-                    UserType = new UserTypeResult 
-                    { 
-                        Id = item.UserTypeId,
-                        Name = item.UserType.Name
-                    },
-                    School = new SchoolResult
-                    {
-                        Id = item.Classroom.Grade.SchoolId,
-                        Name = item.Classroom.Grade.School.Name,
-                        PicturePath = item.Classroom.Grade.School.PicturePath,
-                        Description = item.Classroom.Grade.School.Description
-                    },
-                    Organization = new OrganizationResult
-                    {
-                        Id = item.Classroom.Grade.School.OrganizationId,
-                        Name = item.Classroom.Grade.School.Organization.Name,
-                        PicturePath = item.Classroom.Grade.School.Organization.PicturePath,
-                    }
+                    GradeId = item.Classroom.GradeId,
+                    GradeName = item.Classroom.Grade.Name,
+                    SeasonId = item.SeasonId,
+                    SeasonName = item.Season.Name,
+                    UserTypeId = item.UserTypeId,
+                    UserTypeName = item.UserType.Name,
+                    SchoolId = item.Classroom.Grade.SchoolId,
+                    SchoolName = item.Classroom.Grade.School.Name,
+                    OrganizationId = item.Classroom.Grade.School.OrganizationId,
+                    OrganizationName = item.Classroom.Grade.School.Organization.Name,
                 });
         }
     }
