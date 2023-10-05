@@ -3,6 +3,7 @@
 [Authorize]
 [Route("api/activity-instances")]
 [ApiController]
+[ApiExplorerSettings(GroupName = "Activities")]
 public class ActivityInstancesController : ControllerBase
 {
     private readonly IActivityInstanceService _activityInstanceService;

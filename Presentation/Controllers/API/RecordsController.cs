@@ -3,6 +3,7 @@
 [Authorize]
 [Route("api/records")]
 [ApiController]
+[ApiExplorerSettings(GroupName = "Records")]
 public class RecordsController : ControllerBase
 {
     private readonly IRecordService _recordService;

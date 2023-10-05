@@ -3,6 +3,7 @@
 [Authorize]
 [Route("api/seasons")]
 [ApiController]
+[ApiExplorerSettings(GroupName = "Seasons")]
 public class SeasonsController : ControllerBase
 {
     private readonly ISeasonService _seasonService;

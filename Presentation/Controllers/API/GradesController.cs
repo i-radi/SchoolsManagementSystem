@@ -3,6 +3,7 @@
 [Authorize]
 [Route("api/grades")]
 [ApiController]
+[ApiExplorerSettings(GroupName = "Grades")]
 public class GradesController : ControllerBase
 {
     private readonly IGradeService _gradeService;

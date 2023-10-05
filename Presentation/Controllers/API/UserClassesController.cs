@@ -6,6 +6,7 @@ namespace Presentation.Controllers.API;
 [Authorize]
 [Route("api/user-classes")]
 [ApiController]
+[ApiExplorerSettings(GroupName = "Users")]
 public class UserClassesController : ControllerBase
 {
     private readonly IUserClassService _userClassService;

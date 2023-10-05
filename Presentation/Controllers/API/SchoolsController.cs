@@ -3,6 +3,7 @@
 //[Authorize]
 [Route("api/schools")]
 [ApiController]
+[ApiExplorerSettings(GroupName = "Schools")]
 public class SchoolsController : ControllerBase
 {
     private readonly ISchoolService _schoolService;

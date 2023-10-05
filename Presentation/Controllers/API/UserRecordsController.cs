@@ -3,6 +3,7 @@
 [Authorize]
 [Route("api/user-records")]
 [ApiController]
+[ApiExplorerSettings(GroupName = "Users")]
 public class UserRecordsController : ControllerBase
 {
     private readonly IUserRecordService _userRecordService;

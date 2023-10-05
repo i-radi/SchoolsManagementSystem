@@ -3,6 +3,7 @@
 [Authorize]
 [Route("api/activity-times")]
 [ApiController]
+[ApiExplorerSettings(GroupName = "Activities")]
 public class ActivityTimesController : ControllerBase
 {
     private readonly IActivityTimeService _activityTimeService;

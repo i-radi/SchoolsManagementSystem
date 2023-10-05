@@ -3,6 +3,7 @@
 [Authorize]
 [Route("api/activity-classrooms")]
 [ApiController]
+[ApiExplorerSettings(GroupName = "Activities")]
 public class ActivityClassroomsController : ControllerBase
 {
     private readonly IActivityClassroomService _activityClassroomService;

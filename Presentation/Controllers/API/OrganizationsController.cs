@@ -3,6 +3,7 @@
 [Authorize]
 [Route("api/organizations")]
 [ApiController]
+[ApiExplorerSettings(GroupName = "Organizations")]
 public class OrganizationsController : ControllerBase
 {
     private readonly IOrganizationService _organizationService;

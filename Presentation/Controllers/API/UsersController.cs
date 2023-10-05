@@ -3,6 +3,7 @@
 [Authorize]
 [Route("api/users")]
 [ApiController]
+[ApiExplorerSettings(GroupName = "Users")]
 public class UsersController : ControllerBase
 {
     private readonly SignInManager<User> _signInManager;

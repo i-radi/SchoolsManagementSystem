@@ -3,6 +3,7 @@
 [Authorize]
 [Route("api/activities")]
 [ApiController]
+[ApiExplorerSettings(GroupName = "Activities")]
 public class ActivitiesController : ControllerBase
 {
     private readonly IActivityService _activityService;

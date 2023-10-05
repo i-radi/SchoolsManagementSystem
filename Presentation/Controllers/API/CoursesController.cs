@@ -3,6 +3,7 @@
 [Authorize]
 [Route("api/courses")]
 [ApiController]
+[ApiExplorerSettings(GroupName = "Courses")]
 public class CoursesController : ControllerBase
 {
     private readonly ICourseService _courseService;

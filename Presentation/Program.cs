@@ -72,7 +72,22 @@ if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/Identity/swagger.json", "Identity");
+        options.SwaggerEndpoint("/swagger/Users/swagger.json", "Users");
+        options.SwaggerEndpoint("/swagger/Organizations/swagger.json", "Organizations");
+        options.SwaggerEndpoint("/swagger/Schools/swagger.json", "Schools");
+        options.SwaggerEndpoint("/swagger/Seasons/swagger.json", "Seasons");
+        options.SwaggerEndpoint("/swagger/Grades/swagger.json", "Grades");
+        options.SwaggerEndpoint("/swagger/Classes/swagger.json", "Classes");
+        options.SwaggerEndpoint("/swagger/Courses/swagger.json", "Courses");
+        options.SwaggerEndpoint("/swagger/Activities/swagger.json", "Activities");
+        options.SwaggerEndpoint("/swagger/Records/swagger.json", "Records");
+        options.RoutePrefix = "swagger";
+        options.DisplayRequestDuration();
+        options.DefaultModelsExpandDepth(-1);
+    });
 }
 else
 {

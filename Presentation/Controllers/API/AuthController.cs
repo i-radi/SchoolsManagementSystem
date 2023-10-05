@@ -6,6 +6,7 @@ namespace Presentation.Controllers.API;
 [Authorize]
 [Route("api/auth")]
 [ApiController]
+[ApiExplorerSettings(GroupName = "Identity")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
