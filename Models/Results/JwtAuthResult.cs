@@ -4,9 +4,9 @@ public class JwtAuthResult
 {
     public int Id { get; set; }
     public bool IsSuperAdmin { get; set; }
-    public UserInformation UserInformations { get; set; } = new UserInformation();
-    public List<RoleResult> Roles { get; set; } = new List<RoleResult>();
-    public List<ClassroomResult> Classrooms { get; set; } = new List<ClassroomResult>();
+    //public UserInformation UserInformations { get; set; } = new UserInformation();
+    //public List<RoleResult> Roles { get; set; } = new List<RoleResult>();
+    //public List<ClassroomResult> Classrooms { get; set; } = new List<ClassroomResult>();
     public bool IsAuthenticated { get; set; }
     public string AccessToken { get; set; } = string.Empty;
     public DateTime AccessTokenExpiryDate { get; set; }

@@ -1,4 +1,5 @@
-﻿using VModels.DTOS.Auth;
+﻿using Models.Entities.Identity;
+using VModels.DTOS.Auth;
 
 namespace Core.IServices;
 
@@ -11,4 +12,7 @@ public interface IAuthService
     Task<Response<JwtAuthResult>> UpdateAsync(ChangeUserDto dto);
     Task<Response<JwtAuthResult>> RefreshTokenAsync(RefreshTokenInputDto dto);
     Task<Response<bool>> RevokeTokenAsync(string username);
+    Task<Response<List<RoleResult>>> GetUserRoles(int userId);
+    Task<Response<List<ClassroomResult>>> GetUserClassrooms(int userId);
+
 }

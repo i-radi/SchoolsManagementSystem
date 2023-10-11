@@ -1,10 +1,12 @@
 ﻿using Infrastructure.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.IdentityModel.Tokens;
 using Models.Entities;
 using Models.Entities.Identity;
+using Models.Results;
 using Persistance.Context;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -218,9 +220,9 @@ public class AuthService : IAuthService
 
         var (accessToken, expireDate) = await GenerateJWTToken(user);
         var response = CreateJwtResponse(user, refreshToken, userroles, accessToken, expireDate);
-        SetUserInformations(user, response);
-        await SetRoles(userroles, response);
-        await SetClassrooms(user, response);
+        //SetUserInformations(user, response);
+        //await SetRoles(userroles, response);
+        //await SetClassrooms(user, response);
 
         var updatedUser = await UpdateAccessAndRefreshToken(user, response);
         if (updatedUser.Entity.Id != user.Id)
@@ -244,6 +246,8 @@ public class AuthService : IAuthService
         };
     }
 
+    #region SetUserInformations&SetRoles& SetClassrooms
+    /*
     private void SetUserInformations(User user, JwtAuthResult response)
     {
         response.UserInformations.Name = user.Name;
@@ -323,7 +327,8 @@ public class AuthService : IAuthService
                 });
         }
     }
-
+    */
+    #endregion
     private async Task<EntityEntry<User>> UpdateAccessAndRefreshToken(User user, JwtAuthResult response)
     {
         user.AccessToken = response.AccessToken;
@@ -410,6 +415,76 @@ public class AuthService : IAuthService
         {
             return ResponseHandler.UnprocessableEntity<bool>(ex.Message);
         }
+    }
+
+    public async Task<Response<List<RoleResult>>> GetUserRoles(int userId)
+    {
+        var roleResult = new List<RoleResult>();
+        var userroles = await _userRoleRepo
+                                .GetTableNoTracking()
+                                .Include(ur => ur.Role)
+                                .Where(ur => ur.UserId == userId)
+                                .ToListAsync();
+
+        foreach (var role in userroles)
+        {
+            roleResult.Add(new()
+            {
+                UserRoleId = role.Id,
+                Name = role.Role!.Name!,
+                OrganizationId = role.OrganizationId,
+                Organization = (await _applicationDBContext.Organizations.FirstOrDefaultAsync(o => o.Id == role.OrganizationId))?.Name!,
+                SchoolId = role.SchoolId,
+                School = (await _applicationDBContext.Schools.FirstOrDefaultAsync(o => o.Id == role.SchoolId))?.Name!,
+                ActivityId = role.ActivityId,
+                Activity = (await _applicationDBContext.Activities.FirstOrDefaultAsync(o => o.Id == role.ActivityId))?.Name!,
+            });
+        }
+        return ResponseHandler.Success<List<RoleResult>>(roleResult);
+    }
+
+    public async Task<Response<List<ClassroomResult>>> GetUserClassrooms(int userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        var classroomsResult = new List<ClassroomResult>();
+
+        var userClassrooms = await _userClassRepo
+            .GetTableNoTracking()
+            .Include(ur => ur.Season)
+            .Include(ur => ur.UserType)
+            .Include(ur => ur.Classroom)
+            .ThenInclude(c => c.Grade)
+            .ThenInclude(g => g.School)
+            .ThenInclude(s => s.Organization)
+            .AsSplitQuery()
+            .Where(ur => ur.UserId == user.Id && ur.Season.IsCurrent)
+            .ToListAsync();
+
+        foreach (var item in userClassrooms)
+        {
+            classroomsResult.Add(
+                new ClassroomResult
+                {
+                    Id = item.ClassroomId,
+                    Name = item.Classroom.Name,
+                    PicturePath = item.Classroom.PicturePath,
+                    Location = item.Classroom.Location,
+                    Order = item.Classroom.Order,
+                    StudentImagePath = item.Classroom.StudentImagePath,
+                    TeacherImagePath = item.Classroom.TeacherImagePath,
+                    GradeId = item.Classroom.GradeId,
+                    GradeName = item.Classroom.Grade.Name,
+                    SeasonId = item.SeasonId,
+                    SeasonName = item.Season.Name,
+                    UserTypeId = item.UserTypeId,
+                    UserTypeName = item.UserType.Name,
+                    SchoolId = item.Classroom.Grade.SchoolId,
+                    SchoolName = item.Classroom.Grade.School.Name,
+                    OrganizationId = item.Classroom.Grade.School.OrganizationId,
+                    OrganizationName = item.Classroom.Grade.School.Organization.Name,
+                });
+        }
+        return ResponseHandler.Success<List<ClassroomResult>>(classroomsResult);
     }
 
     #endregion

@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Utilities;
+using Models.Helpers;
 using Models.Results;
 
 namespace Presentation.Controllers.API;
@@ -11,19 +12,25 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly RoleManager<Role> _roleManager;
+    private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
     private readonly IUserRoleService _userRoleService;
+    private readonly BaseSettings _baseSettings;
 
     public AuthController(
         IAuthService authService,
         RoleManager<Role> roleManager,
+        IMapper mapper,
         UserManager<User> userManager,
-        IUserRoleService userRoleService)
+        IUserRoleService userRoleService,
+        BaseSettings baseSettings)
     {
         _authService = authService;
         _roleManager = roleManager;
+        _mapper = mapper;
         _userManager = userManager;
         _userRoleService = userRoleService;
+        _baseSettings = baseSettings;
     }
 
     [AllowAnonymous]
@@ -43,6 +50,59 @@ public class AuthController : ControllerBase
         {
             result = await _authService.LoginByUserNameAsync(model);
         }
+
+        if (!result.Succeeded)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [HttpGet("user-details/{id}")]
+    public async Task<IActionResult> GetUserDetailsById(int id)
+    {
+        var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+        
+        if (modelItem is null)
+        {
+            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
+        }
+        
+        if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
+        {
+            modelItem.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{modelItem.ProfilePicturePath}";
+        }
+
+        var result = _mapper.Map<GetProfileDto>(modelItem);
+        return Ok(ResponseHandler.Success(result));
+    }
+
+    [HttpGet("user-roles-details/{userId}")]
+    public async Task<IActionResult> GetUserRolesByUserId(int userId)
+    {
+        var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (modelItem is null)
+        {
+            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
+        }
+
+        var result = await _authService.GetUserRoles(userId);
+
+        if (!result.Succeeded)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [HttpGet("user-classes-details/{userId}")]
+    public async Task<IActionResult> GetUserClassesByUserId(int userId)
+    {
+        var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (modelItem is null)
+        {
+            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
+        }
+
+        var result = await _authService.GetUserClassrooms(userId);
 
         if (!result.Succeeded)
             return BadRequest(result);
