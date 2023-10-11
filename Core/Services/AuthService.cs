@@ -1,6 +1,7 @@
 ﻿using Infrastructure.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.IdentityModel.Tokens;
 using Models.Entities;
 using Models.Entities.Identity;
@@ -222,7 +223,7 @@ public class AuthService : IAuthService
         await SetClassrooms(user, response);
 
         var updatedUser = await UpdateAccessAndRefreshToken(user, response);
-        if (!updatedUser.Succeeded)
+        if (updatedUser.Entity.Id != user.Id)
         {
             return new JwtAuthResult { IsAuthenticated = false };
         }
@@ -323,12 +324,13 @@ public class AuthService : IAuthService
         }
     }
 
-    private async Task<IdentityResult> UpdateAccessAndRefreshToken(User user, JwtAuthResult response)
+    private async Task<EntityEntry<User>> UpdateAccessAndRefreshToken(User user, JwtAuthResult response)
     {
         user.AccessToken = response.AccessToken;
         user.RefreshToken = response.RefreshToken;
         user.RefreshTokenExpiryDate = response.RefreshTokenExpiryDate;
-        var updatedUser = await _userManager.UpdateAsync(user);
+        EntityEntry<User> updatedUser = _applicationDBContext.Users.Update(user);
+        await _applicationDBContext.SaveChangesAsync();
         return updatedUser;
     }
 
@@ -370,19 +372,15 @@ public class AuthService : IAuthService
 
         #region Validation
 
-        var token = new JwtSecurityTokenHandler().ReadJwtToken(dto.AccessToken);
-        var username = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
-
-        var user = await _userManager.FindByNameAsync(username);
+        var user = await _applicationDBContext.Users.AsNoTracking().FirstOrDefaultAsync(s => s.AccessToken == dto.AccessToken);
         if (user is null)
         {
             return ResponseHandler.BadRequest<JwtAuthResult>("Invalid token");
         }
 
-        if (user.AccessToken != dto.AccessToken
-            || user.RefreshToken != dto.RefreshToken)
+        if (user.RefreshToken != dto.RefreshToken)
         {
-            return ResponseHandler.BadRequest<JwtAuthResult>("Token is invalid");
+            return ResponseHandler.BadRequest<JwtAuthResult>("RefreshToken is invalid");
         }
 
         if (user.RefreshTokenExpiryDate <= DateTime.Now)
@@ -393,7 +391,7 @@ public class AuthService : IAuthService
         #endregion
 
         #region Generating Token 
-        var generateToken = await GetJWTToken(user, user.RefreshToken);
+        var generateToken = await GetJWTToken(user, Guid.NewGuid());
         return ResponseHandler.Success(generateToken);
         #endregion
 
