@@ -1,6 +1,7 @@
 ﻿using Infrastructure.Utilities;
 using Models.Helpers;
 using Models.Results;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Presentation.Controllers.API;
 
@@ -33,7 +34,65 @@ public class AuthController : ControllerBase
         _baseSettings = baseSettings;
     }
 
+
+    [SwaggerOperation(Tags = new[] { "User Informations" })]
+    [HttpGet("user-details/{id}")]
+    public async Task<IActionResult> GetUserDetailsById(int id)
+    {
+        var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+        
+        if (modelItem is null)
+        {
+            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
+        }
+        
+        if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
+        {
+            modelItem.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{modelItem.ProfilePicturePath}";
+        }
+
+        var result = _mapper.Map<GetProfileDto>(modelItem);
+        return Ok(ResponseHandler.Success(result));
+    }
+
+    [SwaggerOperation(Tags = new[] { "User Informations" })]
+    [HttpGet("user-roles-details/{userId}")]
+    public async Task<IActionResult> GetUserRolesByUserId(int userId)
+    {
+        var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (modelItem is null)
+        {
+            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
+        }
+
+        var result = await _authService.GetUserRoles(userId);
+
+        if (!result.Succeeded)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [SwaggerOperation(Tags = new[] { "User Informations" })]
+    [HttpGet("user-classes-details/{userId}")]
+    public async Task<IActionResult> GetUserClassesByUserId(int userId)
+    {
+        var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (modelItem is null)
+        {
+            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
+        }
+
+        var result = await _authService.GetUserClassrooms(userId);
+
+        if (!result.Succeeded)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
     [AllowAnonymous]
+    [SwaggerOperation(Tags = new[] { "Identity" })]
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto model)
     {
@@ -57,60 +116,8 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("user-details/{id}")]
-    public async Task<IActionResult> GetUserDetailsById(int id)
-    {
-        var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
-        
-        if (modelItem is null)
-        {
-            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
-        }
-        
-        if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
-        {
-            modelItem.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{modelItem.ProfilePicturePath}";
-        }
-
-        var result = _mapper.Map<GetProfileDto>(modelItem);
-        return Ok(ResponseHandler.Success(result));
-    }
-
-    [HttpGet("user-roles-details/{userId}")]
-    public async Task<IActionResult> GetUserRolesByUserId(int userId)
-    {
-        var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-        if (modelItem is null)
-        {
-            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
-        }
-
-        var result = await _authService.GetUserRoles(userId);
-
-        if (!result.Succeeded)
-            return BadRequest(result);
-
-        return Ok(result);
-    }
-
-    [HttpGet("user-classes-details/{userId}")]
-    public async Task<IActionResult> GetUserClassesByUserId(int userId)
-    {
-        var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-        if (modelItem is null)
-        {
-            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
-        }
-
-        var result = await _authService.GetUserClassrooms(userId);
-
-        if (!result.Succeeded)
-            return BadRequest(result);
-
-        return Ok(result);
-    }
-
     [AllowAnonymous]
+    [SwaggerOperation(Tags = new[] { "Identity" })]
     [HttpPost("refresh-token")]
     public async Task<IActionResult> GetRefreshTokenAsync(RefreshTokenInputDto model)
     {
@@ -125,6 +132,7 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    [SwaggerOperation(Tags = new[] { "Identity" })]
     [HttpDelete("revoke-token")]
     public async Task<IActionResult> RevokeTokenAsync(string username)
     {
@@ -139,6 +147,22 @@ public class AuthController : ControllerBase
         return Ok("done.");
     }
 
+    [SwaggerOperation(Tags = new[] { "Identity" })]
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangeUserPasswordAsync(ChangeUserPasswordDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _authService.ChangeUserPasswordAsync(dto);
+
+        if (!result.Succeeded)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [SwaggerOperation(Tags = new[] { "Identity" })]
     [HttpPut("change-user-email-or-password/{id}")]
     public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] ChangeUserDto dto)
     {
@@ -153,6 +177,7 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    [SwaggerOperation(Tags = new[] { "Roles" })]
     [HttpGet("roles")]
     public async Task<IActionResult> GetRoles()
     {
@@ -165,15 +190,16 @@ public class AuthController : ControllerBase
         return Ok(roles);
     }
 
-    [HttpPost("user-roles/{userId}")]
-    public async Task<IActionResult> AddUserRoles([FromRoute] int userId, UserRoleRequest request)
+    [SwaggerOperation(Tags = new[] { "Roles" })]
+    [HttpPost("user-roles")]
+    public async Task<IActionResult> AddUserRoles(UserRoleRequest request)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == request.UserId);
         if (user == null)
         {
             return BadRequest(ResponseHandler.BadRequest<string>("Invalid User Id."));
         }
-        var dto = request.ToDto(userId);
+        var dto = request.ToDto(request.UserId);
         if ((await _userRoleService.IsExists(dto)).Data)
         {
             return BadRequest(ResponseHandler.BadRequest<string>("This role already exists."));
@@ -186,15 +212,41 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
-    [HttpDelete("user-roles/{userId}")]
-    public async Task<IActionResult> DeleteUserRoles([FromRoute] int userId, UserRoleRequest request)
+    [SwaggerOperation(Tags = new[] { "Roles" })]
+    [HttpDelete("user-roles/{userRoleId}")]
+    public async Task<IActionResult> DeleteUserRoles(int userRoleId)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        var userRoleResponse = await _userRoleService.GetById(userRoleId);
+        if (userRoleResponse is null || userRoleResponse.Data is null)
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("Invalid UserRole Id."));
+        }
+        var dto = new AddUserRoleDto
+        {
+            UserId = userRoleResponse.Data.UserId,
+            RoleId = userRoleResponse.Data.RoleId,
+            OrganizationId = userRoleResponse.Data.OrganizationId,
+            SchoolId = userRoleResponse.Data.SchoolId,
+            ActivityId = userRoleResponse.Data.ActivityId
+        };
+        var result = await _userRoleService.Delete(dto);
+        if (!result.Succeeded)
+        {
+            return BadRequest(result);
+        }
+        return Ok(result);
+    }
+
+    [SwaggerOperation(Tags = new[] { "Roles" })]
+    [HttpDelete("user-roles")]
+    public async Task<IActionResult> DeleteUserRoles(UserRoleRequest request)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == request.UserId);
         if (user == null)
         {
             return BadRequest(ResponseHandler.BadRequest<string>("Invalid User Id."));
         }
-        var dto = request.ToDto(userId);
+        var dto = request.ToDto(request.UserId);
         if (!(await _userRoleService.IsExists(dto)).Data)
         {
             return BadRequest(ResponseHandler.BadRequest<string>("This role not exist."));

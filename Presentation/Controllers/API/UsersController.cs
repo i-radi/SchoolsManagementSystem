@@ -105,20 +105,6 @@ public class UsersController : ControllerBase
         return Ok(ResponseHandler.Success(userDto));
     }
 
-    [HttpPut("change-password")]
-    public async Task<IActionResult> ChangeUserPasswordAsync(ChangeUserPasswordDto dto)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var result = await _authService.ChangeUserPasswordAsync(dto);
-
-        if (!result.Succeeded)
-            return BadRequest(result);
-
-        return Ok(result);
-    }
-
     [HttpPut("change-image/{id}")]
     public async Task<IActionResult> UploadImage(int id, IFormFile image)
     {
