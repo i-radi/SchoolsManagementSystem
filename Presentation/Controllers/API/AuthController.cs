@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Utilities;
+using Microsoft.AspNetCore.Hosting;
 using Models.Helpers;
 using Models.Results;
 using Swashbuckle.AspNetCore.Annotations;
@@ -16,6 +17,8 @@ public class AuthController : ControllerBase
     private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
     private readonly IUserRoleService _userRoleService;
+    private readonly IAttachmentService _attachmentService;
+    private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly BaseSettings _baseSettings;
 
     public AuthController(
@@ -24,6 +27,8 @@ public class AuthController : ControllerBase
         IMapper mapper,
         UserManager<User> userManager,
         IUserRoleService userRoleService,
+        IAttachmentService attachmentService,
+        IWebHostEnvironment webHostEnvironment,
         BaseSettings baseSettings)
     {
         _authService = authService;
@@ -31,6 +36,8 @@ public class AuthController : ControllerBase
         _mapper = mapper;
         _userManager = userManager;
         _userRoleService = userRoleService;
+        _attachmentService = attachmentService;
+        _webHostEnvironment = webHostEnvironment;
         _baseSettings = baseSettings;
     }
 
@@ -257,5 +264,55 @@ public class AuthController : ControllerBase
             return BadRequest(result);
         }
         return Ok(result);
+    }
+
+    [HttpPut("change-image/{id}")]
+    [SwaggerOperation(description: "maximum image size equals (5 MB) <br/> allowed formats: jpg, jpeg, png, gif.", Tags = new[] { "Identity" })]
+    public async Task<IActionResult> UploadImage(int id, IFormFile image)
+    {
+        var modelItem = await _userManager.Users
+            .FirstOrDefaultAsync(u => u.Id == id);
+        if (modelItem is null)
+        {
+            return NotFound(ResponseHandler.NotFound<string>("not found user.."));
+        }
+
+        if (image is null || image.Length == 0)
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("Invalid image."));
+        }
+
+        if (image.Length > 5 * 1024 * 1024)
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("Image size exceeds the limit (5 MB)."));
+        }
+
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+        var fileExtension = Path.GetExtension(image.FileName).ToLower();
+        if (!allowedExtensions.Contains(fileExtension))
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>("Invalid file format. Allowed formats: jpg, jpeg, png, gif."));
+        }
+
+        modelItem.ProfilePicturePath = await _attachmentService.Upload(
+            image,
+            _webHostEnvironment,
+            _baseSettings.usersPath,
+            $"{modelItem.UserName}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
+
+        var updatedModel = await _userManager.UpdateAsync(modelItem);
+
+        if (!updatedModel.Succeeded)
+        {
+            return BadRequest(ResponseHandler.BadRequest<string>(updatedModel.Errors.ToString()));
+        }
+
+        if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
+        {
+            modelItem.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{modelItem.ProfilePicturePath}";
+        }
+
+        var result = _mapper.Map<GetUserDto>(modelItem);
+        return Ok(ResponseHandler.Success(result));
     }
 }

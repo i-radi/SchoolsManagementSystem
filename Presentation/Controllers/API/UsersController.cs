@@ -106,6 +106,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("change-image/{id}")]
+    [Obsolete("This endpoint is deprecated. Use the new endpoint in identity group.", false)]
     public async Task<IActionResult> UploadImage(int id, IFormFile image)
     {
         var modelItem = await _userManager.Users
