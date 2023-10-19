@@ -43,10 +43,10 @@ public class EmailService : IEmailService
         var clientId = _configuration["Google:ClientId"]!;
         var clientSecret = _configuration["Google:ClientSecret"]!;
 
-        await SendMailAsync(_emailSettings, fromMailAddress, clientId, clientSecret, message);
+        await SendMailAsync(fromMailAddress, clientId, clientSecret, message);
     }
 
-    private async Task SendMailAsync(EmailSettings emailSettings, MailAddress fromMailAddress, string clientId, string clientSecret, MailMessage message)
+    private async Task SendMailAsync(MailAddress fromMailAddress, string clientId, string clientSecret, MailMessage message)
     {
         var credential = await GetOAuth2CredentialAsync(clientId, clientSecret);
 
