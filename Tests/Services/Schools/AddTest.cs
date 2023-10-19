@@ -15,7 +15,7 @@ public class AddTest
         _mapperMock = MapperMock.GetAllProfile();
         _schoolRepoMock = new();
         _seasonRepoMock = new();
-        _Schoolservice = new(_seasonRepoMock.Object, _schoolRepoMock.Object,null,  _mapperMock);
+        _Schoolservice = new(_seasonRepoMock.Object, _schoolRepoMock.Object, null, _mapperMock);
     }
 
     [Fact]

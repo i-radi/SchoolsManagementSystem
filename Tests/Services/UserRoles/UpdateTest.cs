@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Models.Entities;
 using Models.Entities.Identity;
 
 namespace Tests.Services.UserRoles;
@@ -45,7 +44,7 @@ public class UpdateTest
         //Arrange
         _userRoleRepoMock.Setup(x => x.GetByIdAsync(id)).Returns(Task.FromResult<UserRole>(null));
 
-        var userRoleDto = new UpdateUserRoleDto() { Id = 1, RoleId = 1, UserId = 2};
+        var userRoleDto = new UpdateUserRoleDto() { Id = 1, RoleId = 1, UserId = 2 };
 
         //Act
         var result = await _userRoleService.Update(userRoleDto);

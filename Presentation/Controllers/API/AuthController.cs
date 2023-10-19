@@ -1,6 +1,4 @@
 ﻿using Infrastructure.Utilities;
-using Microsoft.AspNetCore.Hosting;
-using Models.Helpers;
 using Models.Results;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -47,12 +45,12 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> GetUserDetailsById(int id)
     {
         var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
-        
+
         if (modelItem is null)
         {
             return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
         }
-        
+
         if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
         {
             modelItem.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{modelItem.ProfilePicturePath}";

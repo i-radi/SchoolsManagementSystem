@@ -1,5 +1,4 @@
-﻿using Humanizer;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 
 namespace Presentation.Controllers.API;
 
@@ -31,7 +30,7 @@ public class UserClassesController : ControllerBase
         }
 
         var dtos = _userClassService.GetAll(pageNumber, pageSize, userId);
-        
+
         if (dtos.Data.IsNullOrEmpty())
             return BadRequest(ResponseHandler.BadRequest<string>("Not Found UserClasses."));
 

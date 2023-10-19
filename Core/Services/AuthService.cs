@@ -1,12 +1,9 @@
 ﻿using Infrastructure.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.IdentityModel.Tokens;
-using Models.Entities;
 using Models.Entities.Identity;
-using Models.Results;
 using Persistance.Context;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Models.Entities;
 using Models.Entities.Identity;
 
 namespace Tests.Services.UserRoles;

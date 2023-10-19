@@ -15,12 +15,14 @@ builder.Services.AddDbContext<ApplicationDBContext>(option =>
 #endregion
 
 #region Dependency injections
+#pragma warning disable CS0612 // Type or member is obsolete
+builder.Services.AddSerilogRegisteration(builder.Configuration, builder.Host);
+#pragma warning restore CS0612 // Type or member is obsolete
 
 builder.Services.AddPersistanceDependencies()
                  .AddInfrastructureDependencies(builder.Configuration)
                  .AddCoreDependencies()
                  .AddPersistanceServiceRegisteration(builder.Configuration)
-                 .AddSerilogRegisteration(builder.Configuration, builder.Host)
                  .AddInfrastructureServiceRegisteration(builder.Configuration);
 
 builder.Services.AddControllersWithViews()

@@ -1,5 +1,4 @@
-﻿using Models.Entities.Identity;
-using VModels.DTOS.Auth;
+﻿using VModels.DTOS.Auth;
 
 namespace Core.IServices;
 
