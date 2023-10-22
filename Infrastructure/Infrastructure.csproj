@@ -11,13 +11,12 @@
     <PackageReference Include="EPPlus" Version="6.2.8" />
     <PackageReference Include="FluentValidation" Version="11.7.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.7.1" />
-    <PackageReference Include="Google.Apis.Auth" Version="1.62.1" />
-    <PackageReference Include="Google.Apis.Gmail.v1" Version="1.62.1.3196" />
+    <PackageReference Include="MailKit" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
+    <PackageReference Include="MimeKit" Version="4.2.0" />
     <PackageReference Include="QRCoderNetCore" Version="1.0.0" />
-    <PackageReference Include="RestSharp" Version="110.2.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="Serilog.Sinks.Email" Version="2.4.0" />

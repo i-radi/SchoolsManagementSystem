@@ -49,7 +49,7 @@ public class ErrorHandlerMiddleware
                     $" Time : {DateTime.Now.ToShortTimeString()}</br>" +
                     $" User Email : {userName}</br> User Role : {userRole}</br>" +
                     $" Response Model : {JsonSerializer.Serialize(responseModel)}";
-                await _emailSender.SendEmailAsync(message);
+                _emailSender.SendEmail(message);
             }
 
             switch (error)

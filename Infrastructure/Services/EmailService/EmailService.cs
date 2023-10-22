@@ -1,90 +1,59 @@
-﻿using Google.Apis.Auth.OAuth2;
-using Google.Apis.Gmail.v1;
-using Google.Apis.Gmail.v1.Data;
-using Google.Apis.Services;
-using Google.Apis.Util.Store;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+﻿using MailKit.Net.Smtp;
+using MimeKit;
 using Models.Helpers;
-using System.Net.Mail;
 
 namespace Infrastructure.Services;
 
 public class EmailService : IEmailService
 {
     private readonly EmailSettings _emailSettings;
-    private readonly IConfiguration _configuration;
-    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public EmailService(EmailSettings emailSettings, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
+    public EmailService(EmailSettings emailSettings)
     {
         _emailSettings = emailSettings;
-        _configuration = configuration;
-        _webHostEnvironment = webHostEnvironment;
+    }
+    public void SendEmail(string htmlMessage)
+    {
+        var emailMessage = CreateEmailMessage(htmlMessage);
+        Send(emailMessage);
     }
 
-    public async Task SendEmailAsync(string htmlMessage)
+    private MimeMessage CreateEmailMessage(string htmlMessage)
     {
+        List<MailboxAddress> emails = _emailSettings.ToEmails
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => new MailboxAddress(x,x)).ToList();
 
-        var emails = _emailSettings.ToEmails.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
-        var subject = _emailSettings.EmailSubject;
-        string fromMail = _emailSettings.FromEmail;
-        var fromMailAddress = new MailAddress(fromMail, "Schools Management System {FL}");
+        var emailMessage = new MimeMessage();
+        emailMessage.From.Add(new MailboxAddress(_emailSettings.FromEmail, _emailSettings.FromEmail));
+        emailMessage.To.AddRange(emails);
+        emailMessage.Subject = _emailSettings.EmailSubject;
+        emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = htmlMessage };
+        return emailMessage;
+    }
 
-        MailMessage message = new MailMessage();
-        message.From = fromMailAddress;
-        message.Subject = subject;
-        foreach (var email in emails)
+    private void Send(MimeMessage message)
+    {
+        using (var client = new SmtpClient())
         {
-            message.To.Add(new MailAddress(email));
+            try
+            {
+                client.Connect(_emailSettings.SmtpServer, _emailSettings.Port, true);
+                client.AuthenticationMechanisms.Remove("XOAUTH2");
+                client.Authenticate(_emailSettings.UserName, _emailSettings.Password);
+                client.Send(message);
+            }
+            catch
+            {
+                //log an error message or throw an exception or both.
+                throw;
+            }
+            finally
+            {
+                client.Disconnect(true);
+                client.Dispose();
+            }
         }
-        message.Body = "<html><body> " + htmlMessage + " </body></html>";
-        message.IsBodyHtml = true;
-        var clientId = _configuration["Google:ClientId"]!;
-        var clientSecret = _configuration["Google:ClientSecret"]!;
 
-        await SendMailAsync(fromMailAddress, clientId, clientSecret, message);
-    }
-
-    private async Task SendMailAsync(MailAddress fromMailAddress, string clientId, string clientSecret, MailMessage message)
-    {
-        var credential = await GetOAuth2CredentialAsync(clientId, clientSecret);
-
-        var service = new GmailService(new BaseClientService.Initializer()
-        {
-            HttpClientInitializer = credential,
-            ApplicationName = "SMS Application"
-        });
-
-        var mimeMessage = MimeKit.MimeMessage.CreateFromMailMessage(message);
-        var gmailMessage = new Message
-        {
-            Raw = Base64UrlEncode(mimeMessage.ToString())
-        };
-
-        await service.Users.Messages.Send(gmailMessage, "me").ExecuteAsync();
-    }
-
-    private async Task<UserCredential> GetOAuth2CredentialAsync(string clientId, string clientSecret)
-    {
-        String FilePath = Path.Combine(_webHostEnvironment.WebRootPath, "google credentials");
-
-        var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                                new ClientSecrets { ClientId = clientId, ClientSecret = clientSecret },
-                                new[] { GmailService.Scope.GmailSend },
-                                "user",
-                                CancellationToken.None,
-                                new FileDataStore(FilePath, true));
-
-        return credential;
-    }
-
-    private string Base64UrlEncode(string input)
-    {
-        var inputBytes = System.Text.Encoding.UTF8.GetBytes(input);
-        return Convert.ToBase64String(inputBytes)
-            .Replace('+', '-')
-            .Replace('/', '_')
-            .Replace("=", "");
     }
 }
