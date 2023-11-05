@@ -19,6 +19,7 @@ public class AuthService : IAuthService
     private readonly UserManager<User> _userManager;
     private readonly ApplicationDBContext _applicationDBContext;
     private readonly IUserRoleRepo _userRoleRepo;
+    private readonly IUserOrganizationRepo _userOrganizationRepo;
     private readonly IUserClassRepo _userClassRepo;
     private readonly IMapper _mapper;
     private readonly IWebHostEnvironment _webHostEnvironment;
@@ -31,6 +32,7 @@ public class AuthService : IAuthService
         UserManager<User> userManager,
         ApplicationDBContext applicationDBContext,
         IUserRoleRepo userRoleRepo,
+        IUserOrganizationRepo userOrganizationRepo,
         IUserClassRepo userClassRepo,
         IMapper mapper,
         IWebHostEnvironment webHostEnvironment,
@@ -41,6 +43,7 @@ public class AuthService : IAuthService
         _userManager = userManager;
         _applicationDBContext = applicationDBContext;
         _userRoleRepo = userRoleRepo;
+        _userOrganizationRepo = userOrganizationRepo;
         _userClassRepo = userClassRepo;
         _mapper = mapper;
         _webHostEnvironment = webHostEnvironment;
@@ -363,6 +366,16 @@ public class AuthService : IAuthService
         foreach (var role in roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
+            if (role == "OrganizationAdmin")
+            {
+                var orgId = _userRoleRepo.GetTableNoTracking().FirstOrDefault(ur => ur.UserId == user.Id && ur.RoleId == 2)?.OrganizationId;
+                claims.Add(new Claim(nameof(UserClaimModel.OrgId), orgId.ToString()!));
+            }
+            if (role == "SchoolAdmin")
+            {
+                var schoolId = _userRoleRepo.GetTableNoTracking().FirstOrDefault(ur => ur.UserId == user.Id && ur.RoleId == 3)?.SchoolId;
+                claims.Add(new Claim(nameof(UserClaimModel.SchoolId), schoolId.ToString()!));
+            }
         }
         var userClaims = await _userManager.GetClaimsAsync(user);
         claims.AddRange(userClaims);
