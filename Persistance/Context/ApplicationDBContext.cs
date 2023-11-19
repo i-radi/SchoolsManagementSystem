@@ -51,7 +51,7 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        modelBuilder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
         ChangeIdentitSchemaAndTableNames(modelBuilder);
     }
 

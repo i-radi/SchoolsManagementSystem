@@ -11,7 +11,7 @@ public static class ModuleInfrastructureDependencies
     public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services, IConfiguration configuration)
     {
         // Configuration Of Automapper
-        services.AddAutoMapper(Assembly.GetExecutingAssembly());
+        services.AddAutoMapper(AssemblyReference.Assembly);
 
         var emailSettings = new EmailSettings();
         configuration.GetSection(nameof(emailSettings)).Bind(emailSettings);
@@ -30,7 +30,7 @@ public static class ModuleInfrastructureDependencies
 
 
         // Get Validators
-        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        services.AddValidatorsFromAssembly(AssemblyReference.Assembly);
         services.AddControllersWithViews()
             .ConfigureApiBehaviorOptions(options =>
         {
