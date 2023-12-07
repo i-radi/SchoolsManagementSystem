@@ -1,16 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Models.Entities.Identity;
-using System.Numerics;
-using System;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
 using Models.Helpers;
-using Persistance.IRepos;
+using System.Security.Claims;
 
 namespace Persistance.DI;
 

@@ -26,6 +26,7 @@ public static class ModuleCoreDependencies
         services.AddScoped<IRecordService, RecordService>();
         services.AddScoped<IUserRecordService, UserRecordService>();
         services.AddScoped<IRecordClassService, RecordClassService>();
+        services.AddScoped<IAttendanceService, AttendanceService>();
 
         #region Authorization
 

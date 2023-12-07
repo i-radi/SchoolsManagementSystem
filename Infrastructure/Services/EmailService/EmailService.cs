@@ -22,7 +22,7 @@ public class EmailService : IEmailService
     {
         List<MailboxAddress> emails = _emailSettings.ToEmails
             .Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .Select(x => new MailboxAddress(x,x)).ToList();
+            .Select(x => new MailboxAddress(x, x)).ToList();
 
         var emailMessage = new MimeMessage();
         emailMessage.From.Add(new MailboxAddress(_emailSettings.FromEmail, _emailSettings.FromEmail));
