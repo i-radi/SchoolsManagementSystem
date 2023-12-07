@@ -26,7 +26,7 @@ else
                 @foreach (var instance in Model.ActivityInstances)
                 {
                     <th>
-                        @($"{instance.InstanceId}-{instance.InstanceName}-{instance.InstanceDate.ToString("dd-MM-yyyy")}")
+                        @($"{instance.InstanceName}-{instance.InstanceDate.ToString("dd-MM-yyyy")}")
                     </th>
                 }
                 <th>Total</th>
