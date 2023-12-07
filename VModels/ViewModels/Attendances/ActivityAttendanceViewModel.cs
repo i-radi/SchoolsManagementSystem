@@ -4,8 +4,8 @@ public class ActivityAttendanceViewModel
 {
     public int ActivityId { get; set; }
     public string? ActivityName { get; set; }
-    public List<UserAttendance> Classes { get; set; } = new();
-    public List<InstanceAttendance> AllActivityInstances { get; set; } = new();
+    public List<UserAttendance> Users { get; set; } = new();
+    public List<InstanceAttendance> ActivityInstances { get; set; } = new();
 }
 
 public class UserAttendance

@@ -27,7 +27,7 @@ public class AttendanceService : IAttendanceService
         var activityInstances = await _activityRepo.GetActivityInstancesWithUserByActivityId(id);
         foreach (var activityInstance in activityInstances)
         {
-            result.AllActivityInstances.Add(new InstanceAttendance
+            result.ActivityInstances.Add(new InstanceAttendance
             {
                 InstanceId = activityInstance.Id,
                 InstanceDate = activityInstance.ForDate,
@@ -57,7 +57,7 @@ public class AttendanceService : IAttendanceService
                 }
             }
 
-            result.Classes.Add(userAttendance);
+            result.Users.Add(userAttendance);
         }
 
         return result;
