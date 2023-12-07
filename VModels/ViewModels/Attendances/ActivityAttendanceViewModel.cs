@@ -15,12 +15,8 @@ public class UserAttendance
     public int UserId { get; set; }
     public string? UserName { get; set; }
     public int UserTypeId { get; set; }
-    public List<ActivityInstanceAttendance> Attendances { get; set; } = new();
-}
-
-public class ActivityInstanceAttendance
-{
-    public int InstanceId { get; set; }
+    public string? UserType { get; set; }
+    public List<int> InstanceIds { get; set; } = new();
 }
 
 public class InstanceAttendance

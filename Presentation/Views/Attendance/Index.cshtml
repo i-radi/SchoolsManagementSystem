@@ -1,0 +1,53 @@
+﻿@model ActivityAttendanceViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>@Model.ActivityName</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Classes[0].ClassName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Classes[0].UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Classes[0].UserType)
+            </th>
+            @foreach (var instance in Model.AllActivityInstances)
+            {
+                <th>
+                    @($"{instance.InstanceId}-{instance.InstanceName}-{instance.InstanceDate.ToString("dd-MM-yyyy")}")
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Classes)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClassName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserType)
+                </td>
+                @foreach (var instance in Model.AllActivityInstances)
+                {
+                    <td style="color: @(item.InstanceIds.Contains(instance.InstanceId) ? "green" : "red")">
+                        @(item.InstanceIds.Contains(instance.InstanceId) ? "Yes" : "No")
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" asp-controller="Activities">Back to Activities</a>

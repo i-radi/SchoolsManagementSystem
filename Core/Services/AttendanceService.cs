@@ -45,17 +45,15 @@ public class AttendanceService : IAttendanceService
                 ClassName = userClass.Classroom.Name,
                 UserId = userClass.User!.Id,
                 UserName = userClass.User.Name,
-                UserTypeId = userClass.UserTypeId
+                UserTypeId = userClass.UserTypeId,
+                UserType = userClass.UserType!.Name
             };
 
             foreach (var activityInstance in activityInstances)
             {
                 if (activityInstance.ActivityInstanceUsers.Any(a => a.UserId == userClass.UserId))
                 {
-                    userAttendance.Attendances.Add(new ActivityInstanceAttendance
-                    {
-                        InstanceId = activityInstance.Id
-                    });
+                    userAttendance.InstanceIds.Add(activityInstance.Id);
                 }
             }
 
