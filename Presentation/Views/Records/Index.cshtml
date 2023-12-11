@@ -73,6 +73,7 @@
                     @Html.DisplayFor(modelItem => item.ForTeachers)
                 </td>
                 <td>
+                    <a asp-action="Record" asp-controller="Attendance" asp-route-recordId="@item.Id">Show Attendance</a> |
                     <a asp-action="Index" asp-controller="RecordClasses" asp-route-recordId="@item.Id">Manage Classes</a> |
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

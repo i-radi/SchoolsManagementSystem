@@ -16,7 +16,6 @@ public class ActivityRepo : GenericRepoAsync<Activity>, IActivityRepo
     #region Handle Methods
     public override async Task<Activity> GetByIdAsync(int id)
     {
-#pragma warning disable CS8603
         return await _dbContext.Set<Activity>()
             .Include(c => c.School)
             .FirstOrDefaultAsync(c => c.Id == id);

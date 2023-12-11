@@ -1,4 +1,5 @@
 ﻿
+using Models.Entities;
 using VModels.ViewModels.Attendances;
 
 namespace Core.Services;
@@ -6,10 +7,12 @@ namespace Core.Services;
 public class AttendanceService : IAttendanceService
 {
     private readonly IActivityRepo _activityRepo;
+    private readonly IRecordRepo _recordRepo;
 
-    public AttendanceService(IActivityRepo activitysRepo)
+    public AttendanceService(IActivityRepo activitysRepo, IRecordRepo recordRepo)
     {
         _activityRepo = activitysRepo;
+        _recordRepo = recordRepo;
     }
 
     public async Task<ActivityAttendanceViewModel?> GetByActivityId(int id)
@@ -58,6 +61,51 @@ public class AttendanceService : IAttendanceService
             }
 
             result.Users.Add(userAttendance);
+        }
+
+        return result;
+    }
+
+    public async Task<RecordAttendanceViewModel?> GetByRecordId(int id)
+    {
+
+        var record = await _recordRepo.GetRecordWithUsersByRecordId(id);
+        if (record == null) return null;
+        var result = new RecordAttendanceViewModel
+        {
+            RecordId = record.Id,
+            RecordName = record.Name
+        };
+
+        // columns of report
+        record.UserRecords
+            .Select(ur => ur.DoneDate.Value.Date)
+            .Distinct()
+            .ToList()
+            .ForEach(d => result.RecordDates.Add(new InstanceAttendance{InstanceDate = d}));
+
+        // rows of report
+        var userClasses = await _recordRepo.GetUserClassesByRecordId(id);
+        foreach (var userClass in userClasses)
+        {
+            var userAttendance = new UserAttendance
+            {
+                ClassId = userClass.Classroom!.Id,
+                ClassName = userClass.Classroom.Name,
+                UserId = userClass.User!.Id,
+                UserName = userClass.User.Name,
+                UserTypeId = userClass.UserTypeId,
+                UserType = userClass.UserType!.Name
+            };
+
+            foreach (var userRecord in record.UserRecords)
+            {
+                if (userRecord.UserId == userClass.UserId)
+                {
+                    userAttendance.InstanceIds.Add(userRecord.Id);
+                }
+            }
+            result.ClassUsers.Add(userAttendance);
         }
 
         return result;

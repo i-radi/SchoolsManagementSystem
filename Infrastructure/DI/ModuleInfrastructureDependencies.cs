@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Models.Helpers;
+using VModels.ViewModels.Attendances;
 
 namespace Infrastructure.DI;
 

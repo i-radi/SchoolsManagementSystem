@@ -1,13 +1,13 @@
-﻿@model ActivityAttendanceViewModel
+﻿@model RecordAttendanceViewModel
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h3>@Model.ActivityName</h3>
-@if (!Model.ActivityInstances.Any())
+<h3>@Model.RecordName</h3>
+@if (!Model.RecordDates.Any())
 {
-    <p>@(Model.ActivityName) doesn't contain activity instances</p>
+    <p>@(Model.RecordName) doesn't contain users</p>
 }
 else
 {
@@ -15,25 +15,25 @@ else
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Users[0].ClassName)
+                    @Html.DisplayNameFor(model => model.ClassUsers[0].ClassName)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Users[0].UserName)
+                    @Html.DisplayNameFor(model => model.ClassUsers[0].UserName)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Users[0].UserType)
+                    @Html.DisplayNameFor(model => model.ClassUsers[0].UserType)
                 </th>
-                @foreach (var instance in Model.ActivityInstances)
+                @foreach (var instance in Model.RecordDates)
                 {
                     <th>
-                        @($"{instance.InstanceName}-{instance.InstanceDate.ToString("dd-MM-yyyy")}")
+                        @($"{instance.InstanceDate.ToString("dd-MM-yyyy")}")
                     </th>
                 }
                 <th>Total</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.Users)
+            @foreach (var item in Model.ClassUsers)
             {
                 <tr>
                     <td>
@@ -45,19 +45,19 @@ else
                     <td>
                         @Html.DisplayFor(modelItem => item.UserType)
                     </td>
-                    @foreach (var instance in Model.ActivityInstances)
+                    @foreach (var instance in Model.RecordDates)
                     {
                         <td style="color: @(item.InstanceIds.Contains(instance.InstanceId) ? "green" : "red")">
                             @(item.InstanceIds.Contains(instance.InstanceId) ? "Yes" : "No")
                         </td>
                     }
-                    <td>@($"{item.InstanceIds.Count}/{Model.ActivityInstances.Count}")</td>
+                    <td>@($"{item.InstanceIds.Count}/{Model.RecordDates.Count}")</td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <a asp-action="Index" asp-controller="Activities">Back to Activities</a>
+    <a asp-action="Index" asp-controller="Records">Back to Records</a>
 }
 
 @section Styles {
