@@ -2,9 +2,9 @@
 
 public interface IUserClassService
 {
-    Response<List<GetUserClassDto>> GetAll(int pageNumber, int pageSize, int userId = 0);
-    Task<Response<GetUserClassDto?>> GetById(int id);
-    Task<Response<GetUserClassDto>> Add(AddUserClassDto model);
-    Task<Response<bool>> Update(UpdateUserClassDto model);
-    Task<Response<bool>> Delete(int id);
+    Result<List<GetUserClassDto>> GetAll(int pageNumber, int pageSize, int userId = 0);
+    Task<Result<GetUserClassDto?>> GetById(int id);
+    Task<Result<GetUserClassDto>> Add(AddUserClassDto model);
+    Task<Result<bool>> Update(UpdateUserClassDto model);
+    Task<Result<bool>> Delete(int id);
 }

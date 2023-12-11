@@ -28,11 +28,11 @@ public class SchoolsController : ControllerBase
     {
         var schooldto = await _schoolService.GetById(schoolId);
         if (schooldto is null)
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Found School"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Found School"));
 
         var seasondto = await _seasonService.GetById(seasonId);
         if (seasondto is null)
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Found Season"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Found Season"));
 
         return Ok(await _schoolService.GetSchoolReport(schoolId, seasonId));
     }
@@ -46,7 +46,7 @@ public class SchoolsController : ControllerBase
             var orgResponse = (await _organizationService.GetById(organizationId));
             if (orgResponse is null)
             {
-                return BadRequest(ResponseHandler.BadRequest<string>("Invalid Organization Id."));
+                return BadRequest(ResultHandler.BadRequest<string>("Invalid Organization Id."));
             }
             return Ok(_schoolService.GetByOrganization(organizationId, pageNumber, pageSize));
         }
@@ -59,7 +59,7 @@ public class SchoolsController : ControllerBase
     {
         var dto = await _schoolService.GetById(id);
         if (dto.Data is null)
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Found School"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Found School"));
         return Ok(dto);
     }
 
@@ -74,12 +74,12 @@ public class SchoolsController : ControllerBase
     {
         if (id != dto.Id)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Id not matched"));
+            return BadRequest(ResultHandler.BadRequest<string>("Id not matched"));
         }
         var result = await _schoolService.Update(dto);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Updated"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Updated"));
         }
 
         return Ok(result);
@@ -91,7 +91,7 @@ public class SchoolsController : ControllerBase
         var result = await _schoolService.Delete(id);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Deleted"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Deleted"));
         }
         return Ok(result);
     }

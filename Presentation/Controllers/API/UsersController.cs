@@ -58,7 +58,7 @@ public class UsersController : ControllerBase
         }
 
         var result = _mapper.Map<GetUserDto>(modelItem);
-        return Ok(ResponseHandler.Success(result));
+        return Ok(ResultHandler.Success(result));
     }
 
     [HttpGet("profile/{id}")]
@@ -72,7 +72,7 @@ public class UsersController : ControllerBase
         }
 
         var result = _mapper.Map<GetProfileDto>(modelItem);
-        return Ok(ResponseHandler.Success(result));
+        return Ok(ResultHandler.Success(result));
     }
 
     [HttpPut("{id}")]
@@ -80,13 +80,13 @@ public class UsersController : ControllerBase
     {
         if (id != dto.Id)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Invalid User Id."));
+            return BadRequest(ResultHandler.BadRequest<string>("Invalid User Id."));
         }
 
         var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (modelItem is null)
         {
-            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
+            return NotFound(ResultHandler.NotFound<string>("User Not Found."));
         }
 
         modelItem = modelItem.MapUpdateUserDto(dto);
@@ -98,11 +98,11 @@ public class UsersController : ControllerBase
             foreach (var error in result.Errors)
                 errors += $"{error.Description},";
 
-            return NotFound(ResponseHandler.BadRequest<string>(errors));
+            return NotFound(ResultHandler.BadRequest<string>(errors));
         }
 
         var userDto = _mapper.Map<GetProfileDto>(modelItem);
-        return Ok(ResponseHandler.Success(userDto));
+        return Ok(ResultHandler.Success(userDto));
     }
 
     [HttpPut("change-image/{id}")]
@@ -113,24 +113,24 @@ public class UsersController : ControllerBase
             .FirstOrDefaultAsync(u => u.Id == id);
         if (modelItem is null)
         {
-            return NotFound(ResponseHandler.NotFound<string>("not found user.."));
+            return NotFound(ResultHandler.NotFound<string>("not found user.."));
         }
 
         if (image is null || image.Length == 0)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Invalid image."));
+            return BadRequest(ResultHandler.BadRequest<string>("Invalid image."));
         }
 
         if (image.Length > 5 * 1024 * 1024)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Image size exceeds the limit (5 MB)."));
+            return BadRequest(ResultHandler.BadRequest<string>("Image size exceeds the limit (5 MB)."));
         }
 
         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
         var fileExtension = Path.GetExtension(image.FileName).ToLower();
         if (!allowedExtensions.Contains(fileExtension))
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Invalid file format. Allowed formats: jpg, jpeg, png, gif."));
+            return BadRequest(ResultHandler.BadRequest<string>("Invalid file format. Allowed formats: jpg, jpeg, png, gif."));
         }
 
         modelItem.ProfilePicturePath = await _attachmentService.Upload(
@@ -143,7 +143,7 @@ public class UsersController : ControllerBase
 
         if (!updatedModel.Succeeded)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>(updatedModel.Errors.ToString()));
+            return BadRequest(ResultHandler.BadRequest<string>(updatedModel.Errors.ToString()));
         }
 
         if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
@@ -152,7 +152,7 @@ public class UsersController : ControllerBase
         }
 
         var result = _mapper.Map<GetUserDto>(modelItem);
-        return Ok(ResponseHandler.Success(result));
+        return Ok(ResultHandler.Success(result));
     }
 
     [HttpDelete("{id}")]
@@ -161,7 +161,7 @@ public class UsersController : ControllerBase
         var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (modelItem is null)
         {
-            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
+            return NotFound(ResultHandler.NotFound<string>("User Not Found."));
         }
         var result = await _userManager.DeleteAsync(modelItem);
         if (!result.Succeeded)
@@ -171,9 +171,9 @@ public class UsersController : ControllerBase
             foreach (var error in result.Errors)
                 errors += $"{error.Description},";
 
-            return NotFound(ResponseHandler.BadRequest<string>(errors));
+            return NotFound(ResultHandler.BadRequest<string>(errors));
         }
-        return Ok(ResponseHandler.BadRequest<bool>("deleted successfully"));
+        return Ok(ResultHandler.BadRequest<bool>("deleted successfully"));
     }
 
     [HttpGet("organization/{organizationId}")]
@@ -201,7 +201,7 @@ public class UsersController : ControllerBase
 
         var result = _mapper.Map<IEnumerable<GetUserDto>>(modelItems);
 
-        return Ok(ResponseHandler.Success(result));
+        return Ok(ResultHandler.Success(result));
     }
 
     [HttpGet("organization/{organizationId}/search")]
@@ -234,7 +234,7 @@ public class UsersController : ControllerBase
 
         var result = _mapper.Map<IEnumerable<GetUserDto>>(modelItems);
 
-        return Ok(ResponseHandler.Success(result));
+        return Ok(ResultHandler.Success(result));
     }
 
     [HttpGet]
@@ -255,7 +255,7 @@ public class UsersController : ControllerBase
 
         var result = _mapper.Map<IEnumerable<GetUserDto>>(modelItems);
 
-        return Ok(ResponseHandler.Success(result));
+        return Ok(ResultHandler.Success(result));
     }
 
     [HttpGet("export-users")]
@@ -299,11 +299,11 @@ public class UsersController : ControllerBase
 
             var fileUrl = $"{Request.Scheme}://{Request.Host}/export attachments/{fileName}";
 
-            return Ok(ResponseHandler.Success(fileUrl));
+            return Ok(ResultHandler.Success(fileUrl));
         }
 
         var result = await _exportService.ExportToExcel(data);
 
-        return Ok(ResponseHandler.Success(result));
+        return Ok(ResultHandler.Success(result));
     }
 }

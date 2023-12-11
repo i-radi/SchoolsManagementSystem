@@ -2,9 +2,9 @@
 
 public interface IActivityInstanceService
 {
-    Response<List<GetActivityInstanceDto>> GetAll(int pageNumber, int pageSize, int activityId = 0);
-    Task<Response<GetActivityInstanceDto?>> GetById(int id);
-    Task<Response<GetActivityInstanceDto>> Add(AddActivityInstanceDto model);
-    Task<Response<bool>> Update(UpdateActivityInstanceDto model);
-    Task<Response<bool>> Delete(int id);
+    Result<List<GetActivityInstanceDto>> GetAll(int pageNumber, int pageSize, int activityId = 0);
+    Task<Result<GetActivityInstanceDto?>> GetById(int id);
+    Task<Result<GetActivityInstanceDto>> Add(AddActivityInstanceDto model);
+    Task<Result<bool>> Update(UpdateActivityInstanceDto model);
+    Task<Result<bool>> Delete(int id);
 }

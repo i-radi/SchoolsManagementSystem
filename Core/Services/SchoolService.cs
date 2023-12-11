@@ -21,15 +21,15 @@ public class SchoolService : ISchoolService
         _mapper = mapper;
     }
 
-    public Response<List<GetSchoolDto>> GetAll(int pageNumber, int pageSize)
+    public Result<List<GetSchoolDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _schoolsRepo.GetTableNoTracking().Include(m => m.Organization);
         var result = PaginatedList<GetSchoolDto>.Create(_mapper.Map<List<GetSchoolDto>>(modelItems), pageNumber, pageSize);
 
-        return ResponseHandler.Success(_mapper.Map<List<GetSchoolDto>>(result));
+        return ResultHandler.Success(_mapper.Map<List<GetSchoolDto>>(result));
     }
 
-    public async Task<Response<GetSchoolReportDto>> GetSchoolReport(int schoolId, int SeasonId)
+    public async Task<Result<GetSchoolReportDto>> GetSchoolReport(int schoolId, int SeasonId)
     {
         var model = await _schoolsRepo
             .GetTableNoTracking()
@@ -129,10 +129,10 @@ public class SchoolService : ISchoolService
             }
         }
 
-        return ResponseHandler.Success(dto);
+        return ResultHandler.Success(dto);
     }
 
-    public Response<List<GetSchoolDto>> GetByOrganization(int orgId, int pageNumber, int pageSize)
+    public Result<List<GetSchoolDto>> GetByOrganization(int orgId, int pageNumber, int pageSize)
     {
         var modelItems = _schoolsRepo
             .GetTableNoTracking()
@@ -141,49 +141,49 @@ public class SchoolService : ISchoolService
 
         var result = PaginatedList<GetSchoolDto>.Create(_mapper.Map<List<GetSchoolDto>>(modelItems), pageNumber, pageSize);
 
-        return ResponseHandler.Success(_mapper.Map<List<GetSchoolDto>>(result));
+        return ResultHandler.Success(_mapper.Map<List<GetSchoolDto>>(result));
     }
 
-    public async Task<Response<GetSchoolDto?>> GetById(int id)
+    public async Task<Result<GetSchoolDto?>> GetById(int id)
     {
         var modelItem = await _schoolsRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return ResponseHandler.Success(_mapper.Map<GetSchoolDto>(modelItem))!;
+        return ResultHandler.Success(_mapper.Map<GetSchoolDto>(modelItem))!;
     }
 
-    public async Task<Response<GetSchoolDto>> Add(AddSchoolDto dto)
+    public async Task<Result<GetSchoolDto>> Add(AddSchoolDto dto)
     {
         var modelItem = _mapper.Map<School>(dto);
 
         var model = await _schoolsRepo.AddAsync(modelItem);
 
-        return ResponseHandler.Created(_mapper.Map<GetSchoolDto>(modelItem));
+        return ResultHandler.Created(_mapper.Map<GetSchoolDto>(modelItem));
     }
 
-    public async Task<Response<bool>> Update(UpdateSchoolDto dto)
+    public async Task<Result<bool>> Update(UpdateSchoolDto dto)
     {
         var modelItem = await _schoolsRepo.GetByIdAsync(dto.Id);
 
         if (modelItem is null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         _mapper.Map(dto, modelItem);
 
         var model = _schoolsRepo.UpdateAsync(modelItem);
 
-        return ResponseHandler.Success(true);
+        return ResultHandler.Success(true);
     }
 
-    public async Task<Response<bool>> Delete(int id)
+    public async Task<Result<bool>> Delete(int id)
     {
 
         var dbModel = await _schoolsRepo.GetByIdAsync(id);
 
         if (dbModel == null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         await _schoolsRepo.DeleteAsync(dbModel);
-        return ResponseHandler.Deleted<bool>();
+        return ResultHandler.Deleted<bool>();
     }
 }

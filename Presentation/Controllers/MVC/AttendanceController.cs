@@ -17,7 +17,7 @@
             }
 
             var viewmodel = await _attendanceService.GetByActivityId(activityId);
-            
+
             if (viewmodel is null)
             {
                 return RedirectToAction("Index", nameof(ActivitiesController));

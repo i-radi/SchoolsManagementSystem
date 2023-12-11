@@ -211,7 +211,7 @@
         {
             var course = await _courseRepo.GetByIdAsync(id);
 
-            if (course == null || string.IsNullOrEmpty(course.CourseDetails.Content))
+            if (course == null || string.IsNullOrEmpty(course.CourseDetails!.Content))
             {
                 return NotFound();
             }
@@ -222,7 +222,7 @@
             string contentType = GetContentType(fileName);
 
             byte[] fileContents;
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            using (FileStream fs = new(path, FileMode.Open, FileAccess.Read))
             {
                 fileContents = new byte[fs.Length];
                 fs.Read(fileContents, 0, (int)fs.Length);
@@ -231,26 +231,15 @@
             return File(fileContents, contentType, fileName);
         }
 
-        private string GetContentType(string fileName)
+        private static string GetContentType(string fileName)
         {
-            string contentType;
-            switch (Path.GetExtension(fileName).ToLower())
+            string contentType = Path.GetExtension(fileName).ToLower() switch
             {
-                case ".pdf":
-                    contentType = "application/pdf";
-                    break;
-                case ".doc":
-                case ".docx":
-                    contentType = "application/msword";
-                    break;
-                case ".ppt":
-                case ".pptx":
-                    contentType = "application/vnd.ms-powerpoint";
-                    break;
-                default:
-                    contentType = "application/octet-stream";
-                    break;
-            }
+                ".pdf" => "application/pdf",
+                ".doc" or ".docx" => "application/msword",
+                ".ppt" or ".pptx" => "application/vnd.ms-powerpoint",
+                _ => "application/octet-stream",
+            };
             return contentType;
         }
 

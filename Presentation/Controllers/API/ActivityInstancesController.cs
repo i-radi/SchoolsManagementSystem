@@ -34,7 +34,7 @@ public class ActivityInstancesController : ControllerBase
     {
         var dto = await _activityInstanceService.GetById(id);
         if (dto.Data is null)
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Found Activity Instance"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Found Activity Instance"));
         return Ok(dto);
     }
 
@@ -49,12 +49,12 @@ public class ActivityInstancesController : ControllerBase
     {
         if (id != dto.Id)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Id not matched"));
+            return BadRequest(ResultHandler.BadRequest<string>("Id not matched"));
         }
         var result = await _activityInstanceService.Update(dto);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Updated"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Updated"));
         }
 
         return Ok(result);
@@ -66,7 +66,7 @@ public class ActivityInstancesController : ControllerBase
         var result = await _activityInstanceService.Delete(id);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Deleted"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Deleted"));
         }
         return Ok(result);
     }

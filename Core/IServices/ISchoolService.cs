@@ -4,11 +4,11 @@ namespace Core.IServices;
 
 public interface ISchoolService
 {
-    Response<List<GetSchoolDto>> GetAll(int pageNumber, int pageSize);
-    Task<Response<GetSchoolReportDto>> GetSchoolReport(int schoolId, int SeasonId);
-    Response<List<GetSchoolDto>> GetByOrganization(int orgId, int pageNumber, int pageSize);
-    Task<Response<GetSchoolDto?>> GetById(int id);
-    Task<Response<GetSchoolDto>> Add(AddSchoolDto model);
-    Task<Response<bool>> Update(UpdateSchoolDto model);
-    Task<Response<bool>> Delete(int id);
+    Result<List<GetSchoolDto>> GetAll(int pageNumber, int pageSize);
+    Task<Result<GetSchoolReportDto>> GetSchoolReport(int schoolId, int SeasonId);
+    Result<List<GetSchoolDto>> GetByOrganization(int orgId, int pageNumber, int pageSize);
+    Task<Result<GetSchoolDto?>> GetById(int id);
+    Task<Result<GetSchoolDto>> Add(AddSchoolDto model);
+    Task<Result<bool>> Update(UpdateSchoolDto model);
+    Task<Result<bool>> Delete(int id);
 }

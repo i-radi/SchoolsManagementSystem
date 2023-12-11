@@ -2,9 +2,9 @@
 
 public interface IActivityTimeService
 {
-    Response<List<GetActivityTimeDto>> GetAll(int pageNumber, int pageSize);
-    Task<Response<GetActivityTimeDto?>> GetById(int id);
-    Task<Response<GetActivityTimeDto>> Add(AddActivityTimeDto model);
-    Task<Response<bool>> Update(UpdateActivityTimeDto model);
-    Task<Response<bool>> Delete(int id);
+    Result<List<GetActivityTimeDto>> GetAll(int pageNumber, int pageSize);
+    Task<Result<GetActivityTimeDto?>> GetById(int id);
+    Task<Result<GetActivityTimeDto>> Add(AddActivityTimeDto model);
+    Task<Result<bool>> Update(UpdateActivityTimeDto model);
+    Task<Result<bool>> Delete(int id);
 }

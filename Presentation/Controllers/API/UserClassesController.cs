@@ -26,13 +26,13 @@ public class UserClassesController : ControllerBase
     {
         if (userId <= 0)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Invalid User Id."));
+            return BadRequest(ResultHandler.BadRequest<string>("Invalid User Id."));
         }
 
         var dtos = _userClassService.GetAll(pageNumber, pageSize, userId);
 
         if (dtos.Data.IsNullOrEmpty())
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Found UserClasses."));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Found UserClasses."));
 
         return Ok(dtos);
     }
@@ -42,7 +42,7 @@ public class UserClassesController : ControllerBase
     {
         var dto = await _userClassService.GetById(id);
         if (dto.Data is null)
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Found UserClass"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Found UserClass"));
         return Ok(dto);
     }
 
@@ -57,12 +57,12 @@ public class UserClassesController : ControllerBase
     {
         if (id != dto.Id)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Id not matched"));
+            return BadRequest(ResultHandler.BadRequest<string>("Id not matched"));
         }
         var result = await _userClassService.Update(dto);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Updated"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Updated"));
         }
 
         return Ok(result);
@@ -74,7 +74,7 @@ public class UserClassesController : ControllerBase
         var result = await _userClassService.Delete(id);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Deleted"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Deleted"));
         }
         return Ok(result);
     }

@@ -24,7 +24,7 @@ public class RecordsController : ControllerBase
     {
         var dto = await _recordService.GetById(id);
         if (dto.Data is null)
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Found Record"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Found Record"));
         return Ok(dto);
     }
 
@@ -39,12 +39,12 @@ public class RecordsController : ControllerBase
     {
         if (id != dto.Id)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Id not matched"));
+            return BadRequest(ResultHandler.BadRequest<string>("Id not matched"));
         }
         var result = await _recordService.Update(dto);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Updated"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Updated"));
         }
 
         return Ok(result);
@@ -56,7 +56,7 @@ public class RecordsController : ControllerBase
         var result = await _recordService.Delete(id);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Deleted"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Deleted"));
         }
         return Ok(result);
     }

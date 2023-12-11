@@ -11,7 +11,7 @@ public class ActivityService : IActivityService
         _mapper = mapper;
     }
 
-    public Response<List<GetActivityDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0)
+    public Result<List<GetActivityDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0)
     {
         var modelItems = _activitiesRepo.GetTableNoTracking();
 
@@ -27,64 +27,62 @@ public class ActivityService : IActivityService
 
         var result = PaginatedList<GetActivityDto>.Create(_mapper.Map<List<GetActivityDto>>(modelItems), pageNumber, pageSize);
 
-        return ResponseHandler.Success(_mapper.Map<List<GetActivityDto>>(result));
+        return ResultHandler.Success(_mapper.Map<List<GetActivityDto>>(result));
     }
 
-    public async Task<Response<GetActivityDto?>> GetById(int id)
+    public async Task<Result<GetActivityDto?>?> GetById(int id)
     {
         var modelItem = await _activitiesRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return ResponseHandler.Success(_mapper.Map<GetActivityDto>(modelItem))!;
+        return ResultHandler.Success(_mapper.Map<GetActivityDto>(modelItem))!;
     }
 
-    public async Task<Response<GetActivityDto>> Add(AddActivityDto dto)
+    public async Task<Result<GetActivityDto>> Add(AddActivityDto dto)
     {
         var modelItem = _mapper.Map<Activity>(dto);
+        _ = await _activitiesRepo.AddAsync(modelItem);
 
-        var model = await _activitiesRepo.AddAsync(modelItem);
-
-        return ResponseHandler.Created(_mapper.Map<GetActivityDto>(modelItem));
+        return ResultHandler.Created(_mapper.Map<GetActivityDto>(modelItem));
     }
 
-    public async Task<Response<bool>> Update(UpdateActivityDto dto)
+    public async Task<Result<bool>> Update(UpdateActivityDto dto)
     {
         var modelItem = await _activitiesRepo.GetByIdAsync(dto.Id);
 
         if (modelItem is null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         _mapper.Map(dto, modelItem);
+        _ = _activitiesRepo.UpdateAsync(modelItem);
 
-        var model = _activitiesRepo.UpdateAsync(modelItem);
-
-        return ResponseHandler.Success(true);
+        return ResultHandler.Success(true);
     }
 
-    public async Task<Response<bool>> Delete(int id)
+    public async Task<Result<bool>> Delete(int id)
     {
 
         var dbModel = await _activitiesRepo.GetByIdAsync(id);
 
         if (dbModel == null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         await _activitiesRepo.DeleteAsync(dbModel);
-        return ResponseHandler.Deleted<bool>();
+        return ResultHandler.Deleted<bool>();
     }
 
-    public async Task<Response<bool>> Archive(int activityId)
+    public async Task<Result<bool>> Archive(int activityId)
     {
         var modelItem = await _activitiesRepo.GetByIdAsync(activityId);
 
         if (modelItem is null)
-            return ResponseHandler.NotFound<bool>("Not Found Activity");
+            return ResultHandler.NotFound<bool>("Not Found Activity");
 
         modelItem.IsAvailable = false;
 
-        var model = _activitiesRepo.UpdateAsync(modelItem);
+        _ = _activitiesRepo.UpdateAsync(modelItem);
 
-        return ResponseHandler.Success(true);
+        return ResultHandler.Success(true);
     }
 }
 

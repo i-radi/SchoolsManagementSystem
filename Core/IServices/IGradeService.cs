@@ -2,9 +2,9 @@
 
 public interface IGradeService
 {
-    Response<List<GetGradeDto>> GetAll(int pageNumber, int pageSize);
-    Task<Response<GetGradeDto?>> GetById(int id);
-    Task<Response<GetGradeDto>> Add(AddGradeDto model);
-    Task<Response<bool>> Update(UpdateGradeDto model);
-    Task<Response<bool>> Delete(int id);
+    Result<List<GetGradeDto>> GetAll(int pageNumber, int pageSize);
+    Task<Result<GetGradeDto?>> GetById(int id);
+    Task<Result<GetGradeDto>> Add(AddGradeDto model);
+    Task<Result<bool>> Update(UpdateGradeDto model);
+    Task<Result<bool>> Delete(int id);
 }

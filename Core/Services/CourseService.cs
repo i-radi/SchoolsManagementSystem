@@ -11,7 +11,7 @@ public class CourseService : ICourseService
         _mapper = mapper;
     }
 
-    public Response<List<GetCourseDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0)
+    public Result<List<GetCourseDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0)
     {
         var modelItems = _coursesRepo.GetTableNoTracking();
         ;
@@ -26,18 +26,18 @@ public class CourseService : ICourseService
 
         var result = PaginatedList<GetCourseDto>.Create(_mapper.Map<List<GetCourseDto>>(modelItems), pageNumber, pageSize);
 
-        return ResponseHandler.Success(_mapper.Map<List<GetCourseDto>>(result));
+        return ResultHandler.Success(_mapper.Map<List<GetCourseDto>>(result));
     }
 
-    public async Task<Response<GetCourseDto?>> GetById(int id)
+    public async Task<Result<GetCourseDto?>> GetById(int id)
     {
         var modelItem = await _coursesRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return ResponseHandler.Success(_mapper.Map<GetCourseDto>(modelItem))!;
+        return ResultHandler.Success(_mapper.Map<GetCourseDto>(modelItem))!;
     }
 
-    public async Task<Response<GetCourseDto>> Add(AddCourseDto dto)
+    public async Task<Result<GetCourseDto>> Add(AddCourseDto dto)
     {
         var modelItem = _mapper.Map<Course>(dto);
         modelItem.CourseDetails = new CourseDetails
@@ -48,15 +48,15 @@ public class CourseService : ICourseService
 
         var model = await _coursesRepo.AddAsync(modelItem);
 
-        return ResponseHandler.Created(_mapper.Map<GetCourseDto>(modelItem));
+        return ResultHandler.Created(_mapper.Map<GetCourseDto>(modelItem));
     }
 
-    public async Task<Response<bool>> Update(UpdateCourseDto dto)
+    public async Task<Result<bool>> Update(UpdateCourseDto dto)
     {
         var modelItem = await _coursesRepo.GetByIdAsync(dto.Id);
 
         if (modelItem is null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         _mapper.Map(dto, modelItem);
         if (modelItem.CourseDetails is not null)
@@ -66,18 +66,18 @@ public class CourseService : ICourseService
         }
         var model = _coursesRepo.UpdateAsync(modelItem);
 
-        return ResponseHandler.Success(true);
+        return ResultHandler.Success(true);
     }
 
-    public async Task<Response<bool>> Delete(int id)
+    public async Task<Result<bool>> Delete(int id)
     {
 
         var dbModel = await _coursesRepo.GetByIdAsync(id);
 
         if (dbModel == null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         await _coursesRepo.DeleteAsync(dbModel);
-        return ResponseHandler.Deleted<bool>();
+        return ResultHandler.Deleted<bool>();
     }
 }

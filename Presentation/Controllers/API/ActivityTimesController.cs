@@ -28,7 +28,7 @@ public class ActivityTimesController : ControllerBase
     {
         var dto = await _activityTimeService.GetById(id);
         if (dto.Data is null)
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Found Activity Time"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Found Activity Time"));
         return Ok(dto);
     }
 
@@ -43,12 +43,12 @@ public class ActivityTimesController : ControllerBase
     {
         if (id != dto.Id)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Id not matched"));
+            return BadRequest(ResultHandler.BadRequest<string>("Id not matched"));
         }
         var result = await _activityTimeService.Update(dto);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Updated"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Updated"));
         }
 
         return Ok(result);
@@ -60,7 +60,7 @@ public class ActivityTimesController : ControllerBase
         var result = await _activityTimeService.Delete(id);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Deleted"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Deleted"));
         }
         return Ok(result);
     }

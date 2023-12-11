@@ -165,7 +165,7 @@ namespace Presentation.Controllers.MVC
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Assign(int? recordId)
+        public IActionResult Assign(int? recordId)
         {
             ViewBag.ClassroomId = new SelectList(_classroomRepo.GetTableNoTracking(), "Id", "Name");
             ViewBag.RecordId = new SelectList(_recordRepo.GetTableNoTracking().Where(r => r.Available), "Id", "Name");

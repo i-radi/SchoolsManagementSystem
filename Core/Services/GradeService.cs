@@ -11,54 +11,54 @@ public class GradeService : IGradeService
         _mapper = mapper;
     }
 
-    public Response<List<GetGradeDto>> GetAll(int pageNumber, int pageSize)
+    public Result<List<GetGradeDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _gradesRepo.GetTableNoTracking().Include(m => m.School);
         var result = PaginatedList<GetGradeDto>.Create(_mapper.Map<List<GetGradeDto>>(modelItems), pageNumber, pageSize);
 
-        return ResponseHandler.Success(_mapper.Map<List<GetGradeDto>>(result));
+        return ResultHandler.Success(_mapper.Map<List<GetGradeDto>>(result));
     }
 
-    public async Task<Response<GetGradeDto?>> GetById(int id)
+    public async Task<Result<GetGradeDto?>> GetById(int id)
     {
         var modelItem = await _gradesRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return ResponseHandler.Success(_mapper.Map<GetGradeDto>(modelItem))!;
+        return ResultHandler.Success(_mapper.Map<GetGradeDto>(modelItem))!;
     }
 
-    public async Task<Response<GetGradeDto>> Add(AddGradeDto dto)
+    public async Task<Result<GetGradeDto>> Add(AddGradeDto dto)
     {
         var modelItem = _mapper.Map<Grade>(dto);
 
         var model = await _gradesRepo.AddAsync(modelItem);
 
-        return ResponseHandler.Created(_mapper.Map<GetGradeDto>(modelItem));
+        return ResultHandler.Created(_mapper.Map<GetGradeDto>(modelItem));
     }
 
-    public async Task<Response<bool>> Update(UpdateGradeDto dto)
+    public async Task<Result<bool>> Update(UpdateGradeDto dto)
     {
         var modelItem = await _gradesRepo.GetByIdAsync(dto.Id);
 
         if (modelItem is null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         _mapper.Map(dto, modelItem);
 
         var model = _gradesRepo.UpdateAsync(modelItem);
 
-        return ResponseHandler.Success(true);
+        return ResultHandler.Success(true);
     }
 
-    public async Task<Response<bool>> Delete(int id)
+    public async Task<Result<bool>> Delete(int id)
     {
 
         var dbModel = await _gradesRepo.GetByIdAsync(id);
 
         if (dbModel == null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         await _gradesRepo.DeleteAsync(dbModel);
-        return ResponseHandler.Deleted<bool>();
+        return ResultHandler.Deleted<bool>();
     }
 }

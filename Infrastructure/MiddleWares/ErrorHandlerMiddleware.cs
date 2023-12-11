@@ -17,7 +17,6 @@ public class ErrorHandlerMiddleware
     private readonly ILogger<ErrorHandlerMiddleware> _logger;
     private readonly EmailSettings _emailSettings;
     private readonly IEmailService _emailSender;
-    private readonly IConfiguration _configuration;
 
     public ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMiddleware> logger, EmailSettings emailSettings, IEmailService emailSender)
     {
@@ -39,13 +38,13 @@ public class ErrorHandlerMiddleware
 
             var response = context.Response;
             response.ContentType = "application/json";
-            var responseModel = new Response<string>() { Succeeded = false, Message = error?.Message! };
+            var responseModel = new Result<string>() { Succeeded = false, Message = error?.Message! };
 
             if (_emailSettings.SendEmails)
             {
                 var userName = context.User.FindFirst(ClaimTypes.Name)?.Value;
                 var userRole = context.User.FindFirst(ClaimTypes.Role)?.Value;
-                var message = $"{error!.Message.ToString()}</br>" +
+                var message = $"{error!.Message}</br>" +
                     $" Time : {DateTime.Now.ToShortTimeString()}</br>" +
                     $" User Email : {userName}</br> User Role : {userRole}</br>" +
                     $" Response Model : {JsonSerializer.Serialize(responseModel)}";
@@ -54,19 +53,19 @@ public class ErrorHandlerMiddleware
 
             switch (error)
             {
-                case UnauthorizedAccessException e:
+                case UnauthorizedAccessException:
                     responseModel.Message = error.Message;
                     responseModel.StatusCode = HttpStatusCode.Unauthorized;
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     break;
 
-                case ValidationException e:
+                case ValidationException:
                     responseModel.Message = error.Message;
                     responseModel.StatusCode = HttpStatusCode.UnprocessableEntity;
                     response.StatusCode = (int)HttpStatusCode.UnprocessableEntity;
                     break;
 
-                case KeyNotFoundException e:
+                case KeyNotFoundException:
                     responseModel.Message = error.Message;
                     responseModel.StatusCode = HttpStatusCode.NotFound;
                     response.StatusCode = (int)HttpStatusCode.NotFound;
@@ -94,7 +93,7 @@ public class ErrorHandlerMiddleware
                     break;
 
                 default:
-                    responseModel.Message = error.Message;
+                    responseModel.Message = error!.Message!;
                     responseModel.StatusCode = HttpStatusCode.InternalServerError;
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     break;

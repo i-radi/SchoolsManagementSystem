@@ -395,7 +395,7 @@ public class UsersController : Controller
             .Select(o => new { SchoolId = o.Id, o.Name }).ToListAsync();
 
         var activities = await _activityRepo.GetTableNoTracking()
-            .Select(o => new { ActivityId = o.Id, Name = o.Name }).ToListAsync();
+            .Select(o => new { ActivityId = o.Id, o.Name }).ToListAsync();
 
         var createRoleViewModel = new CreateRoleViewModel
         {
@@ -553,21 +553,21 @@ public class UsersController : Controller
         ViewBag.UserTypesList = new SelectList(await _userTypeRepo.GetTableNoTracking().ToListAsync(), "Id", "Name");
         try
         {
-            var result = new Response<List<User>>();
+            var result = new Result<List<User>>();
             var allUsers = new List<UserFormViewModel>();
 
             if (viewModel.Attachment is null || viewModel.Attachment.Length < 1)
             {
                 result.Succeeded = false;
                 result.StatusCode = System.Net.HttpStatusCode.BadRequest;
-                result.Errors.Add("Empty File!!");
+                result.Errors!.Add("Empty File!!");
                 ModelState.AddModelError(string.Empty, string.Join(", ", result.Errors));
                 return View(viewModel);
             }
 
             Stream stream = viewModel.Attachment!.OpenReadStream();
             ExcelPackage.LicenseContext = LicenseContext.Commercial;
-            using (ExcelPackage package = new ExcelPackage(stream))
+            using (ExcelPackage package = new(stream))
             {
                 ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
                 worksheet.TrimLastEmptyRows();
@@ -598,18 +598,18 @@ public class UsersController : Controller
             if (!(result.StatusCode == System.Net.HttpStatusCode.OK
                 || result.StatusCode == System.Net.HttpStatusCode.MultiStatus))
             {
-                ModelState.AddModelError(string.Empty, string.Join(", ", result.Errors));
+                ModelState.AddModelError(string.Empty, string.Join(", ", result.Errors!));
                 return View(viewModel);
             }
 
             if (IsAssignToOrganization(viewModel))
             {
-                await AssignOrganization(result.Data, viewModel.OrganizationId);
+                await AssignOrganization(result.Data!, viewModel.OrganizationId);
             }
 
             if (IsAssignToClassroom(viewModel))
             {
-                await AssignClassroom(result.Data, viewModel);
+                await AssignClassroom(result.Data!, viewModel);
             }
 
             TempData["SuccessMessage"] = "Users added " +
@@ -626,13 +626,13 @@ public class UsersController : Controller
         }
     }
 
-    private (bool isValid, List<UserFormViewModel>? usersInfos, List<string>? errors) ValidateSheetAsync(ExcelWorksheet worksheet)
+    private static (bool isValid, List<UserFormViewModel>? usersInfos, List<string>? errors) ValidateSheetAsync(ExcelWorksheet worksheet)
     {
         var users = new List<UserFormViewModel>();
         int colCount = worksheet.Dimension.Columns;
         int rowCount = worksheet.Dimension.Rows;
-        List<string> allErrors = new List<string>();
-        List<string> orgList = new List<string>();
+        List<string> allErrors = new();
+        _ = new List<string>();
 
         if (colCount > 1001)
         {
@@ -676,8 +676,7 @@ public class UsersController : Controller
             user.Gender = worksheet.Cells[row, 4].Value?.ToString()?.Trim();
             if (worksheet.Cells[row, 5].Value != null)
             {
-                DateTime birthdate;
-                if (DateTime.TryParse(worksheet.Cells[row, 5].Value?.ToString()?.Trim(), out birthdate))
+                if (DateTime.TryParse(worksheet.Cells[row, 5].Value?.ToString()?.Trim(), out DateTime birthdate))
                 {
                     user.Birthdate = birthdate;
                 }
@@ -706,10 +705,12 @@ public class UsersController : Controller
         return (isValid: true, usersInfos: users, errors: null);
     }
 
-    private async Task<Response<List<User>>> AddUsersInDataBaseAsync(List<UserFormViewModel> users)
+    private async Task<Result<List<User>>> AddUsersInDataBaseAsync(List<UserFormViewModel> users)
     {
-        Response<List<User>> result = new();
-        result.Data = new List<User>();
+        Result<List<User>> result = new()
+        {
+            Data = new List<User>()
+        };
         foreach (var user in users)
         {
             var userResult = await AddUserAsync(user);
@@ -720,7 +721,7 @@ public class UsersController : Controller
                 result.StatusCode = userResult.StatusCode;
                 return result;
             }
-            result.Data.Add(userResult.Data);
+            result.Data.Add(userResult.Data!);
         }
 
         result.Succeeded = true;
@@ -728,9 +729,9 @@ public class UsersController : Controller
         return result;
     }
 
-    private async Task<Response<User>> AddUserAsync(UserFormViewModel user)
+    private async Task<Result<User>> AddUserAsync(UserFormViewModel user)
     {
-        Response<User> resultUser = new();
+        Result<User> resultUser = new();
 
         string CreatedEmail = (string.IsNullOrEmpty(user.Email)) ? Guid.NewGuid() + "@sms.com" : user.Email;
         var newUser = new User
@@ -791,7 +792,7 @@ public class UsersController : Controller
         return true;
     }
 
-    private bool IsAssignToOrganization(BulkUserClassViewModel viewModel)
+    private static bool IsAssignToOrganization(BulkUserClassViewModel viewModel)
     {
         return viewModel.OrganizationId > 0;
     }
@@ -812,10 +813,7 @@ public class UsersController : Controller
         return true;
     }
 
-    private bool IsAssignToClassroom(BulkUserClassViewModel viewModel)
-    {
-        return viewModel.ClassroomId > 0 && viewModel.SeasonId > 0 && viewModel.UserTypeId > 0;
-    }
+    private static bool IsAssignToClassroom(BulkUserClassViewModel viewModel) => viewModel.ClassroomId > 0 && viewModel.SeasonId > 0 && viewModel.UserTypeId > 0;
 
     public IActionResult DownloadExcelSheet()
     {

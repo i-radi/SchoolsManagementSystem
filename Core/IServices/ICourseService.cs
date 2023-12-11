@@ -2,9 +2,9 @@
 
 public interface ICourseService
 {
-    Response<List<GetCourseDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0);
-    Task<Response<GetCourseDto?>> GetById(int id);
-    Task<Response<GetCourseDto>> Add(AddCourseDto model);
-    Task<Response<bool>> Update(UpdateCourseDto model);
-    Task<Response<bool>> Delete(int id);
+    Result<List<GetCourseDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0);
+    Task<Result<GetCourseDto?>> GetById(int id);
+    Task<Result<GetCourseDto>> Add(AddCourseDto model);
+    Task<Result<bool>> Update(UpdateCourseDto model);
+    Task<Result<bool>> Delete(int id);
 }

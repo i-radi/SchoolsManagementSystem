@@ -11,7 +11,7 @@ public class UserRecordService : IUserRecordService
         _mapper = mapper;
     }
 
-    public Response<List<GetUserRecordDto>> GetAll(int pageNumber, int pageSize)
+    public Result<List<GetUserRecordDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _userRecordsRepo.GetTableNoTracking()
             .Include(c => c.Record)
@@ -19,49 +19,49 @@ public class UserRecordService : IUserRecordService
 
         var result = PaginatedList<GetUserRecordDto>.Create(_mapper.Map<List<GetUserRecordDto>>(modelItems), pageNumber, pageSize);
 
-        return ResponseHandler.Success(_mapper.Map<List<GetUserRecordDto>>(result));
+        return ResultHandler.Success(_mapper.Map<List<GetUserRecordDto>>(result));
     }
 
-    public async Task<Response<GetUserRecordDto?>> GetById(int id)
+    public async Task<Result<GetUserRecordDto?>> GetById(int id)
     {
         var modelItem = await _userRecordsRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return ResponseHandler.Success(_mapper.Map<GetUserRecordDto>(modelItem))!;
+        return ResultHandler.Success(_mapper.Map<GetUserRecordDto>(modelItem))!;
     }
 
-    public async Task<Response<GetUserRecordDto>> Add(AddUserRecordDto dto)
+    public async Task<Result<GetUserRecordDto>> Add(AddUserRecordDto dto)
     {
         var modelItem = _mapper.Map<UserRecord>(dto);
 
         var model = await _userRecordsRepo.AddAsync(modelItem);
 
-        return ResponseHandler.Created(_mapper.Map<GetUserRecordDto>(modelItem));
+        return ResultHandler.Created(_mapper.Map<GetUserRecordDto>(modelItem));
     }
 
-    public async Task<Response<bool>> Update(UpdateUserRecordDto dto)
+    public async Task<Result<bool>> Update(UpdateUserRecordDto dto)
     {
         var modelItem = await _userRecordsRepo.GetByIdAsync(dto.Id);
 
         if (modelItem is null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         _mapper.Map(dto, modelItem);
 
         var model = _userRecordsRepo.UpdateAsync(modelItem);
 
-        return ResponseHandler.Success(true);
+        return ResultHandler.Success(true);
     }
 
-    public async Task<Response<bool>> Delete(int id)
+    public async Task<Result<bool>> Delete(int id)
     {
 
         var dbModel = await _userRecordsRepo.GetByIdAsync(id);
 
         if (dbModel == null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         await _userRecordsRepo.DeleteAsync(dbModel);
-        return ResponseHandler.Deleted<bool>();
+        return ResultHandler.Deleted<bool>();
     }
 }

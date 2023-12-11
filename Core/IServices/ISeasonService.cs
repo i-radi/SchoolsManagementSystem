@@ -2,9 +2,9 @@
 
 public interface ISeasonService
 {
-    Response<List<GetSeasonDto>> GetAll(int pageNumber, int pageSize);
-    Task<Response<GetSeasonDto?>> GetById(int id);
-    Task<Response<GetSeasonDto>> Add(AddSeasonDto model);
-    Task<Response<bool>> Update(UpdateSeasonDto model);
-    Task<Response<bool>> Delete(int id);
+    Result<List<GetSeasonDto>> GetAll(int pageNumber, int pageSize);
+    Task<Result<GetSeasonDto?>> GetById(int id);
+    Task<Result<GetSeasonDto>> Add(AddSeasonDto model);
+    Task<Result<bool>> Update(UpdateSeasonDto model);
+    Task<Result<bool>> Delete(int id);
 }

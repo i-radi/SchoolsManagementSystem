@@ -32,7 +32,7 @@ public class ActivitiesController : ControllerBase
     {
         var dto = await _activityService.GetById(id);
         if (dto.Data is null)
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Found Activity"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Found Activity"));
         return Ok(dto);
     }
 
@@ -47,12 +47,12 @@ public class ActivitiesController : ControllerBase
     {
         if (id != dto.Id)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Id not matched"));
+            return BadRequest(ResultHandler.BadRequest<string>("Id not matched"));
         }
         var result = await _activityService.Update(dto);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Updated"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Updated"));
         }
 
         return Ok(result);
@@ -64,7 +64,7 @@ public class ActivitiesController : ControllerBase
         var result = await _activityService.Delete(id);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Deleted"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Deleted"));
         }
         return Ok(result);
     }

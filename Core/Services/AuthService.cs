@@ -19,7 +19,6 @@ public class AuthService : IAuthService
     private readonly UserManager<User> _userManager;
     private readonly ApplicationDBContext _applicationDBContext;
     private readonly IUserRoleRepo _userRoleRepo;
-    private readonly IUserOrganizationRepo _userOrganizationRepo;
     private readonly IUserClassRepo _userClassRepo;
     private readonly IMapper _mapper;
     private readonly IWebHostEnvironment _webHostEnvironment;
@@ -32,7 +31,6 @@ public class AuthService : IAuthService
         UserManager<User> userManager,
         ApplicationDBContext applicationDBContext,
         IUserRoleRepo userRoleRepo,
-        IUserOrganizationRepo userOrganizationRepo,
         IUserClassRepo userClassRepo,
         IMapper mapper,
         IWebHostEnvironment webHostEnvironment,
@@ -43,7 +41,6 @@ public class AuthService : IAuthService
         _userManager = userManager;
         _applicationDBContext = applicationDBContext;
         _userRoleRepo = userRoleRepo;
-        _userOrganizationRepo = userOrganizationRepo;
         _userClassRepo = userClassRepo;
         _mapper = mapper;
         _webHostEnvironment = webHostEnvironment;
@@ -53,10 +50,10 @@ public class AuthService : IAuthService
     #endregion
 
     #region Handle Methods
-    public async Task<Response<string>> AddAsync(AddUserDto dto)
+    public async Task<Result<string>> AddAsync(AddUserDto dto)
     {
         if (await _userManager.FindByEmailAsync(dto.Email) is not null)
-            return ResponseHandler.BadRequest<string>("Email is already registered!");
+            return ResultHandler.BadRequest<string>("Email is already registered!");
 
         var user = _mapper.Map<User>(dto);
         user.UserName = dto.Email.Split('@')[0];
@@ -70,7 +67,7 @@ public class AuthService : IAuthService
             foreach (var error in result.Errors)
                 errors += $"{error.Description},";
 
-            return ResponseHandler.BadRequest<string>(errors);
+            return ResultHandler.BadRequest<string>(errors);
         }
 
         var createdUser = _userManager.FindByEmailAsync(user.Email!);
@@ -88,16 +85,16 @@ public class AuthService : IAuthService
             });
         }
 
-        return ResponseHandler.Success<string>($"{dto.Email} created successfully");
+        return ResultHandler.Success<string>($"{dto.Email} created successfully");
     }
 
-    public async Task<Response<GetUserDto>> ChangeUserPasswordAsync(ChangeUserPasswordDto dto)
+    public async Task<Result<GetUserDto>> ChangeUserPasswordAsync(ChangeUserPasswordDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
         if (user == null)
         {
-            return ResponseHandler.BadRequest<GetUserDto>("Invalid Email...");
+            return ResultHandler.BadRequest<GetUserDto>("Invalid Email...");
         }
 
         var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
@@ -109,7 +106,7 @@ public class AuthService : IAuthService
             foreach (var error in result.Errors)
                 errors += $"{error.Description},";
 
-            return ResponseHandler.BadRequest<GetUserDto>(errors);
+            return ResultHandler.BadRequest<GetUserDto>(errors);
         }
 
         user.PlainPassword = dto.NewPassword;
@@ -121,7 +118,7 @@ public class AuthService : IAuthService
             foreach (var error in updatedUserResult.Errors)
                 errors += $"{error.Description},";
 
-            return ResponseHandler.BadRequest<GetUserDto>(errors);
+            return ResultHandler.BadRequest<GetUserDto>(errors);
         }
 
         if (!string.IsNullOrEmpty(user.ProfilePicturePath))
@@ -131,16 +128,16 @@ public class AuthService : IAuthService
 
         var viewmodel = _mapper.Map<GetUserDto>(user);
 
-        return ResponseHandler.Success<GetUserDto>(viewmodel);
+        return ResultHandler.Success<GetUserDto>(viewmodel);
     }
 
-    public async Task<Response<JwtAuthResult>> UpdateAsync(ChangeUserDto dto)
+    public async Task<Result<JwtAuthResult>> UpdateAsync(ChangeUserDto dto)
     {
         var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
 
         if (user == null)
         {
-            return ResponseHandler.NotFound<JwtAuthResult>("User not found.");
+            return ResultHandler.NotFound<JwtAuthResult>("User not found.");
         }
 
         if (!string.IsNullOrWhiteSpace(dto.Email) && dto.Email != user.Email)
@@ -148,7 +145,7 @@ public class AuthService : IAuthService
             var checkUser = await _userManager.FindByEmailAsync(dto.Email);
             if (checkUser is not null)
             {
-                return ResponseHandler.BadRequest<JwtAuthResult>("The email already exists.");
+                return ResultHandler.BadRequest<JwtAuthResult>("The email already exists.");
             }
             user.Email = dto.Email;
             user.UserName = dto.Email.Split('@')[0];
@@ -160,7 +157,7 @@ public class AuthService : IAuthService
                 foreach (var error in result.Errors)
                     errors += $"{error.Description},";
 
-                return ResponseHandler.BadRequest<JwtAuthResult>(errors);
+                return ResultHandler.BadRequest<JwtAuthResult>(errors);
             }
         }
 
@@ -175,39 +172,35 @@ public class AuthService : IAuthService
                 foreach (var error in result.Errors)
                     errors += $"{error.Description},";
 
-                return ResponseHandler.BadRequest<JwtAuthResult>(errors);
+                return ResultHandler.BadRequest<JwtAuthResult>(errors);
             }
         }
 
-        return ResponseHandler.Success<JwtAuthResult>(await GetJWTToken(user, Guid.NewGuid()));
+        return ResultHandler.Success<JwtAuthResult>(await GetJWTToken(user, Guid.NewGuid()));
     }
 
-    public async Task<Response<JwtAuthResult>> LoginAsync(LoginDto dto)
+    public async Task<Result<JwtAuthResult>> LoginAsync(LoginDto dto)
     {
-        var authModel = new JwtAuthResult();
-
         var user = await _userManager.FindByEmailAsync(dto.UserNameOrEmail);
 
         if (user is null || !await _userManager.CheckPasswordAsync(user, dto.Password))
         {
-            return ResponseHandler.NotFound<JwtAuthResult>("Email or Password is incorrect!");
+            return ResultHandler.NotFound<JwtAuthResult>("Email or Password is incorrect!");
         }
 
-        return ResponseHandler.Success<JwtAuthResult>(await GetJWTToken(user, Guid.NewGuid()));
+        return ResultHandler.Success<JwtAuthResult>(await GetJWTToken(user, Guid.NewGuid()));
     }
 
-    public async Task<Response<JwtAuthResult>> LoginByUserNameAsync(LoginDto dto)
+    public async Task<Result<JwtAuthResult>> LoginByUserNameAsync(LoginDto dto)
     {
-        var authModel = new JwtAuthResult();
-
         var user = await _userManager.FindByNameAsync(dto.UserNameOrEmail);
 
         if (user is null || !await _userManager.CheckPasswordAsync(user, dto.Password))
         {
-            return ResponseHandler.NotFound<JwtAuthResult>("Email or Password is incorrect!");
+            return ResultHandler.NotFound<JwtAuthResult>("Email or Password is incorrect!");
         }
 
-        return ResponseHandler.Success<JwtAuthResult>(await GetJWTToken(user, Guid.NewGuid()));
+        return ResultHandler.Success<JwtAuthResult>(await GetJWTToken(user, Guid.NewGuid()));
     }
 
     private async Task<JwtAuthResult> GetJWTToken(User user, Guid refreshToken = new Guid())
@@ -357,11 +350,11 @@ public class AuthService : IAuthService
         var roles = (await _userManager.GetRolesAsync(user)).Distinct();
         var claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name,user.Name!),
-                new Claim(ClaimTypes.NameIdentifier,user.UserName!),
-                new Claim(ClaimTypes.Email,user.Email!),
-                new Claim(nameof(UserClaimModel.PhoneNumber), user.PhoneNumber??string.Empty),
-                new Claim(nameof(UserClaimModel.Id), user.Id.ToString())
+                new(ClaimTypes.Name,user.Name!),
+                new(ClaimTypes.NameIdentifier,user.UserName!),
+                new(ClaimTypes.Email,user.Email!),
+                new(nameof(UserClaimModel.PhoneNumber), user.PhoneNumber??string.Empty),
+                new(nameof(UserClaimModel.Id), user.Id.ToString())
             };
         foreach (var role in roles)
         {
@@ -382,7 +375,7 @@ public class AuthService : IAuthService
         return claims;
     }
 
-    public async Task<Response<JwtAuthResult>> RefreshTokenAsync(RefreshTokenInputDto dto)
+    public async Task<Result<JwtAuthResult>> RefreshTokenAsync(RefreshTokenInputDto dto)
     {
 
         #region Validation
@@ -390,44 +383,44 @@ public class AuthService : IAuthService
         var user = await _applicationDBContext.Users.AsNoTracking().FirstOrDefaultAsync(s => s.AccessToken == dto.AccessToken);
         if (user is null)
         {
-            return ResponseHandler.BadRequest<JwtAuthResult>("Invalid token");
+            return ResultHandler.BadRequest<JwtAuthResult>("Invalid token");
         }
 
         if (user.RefreshToken != dto.RefreshToken)
         {
-            return ResponseHandler.BadRequest<JwtAuthResult>("RefreshToken is invalid");
+            return ResultHandler.BadRequest<JwtAuthResult>("RefreshToken is invalid");
         }
 
         if (user.RefreshTokenExpiryDate <= DateTime.Now)
         {
-            return ResponseHandler.BadRequest<JwtAuthResult>("Refresh Token is expired");
+            return ResultHandler.BadRequest<JwtAuthResult>("Refresh Token is expired");
         }
 
         #endregion
 
         #region Generating Token 
         var generateToken = await GetJWTToken(user, Guid.NewGuid());
-        return ResponseHandler.Success(generateToken);
+        return ResultHandler.Success(generateToken);
         #endregion
 
     }
 
-    public async Task<Response<bool>> RevokeTokenAsync(string username)
+    public async Task<Result<bool>> RevokeTokenAsync(string username)
     {
         try
         {
             var user = await _userManager.FindByNameAsync(username);
             user!.RefreshToken = Guid.NewGuid();
             await _userManager.UpdateAsync(user);
-            return ResponseHandler.Success<bool>(true);
+            return ResultHandler.Success<bool>(true);
         }
         catch (Exception ex)
         {
-            return ResponseHandler.UnprocessableEntity<bool>(ex.Message);
+            return ResultHandler.UnprocessableEntity<bool>(ex.Message);
         }
     }
 
-    public async Task<Response<List<RoleResult>>> GetUserRoles(int userId)
+    public async Task<Result<List<RoleResult>>> GetUserRoles(int userId)
     {
         var roleResult = new List<RoleResult>();
         var userroles = await _userRoleRepo
@@ -450,10 +443,10 @@ public class AuthService : IAuthService
                 Activity = (await _applicationDBContext.Activities.FirstOrDefaultAsync(o => o.Id == role.ActivityId))?.Name!,
             });
         }
-        return ResponseHandler.Success<List<RoleResult>>(roleResult);
+        return ResultHandler.Success<List<RoleResult>>(roleResult);
     }
 
-    public async Task<Response<List<ClassroomResult>>> GetUserClassrooms(int userId)
+    public async Task<Result<List<ClassroomResult>>> GetUserClassrooms(int userId)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         var classroomsResult = new List<ClassroomResult>();
@@ -494,7 +487,7 @@ public class AuthService : IAuthService
                     OrganizationName = item.Classroom.Grade.School.Organization.Name,
                 });
         }
-        return ResponseHandler.Success<List<ClassroomResult>>(classroomsResult);
+        return ResultHandler.Success<List<ClassroomResult>>(classroomsResult);
     }
 
     #endregion

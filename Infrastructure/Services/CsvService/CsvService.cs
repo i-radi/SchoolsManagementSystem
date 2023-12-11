@@ -10,7 +10,7 @@ public class CsvService : ICsvService
 {
     public byte[] Write<T>(IList<T> list, bool includeHeader = true)
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         Type type = typeof(T);
         PropertyInfo[] properties = type.GetProperties();
 
@@ -29,7 +29,7 @@ public class CsvService : ICsvService
 
     public string CreateCsvHeaderLine(PropertyInfo[] properties)
     {
-        List<string> propertyValues = new List<string>();
+        List<string> propertyValues = new();
 
         foreach (var prop in properties)
         {
@@ -49,28 +49,27 @@ public class CsvService : ICsvService
 
     public string CreateCsvLine<T>(T item, PropertyInfo[] properties)
     {
-        List<string> propertyValues = new List<string>();
+        List<string> propertyValues = new();
 
         foreach (var prop in properties)
         {
-            string stringformatString = string.Empty;
             object value = prop.GetValue(item, null);
 
             if (prop.PropertyType == typeof(string))
             {
-                CreateCsvStringItem(propertyValues, value);
+                CreateCsvStringItem(propertyValues, value!);
             }
             else if (prop.PropertyType == typeof(string[]))
             {
-                CreateCsvStringArrayItem(propertyValues, value);
+                CreateCsvStringArrayItem(propertyValues, value!);
             }
             else if (prop.PropertyType == typeof(List<string>))
             {
-                CreateCsvStringListItem(propertyValues, value);
+                CreateCsvStringListItem(propertyValues, value!);
             }
             else
             {
-                CreateCsvItem(propertyValues, value);
+                CreateCsvItem(propertyValues, value!);
             }
         }
 

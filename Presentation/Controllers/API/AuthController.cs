@@ -48,7 +48,7 @@ public class AuthController : ControllerBase
 
         if (modelItem is null)
         {
-            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
+            return NotFound(ResultHandler.NotFound<string>("User Not Found."));
         }
 
         if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
@@ -57,7 +57,7 @@ public class AuthController : ControllerBase
         }
 
         var result = _mapper.Map<GetProfileDto>(modelItem);
-        return Ok(ResponseHandler.Success(result));
+        return Ok(ResultHandler.Success(result));
     }
 
     [SwaggerOperation(Tags = new[] { "User Informations" })]
@@ -67,7 +67,7 @@ public class AuthController : ControllerBase
         var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
         if (modelItem is null)
         {
-            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
+            return NotFound(ResultHandler.NotFound<string>("User Not Found."));
         }
 
         var result = await _authService.GetUserRoles(userId);
@@ -85,7 +85,7 @@ public class AuthController : ControllerBase
         var modelItem = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
         if (modelItem is null)
         {
-            return NotFound(ResponseHandler.NotFound<string>("User Not Found."));
+            return NotFound(ResultHandler.NotFound<string>("User Not Found."));
         }
 
         var result = await _authService.GetUserClassrooms(userId);
@@ -104,7 +104,7 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var result = new Response<JwtAuthResult>();
+        var result = new Result<JwtAuthResult>();
 
         if (Check.IsEmail(model.UserNameOrEmail))
         {
@@ -202,12 +202,12 @@ public class AuthController : ControllerBase
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == request.UserId);
         if (user == null)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Invalid User Id."));
+            return BadRequest(ResultHandler.BadRequest<string>("Invalid User Id."));
         }
         var dto = request.ToDto(request.UserId);
         if ((await _userRoleService.IsExists(dto)).Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("This role already exists."));
+            return BadRequest(ResultHandler.BadRequest<string>("This role already exists."));
         }
         var result = await _userRoleService.Add(dto);
         if (!result.Succeeded)
@@ -224,7 +224,7 @@ public class AuthController : ControllerBase
         var userRoleResponse = await _userRoleService.GetById(userRoleId);
         if (userRoleResponse is null || userRoleResponse.Data is null)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Invalid UserRole Id."));
+            return BadRequest(ResultHandler.BadRequest<string>("Invalid UserRole Id."));
         }
         var dto = new AddUserRoleDto
         {
@@ -249,12 +249,12 @@ public class AuthController : ControllerBase
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == request.UserId);
         if (user == null)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Invalid User Id."));
+            return BadRequest(ResultHandler.BadRequest<string>("Invalid User Id."));
         }
         var dto = request.ToDto(request.UserId);
         if (!(await _userRoleService.IsExists(dto)).Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("This role not exist."));
+            return BadRequest(ResultHandler.BadRequest<string>("This role not exist."));
         }
         var result = await _userRoleService.Delete(dto);
         if (!result.Succeeded)
@@ -272,24 +272,24 @@ public class AuthController : ControllerBase
             .FirstOrDefaultAsync(u => u.Id == id);
         if (modelItem is null)
         {
-            return NotFound(ResponseHandler.NotFound<string>("not found user.."));
+            return NotFound(ResultHandler.NotFound<string>("not found user.."));
         }
 
         if (image is null || image.Length == 0)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Invalid image."));
+            return BadRequest(ResultHandler.BadRequest<string>("Invalid image."));
         }
 
         if (image.Length > 5 * 1024 * 1024)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Image size exceeds the limit (5 MB)."));
+            return BadRequest(ResultHandler.BadRequest<string>("Image size exceeds the limit (5 MB)."));
         }
 
         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
         var fileExtension = Path.GetExtension(image.FileName).ToLower();
         if (!allowedExtensions.Contains(fileExtension))
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Invalid file format. Allowed formats: jpg, jpeg, png, gif."));
+            return BadRequest(ResultHandler.BadRequest<string>("Invalid file format. Allowed formats: jpg, jpeg, png, gif."));
         }
 
         modelItem.ProfilePicturePath = await _attachmentService.Upload(
@@ -302,7 +302,7 @@ public class AuthController : ControllerBase
 
         if (!updatedModel.Succeeded)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>(updatedModel.Errors.ToString()));
+            return BadRequest(ResultHandler.BadRequest<string>(updatedModel.Errors.ToString()));
         }
 
         if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
@@ -311,6 +311,6 @@ public class AuthController : ControllerBase
         }
 
         var result = _mapper.Map<GetUserDto>(modelItem);
-        return Ok(ResponseHandler.Success(result));
+        return Ok(ResultHandler.Success(result));
     }
 }

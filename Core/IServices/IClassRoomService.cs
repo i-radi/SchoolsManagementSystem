@@ -2,9 +2,9 @@
 
 public interface IClassroomService
 {
-    Response<List<GetClassroomDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0);
-    Task<Response<GetClassroomDto?>> GetById(int id);
-    Task<Response<GetClassroomDto>> Add(AddClassroomDto model);
-    Task<Response<bool>> Update(UpdateClassroomDto model);
-    Task<Response<bool>> Delete(int id);
+    Result<List<GetClassroomDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0);
+    Task<Result<GetClassroomDto?>> GetById(int id);
+    Task<Result<GetClassroomDto>> Add(AddClassroomDto model);
+    Task<Result<bool>> Update(UpdateClassroomDto model);
+    Task<Result<bool>> Delete(int id);
 }
