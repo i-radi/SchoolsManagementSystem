@@ -27,7 +27,7 @@
             @Html.DisplayNameFor(model => model.CreateDate)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.CreateDate.Value.ToShortDateString())
+            @Html.DisplayFor(model => model.CreateDate!.Value.ToShortDateString())
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.IsDone)
@@ -39,7 +39,7 @@
             @Html.DisplayNameFor(model => model.DoneDate)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DoneDate.Value.ToShortDateString())
+            @Html.DisplayFor(model => model.DoneDate!.Value.ToShortDateString())
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.IsPaid)
@@ -51,7 +51,7 @@
             @Html.DisplayNameFor(model => model.PaidDate)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.PaidDate.Value.ToShortDateString())
+            @Html.DisplayFor(model => model.PaidDate!.Value.ToShortDateString())
         </dd>
     </dl>
     

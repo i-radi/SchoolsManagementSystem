@@ -4,16 +4,10 @@ using VModels.ViewModels.Attendances;
 
 namespace Core.Services;
 
-public class AttendanceService : IAttendanceService
+public class AttendanceService(IActivityRepo activitysRepo, IRecordRepo recordRepo) : IAttendanceService
 {
-    private readonly IActivityRepo _activityRepo;
-    private readonly IRecordRepo _recordRepo;
-
-    public AttendanceService(IActivityRepo activitysRepo, IRecordRepo recordRepo)
-    {
-        _activityRepo = activitysRepo;
-        _recordRepo = recordRepo;
-    }
+    private readonly IActivityRepo _activityRepo = activitysRepo;
+    private readonly IRecordRepo _recordRepo = recordRepo;
 
     public async Task<ActivityAttendanceViewModel?> GetByActivityId(int id)
     {
@@ -79,7 +73,7 @@ public class AttendanceService : IAttendanceService
 
         // columns of report
         record.UserRecords
-            .Select(ur => ur.DoneDate.Value.Date)
+            .Select(ur => ur.DoneDate!.Value.Date)
             .Distinct()
             .ToList()
             .ForEach(d => result.RecordDates.Add(new InstanceAttendance{InstanceDate = d}));

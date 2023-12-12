@@ -7,18 +7,12 @@ using System.Text.Json;
 
 namespace Presentation.Areas.Identity.Pages.Account.Manage
 {
-    public class DownloadPersonalDataModel : PageModel
+    public class DownloadPersonalDataModel(
+        UserManager<User> userManager,
+        ILogger<DownloadPersonalDataModel> logger) : PageModel
     {
-        private readonly UserManager<User> _userManager;
-        private readonly ILogger<DownloadPersonalDataModel> _logger;
-
-        public DownloadPersonalDataModel(
-            UserManager<User> userManager,
-            ILogger<DownloadPersonalDataModel> logger)
-        {
-            _userManager = userManager;
-            _logger = logger;
-        }
+        private readonly UserManager<User> _userManager = userManager;
+        private readonly ILogger<DownloadPersonalDataModel> _logger = logger;
 
         public IActionResult OnGet()
         {
@@ -52,7 +46,7 @@ namespace Presentation.Areas.Identity.Pages.Account.Manage
 
             personalData.Add($"Authenticator Key", await _userManager.GetAuthenticatorKeyAsync(user));
 
-            Response.Headers.Add("Content-Disposition", "attachment; filename=PersonalData.json");
+            Response.Headers.Append("Content-Disposition", "attachment; filename=PersonalData.json");
             return new FileContentResult(JsonSerializer.SerializeToUtf8Bytes(personalData), "application/json");
         }
     }
