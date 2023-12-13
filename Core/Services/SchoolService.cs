@@ -21,12 +21,12 @@ public class SchoolService : ISchoolService
         _mapper = mapper;
     }
 
-    public Result<List<GetSchoolDto>> GetAll(int pageNumber, int pageSize)
+    public Result<PaginatedList<GetSchoolDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _schoolsRepo.GetTableNoTracking().Include(m => m.Organization);
         var result = PaginatedList<GetSchoolDto>.Create(_mapper.Map<List<GetSchoolDto>>(modelItems), pageNumber, pageSize);
 
-        return ResultHandler.Success(_mapper.Map<List<GetSchoolDto>>(result));
+        return ResultHandler.Success(result);
     }
 
     public async Task<Result<GetSchoolReportDto>> GetSchoolReport(int schoolId, int SeasonId)

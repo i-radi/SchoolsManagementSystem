@@ -11,12 +11,12 @@ public class SeasonService : ISeasonService
         _mapper = mapper;
     }
 
-    public Result<List<GetSeasonDto>> GetAll(int pageNumber, int pageSize)
+    public Result<PaginatedList<GetSeasonDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _seasonsRepo.GetTableNoTracking().Include(m => m.School);
         var result = PaginatedList<GetSeasonDto>.Create(_mapper.Map<List<GetSeasonDto>>(modelItems), pageNumber, pageSize);
 
-        return ResultHandler.Success(_mapper.Map<List<GetSeasonDto>>(result));
+        return ResultHandler.Success(result);
     }
 
     public async Task<Result<GetSeasonDto?>> GetById(int id)

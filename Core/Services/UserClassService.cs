@@ -11,7 +11,7 @@ public class UserClassService : IUserClassService
         _mapper = mapper;
     }
 
-    public Result<List<GetUserClassDto>> GetAll(int pageNumber, int pageSize, int userId = 0)
+    public Result<PaginatedList<GetUserClassDto>> GetAll(int pageNumber, int pageSize, int userId = 0)
     {
         var modelItems = _userClassesRepo.GetTableNoTracking()
             .Include(m => m.Classroom)
@@ -27,7 +27,7 @@ public class UserClassService : IUserClassService
 
         var result = PaginatedList<GetUserClassDto>.Create(_mapper.Map<List<GetUserClassDto>>(modelItems.ToList()), pageNumber, pageSize);
 
-        return ResultHandler.Success(_mapper.Map<List<GetUserClassDto>>(result));
+        return ResultHandler.Success(result);
     }
 
     public async Task<Result<GetUserClassDto?>> GetById(int id)

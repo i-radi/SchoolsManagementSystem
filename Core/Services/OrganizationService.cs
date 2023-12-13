@@ -11,12 +11,12 @@ public class OrganizationService : IOrganizationService
         _mapper = mapper;
     }
 
-    public Result<List<GetOrganizationDto>> GetAll(int pageNumber, int pageSize)
+    public Result<PaginatedList<GetOrganizationDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _organizationsRepo.GetTableNoTracking();
         var result = PaginatedList<GetOrganizationDto>.Create(_mapper.Map<List<GetOrganizationDto>>(modelItems), pageNumber, pageSize);
 
-        return ResultHandler.Success(_mapper.Map<List<GetOrganizationDto>>(result));
+        return ResultHandler.Success(result);
     }
 
     public async Task<Result<GetOrganizationDto?>> GetById(int id)

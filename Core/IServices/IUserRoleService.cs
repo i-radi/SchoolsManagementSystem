@@ -2,7 +2,7 @@
 
 public interface IUserRoleService
 {
-    Result<List<GetUserRoleDto>> GetAll(int pageNumber, int pageSize);
+    Result<PaginatedList<GetUserRoleDto>> GetAll(int pageNumber, int pageSize);
     Task<Result<GetUserRoleDto?>> GetById(int id);
     Task<Result<GetUserRoleDto>> Add(AddUserRoleDto model);
     Task<Result<bool>> Update(UpdateUserRoleDto model);

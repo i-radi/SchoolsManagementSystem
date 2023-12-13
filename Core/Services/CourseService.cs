@@ -11,7 +11,7 @@ public class CourseService : ICourseService
         _mapper = mapper;
     }
 
-    public Result<List<GetCourseDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0)
+    public Result<PaginatedList<GetCourseDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0)
     {
         var modelItems = _coursesRepo.GetTableNoTracking();
         ;
@@ -26,7 +26,7 @@ public class CourseService : ICourseService
 
         var result = PaginatedList<GetCourseDto>.Create(_mapper.Map<List<GetCourseDto>>(modelItems), pageNumber, pageSize);
 
-        return ResultHandler.Success(_mapper.Map<List<GetCourseDto>>(result));
+        return ResultHandler.Success(result);
     }
 
     public async Task<Result<GetCourseDto?>> GetById(int id)

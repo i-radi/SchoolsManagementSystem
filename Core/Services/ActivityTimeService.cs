@@ -11,14 +11,14 @@ public class ActivityTimeService : IActivityTimeService
         _mapper = mapper;
     }
 
-    public Result<List<GetActivityTimeDto>> GetAll(int pageNumber, int pageSize)
+    public Result<PaginatedList<GetActivityTimeDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _activityTimesRepo.GetTableNoTracking();
 
 
         var result = PaginatedList<GetActivityTimeDto>.Create(_mapper.Map<List<GetActivityTimeDto>>(modelItems), pageNumber, pageSize);
 
-        return ResultHandler.Success(_mapper.Map<List<GetActivityTimeDto>>(result));
+        return ResultHandler.Success(result);
     }
 
     public async Task<Result<GetActivityTimeDto?>> GetById(int id)

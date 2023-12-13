@@ -1,6 +1,4 @@
-﻿
-using Models.Entities;
-using VModels.ViewModels.Attendances;
+﻿using VModels.ViewModels.Attendances;
 
 namespace Core.Services;
 
@@ -76,7 +74,7 @@ public class AttendanceService(IActivityRepo activitysRepo, IRecordRepo recordRe
             .Select(ur => ur.DoneDate)
             .Distinct()
             .ToList()
-            .ForEach(d => result.RecordDates.Add(new InstanceAttendance{InstanceDate = d.Value}));
+            .ForEach(d => result.RecordDates.Add(new InstanceAttendance { InstanceDate = d.Value }));
 
         // rows of report
         var userClasses = await _recordRepo.GetUserClassesByRecordId(id);

@@ -11,12 +11,12 @@ public class UserTypeService : IUserTypeService
         _mapper = mapper;
     }
 
-    public Result<List<GetUserTypeDto>> GetAll(int pageNumber, int pageSize)
+    public Result<PaginatedList<GetUserTypeDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _userTypesRepo.GetTableNoTracking();
         var result = PaginatedList<GetUserTypeDto>.Create(_mapper.Map<List<GetUserTypeDto>>(modelItems), pageNumber, pageSize);
 
-        return ResultHandler.Success(_mapper.Map<List<GetUserTypeDto>>(result));
+        return ResultHandler.Success(result);
     }
 
     public async Task<Result<GetUserTypeDto?>> GetById(int id)

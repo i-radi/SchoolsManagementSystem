@@ -13,12 +13,12 @@ public class UserRoleService : IUserRoleService
         _mapper = mapper;
     }
 
-    public Result<List<GetUserRoleDto>> GetAll(int pageNumber, int pageSize)
+    public Result<PaginatedList<GetUserRoleDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _userRolesRepo.GetTableNoTracking();
         var result = PaginatedList<GetUserRoleDto>.Create(_mapper.Map<List<GetUserRoleDto>>(modelItems), pageNumber, pageSize);
 
-        return ResultHandler.Success(_mapper.Map<List<GetUserRoleDto>>(result));
+        return ResultHandler.Success(result);
     }
 
     public async Task<Result<bool>> IsExists(AddUserRoleDto model)

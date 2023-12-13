@@ -1,5 +1,4 @@
-﻿using Infrastructure.Utilities;
-using Models.Results;
+﻿using Models.Results;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Presentation.Controllers.API;

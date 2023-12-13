@@ -11,7 +11,7 @@ public class RecordClassService : IRecordClassService
         _mapper = mapper;
     }
 
-    public Result<List<GetRecordClassDto>> GetAll(int pageNumber, int pageSize)
+    public Result<PaginatedList<GetRecordClassDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _recordClassesRepo.GetTableNoTracking()
             .Include(c => c.Record)
@@ -19,7 +19,7 @@ public class RecordClassService : IRecordClassService
 
         var result = PaginatedList<GetRecordClassDto>.Create(_mapper.Map<List<GetRecordClassDto>>(modelItems), pageNumber, pageSize);
 
-        return ResultHandler.Success(_mapper.Map<List<GetRecordClassDto>>(result));
+        return ResultHandler.Success(result);
     }
 
     public async Task<Result<GetRecordClassDto?>> GetById(int id)

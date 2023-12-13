@@ -11,14 +11,14 @@ public class ActivityClassroomService : IActivityClassroomService
         _mapper = mapper;
     }
 
-    public Result<List<GetActivityClassroomDto>> GetAll(int pageNumber, int pageSize)
+    public Result<PaginatedList<GetActivityClassroomDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _activityClassroomsRepo.GetTableNoTracking();
 
 
         var result = PaginatedList<GetActivityClassroomDto>.Create(_mapper.Map<List<GetActivityClassroomDto>>(modelItems), pageNumber, pageSize);
 
-        return ResultHandler.Success(_mapper.Map<List<GetActivityClassroomDto>>(result));
+        return ResultHandler.Success(result);
     }
 
     public async Task<Result<GetActivityClassroomDto?>?> GetById(int id)

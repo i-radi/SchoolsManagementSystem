@@ -11,7 +11,7 @@ public class ActivityInstanceService : IActivityInstanceService
         _mapper = mapper;
     }
 
-    public Result<List<GetActivityInstanceDto>> GetAll(int pageNumber, int pageSize, int activityId = 0)
+    public Result<PaginatedList<GetActivityInstanceDto>> GetAll(int pageNumber, int pageSize, int activityId = 0)
     {
         var modelItems = _activityInstancesRepo.GetTableNoTracking();
 
@@ -22,7 +22,7 @@ public class ActivityInstanceService : IActivityInstanceService
 
         var result = PaginatedList<GetActivityInstanceDto>.Create(_mapper.Map<List<GetActivityInstanceDto>>(modelItems), pageNumber, pageSize);
 
-        return ResultHandler.Success(_mapper.Map<List<GetActivityInstanceDto>>(result));
+        return ResultHandler.Success(result);
     }
 
     public async Task<Result<GetActivityInstanceDto?>> GetById(int id)

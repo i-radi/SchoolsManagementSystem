@@ -2,7 +2,7 @@
 
 public interface IClassroomService
 {
-    Result<List<GetClassroomDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0);
+    Result<PaginatedList<GetClassroomDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0);
     Task<Result<GetClassroomDto?>> GetById(int id);
     Task<Result<GetClassroomDto>> Add(AddClassroomDto model);
     Task<Result<bool>> Update(UpdateClassroomDto model);

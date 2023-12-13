@@ -1,8 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
-using VModels.ViewModels.Attendances;
-
-namespace Persistance.Repos;
+﻿namespace Persistance.Repos;
 
 public class RecordRepo : GenericRepoAsync<Record>, IRecordRepo
 {
@@ -30,7 +26,7 @@ public class RecordRepo : GenericRepoAsync<Record>, IRecordRepo
     {
         return await _dbContext.Set<Record>()
             .Include(c => c.UserRecords)
-            .ThenInclude( ur => ur.User)
+            .ThenInclude(ur => ur.User)
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 

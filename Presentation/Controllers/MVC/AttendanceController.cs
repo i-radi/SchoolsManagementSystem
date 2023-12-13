@@ -1,10 +1,4 @@
-﻿using OfficeOpenXml.Style;
-using OfficeOpenXml.Table;
-using OfficeOpenXml;
-using System.ComponentModel.DataAnnotations;
-using System.Dynamic;
-using System.Reflection;
-using VModels.ViewModels.Attendances;
+﻿using OfficeOpenXml;
 using StackExchange.Profiling;
 
 namespace Presentation.Controllers.MVC

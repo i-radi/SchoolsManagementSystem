@@ -2,7 +2,7 @@
 
 public interface IActivityService
 {
-    Result<List<GetActivityDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0);
+    Result<PaginatedList<GetActivityDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0);
     Task<Result<GetActivityDto?>?> GetById(int id);
     Task<Result<GetActivityDto>> Add(AddActivityDto model);
     Task<Result<bool>> Update(UpdateActivityDto model);

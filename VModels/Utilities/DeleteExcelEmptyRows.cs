@@ -1,6 +1,6 @@
 ﻿using OfficeOpenXml;
 
-namespace Infrastructure.Utilities;
+namespace VModels.Utilities;
 
 public static class DeleteEmptyRows
 {

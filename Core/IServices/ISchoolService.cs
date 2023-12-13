@@ -4,7 +4,7 @@ namespace Core.IServices;
 
 public interface ISchoolService
 {
-    Result<List<GetSchoolDto>> GetAll(int pageNumber, int pageSize);
+    Result<PaginatedList<GetSchoolDto>> GetAll(int pageNumber, int pageSize);
     Task<Result<GetSchoolReportDto>> GetSchoolReport(int schoolId, int SeasonId);
     Result<List<GetSchoolDto>> GetByOrganization(int orgId, int pageNumber, int pageSize);
     Task<Result<GetSchoolDto?>> GetById(int id);

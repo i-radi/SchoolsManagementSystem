@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Infrastructure.Utilities;
+namespace VModels.Utilities;
 
 public static class Check
 {

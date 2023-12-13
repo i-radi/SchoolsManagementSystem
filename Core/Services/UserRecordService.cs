@@ -11,7 +11,7 @@ public class UserRecordService : IUserRecordService
         _mapper = mapper;
     }
 
-    public Result<List<GetUserRecordDto>> GetAll(int pageNumber, int pageSize)
+    public Result<PaginatedList<GetUserRecordDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _userRecordsRepo.GetTableNoTracking()
             .Include(c => c.Record)
@@ -19,7 +19,7 @@ public class UserRecordService : IUserRecordService
 
         var result = PaginatedList<GetUserRecordDto>.Create(_mapper.Map<List<GetUserRecordDto>>(modelItems), pageNumber, pageSize);
 
-        return ResultHandler.Success(_mapper.Map<List<GetUserRecordDto>>(result));
+        return ResultHandler.Success(result);
     }
 
     public async Task<Result<GetUserRecordDto?>> GetById(int id)

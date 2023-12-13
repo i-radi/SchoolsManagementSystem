@@ -34,7 +34,7 @@ public class GetAllTest
         //Assert
         result.Data.Should().NotBeNullOrEmpty();
         result.Succeeded.Should().BeTrue();
-        result.Data.Should().BeOfType<List<GetUserRoleDto>>();
+        result.Data.Should().BeOfType<PaginatedList<GetUserRoleDto>>();
     }
 
     [Theory]
@@ -52,6 +52,6 @@ public class GetAllTest
         //Assert
         result.Data.Should().HaveCount(0);
         result.Succeeded.Should().BeTrue();
-        result.Data.Should().BeOfType<List<GetUserRoleDto>>();
+        result.Data.Should().BeOfType<PaginatedList<GetUserRoleDto>>();
     }
 }

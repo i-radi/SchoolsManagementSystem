@@ -1,6 +1,6 @@
 ﻿namespace Presentation.Controllers.API;
 
-[Authorize]
+//[Authorize]
 [Route("api/schools")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Schools")]
@@ -20,7 +20,11 @@ public class SchoolsController : ControllerBase
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_schoolService.GetAll(pageNumber, pageSize));
+        var result = _schoolService.GetAll(pageNumber, pageSize);
+
+        Response.AddPaginationHeader(result.Data);
+
+        return Ok(result);
     }
 
     [HttpGet("{schoolId}/season/{seasonId}")]

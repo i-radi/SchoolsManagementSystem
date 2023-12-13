@@ -11,12 +11,12 @@ public class GradeService : IGradeService
         _mapper = mapper;
     }
 
-    public Result<List<GetGradeDto>> GetAll(int pageNumber, int pageSize)
+    public Result<PaginatedList<GetGradeDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _gradesRepo.GetTableNoTracking().Include(m => m.School);
         var result = PaginatedList<GetGradeDto>.Create(_mapper.Map<List<GetGradeDto>>(modelItems), pageNumber, pageSize);
 
-        return ResultHandler.Success(_mapper.Map<List<GetGradeDto>>(result));
+        return ResultHandler.Success(result);
     }
 
     public async Task<Result<GetGradeDto?>> GetById(int id)
