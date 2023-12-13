@@ -1,10 +1,10 @@
 # Schools Management System
 
-**SchoolsManagementSystem** is a robust ASP.NET Core 7 API project designed for efficient school management.
+**SchoolsManagementSystem** is a robust ASP.NET Core 8 API project designed for efficient school management.
 
 ## Prerequisites
 Ensure you have the following prerequisites installed on your system:
-- .NET 7 SDK
+- .NET 8 SDK
 - SQL Server
 
 ## How to Run the Project?
