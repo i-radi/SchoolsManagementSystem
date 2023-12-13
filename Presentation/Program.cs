@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 #region Services
 
 #region Connection To SQL Server
-
+builder.Services.AddMiniProfiler(options => options.RouteBasePath = "/profiler").AddEntityFramework();
 builder.Services.AddDbContext<ApplicationDBContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbContextConnection")!);
@@ -72,6 +72,7 @@ using (var scope = app.Services.CreateScope())
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseMiniProfiler();
     app.UseMigrationsEndPoint();
     app.UseSwagger();
     app.UseSwaggerUI(options =>

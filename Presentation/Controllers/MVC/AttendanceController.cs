@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Dynamic;
 using System.Reflection;
 using VModels.ViewModels.Attendances;
+using StackExchange.Profiling;
 
 namespace Presentation.Controllers.MVC
 {
@@ -23,15 +24,17 @@ namespace Presentation.Controllers.MVC
             {
                 return RedirectToAction("Index", "Activities");
             }
-
-            var viewmodel = await _attendanceService.GetByActivityId(activityId);
-
-            if (viewmodel is null)
+            using (MiniProfiler.Current.Step("Getting data"))
             {
-                return RedirectToAction("Index", "Activities");
-            }
+                var viewmodel = await _attendanceService.GetByActivityId(activityId);
 
-            return View(viewmodel);
+                if (viewmodel is null)
+                {
+                    return RedirectToAction("Index", "Activities");
+                }
+
+                return View(viewmodel);
+            }
         }
 
         public async Task<IActionResult> DownloadActivityAttendance(int activityId = 0)
