@@ -73,16 +73,16 @@ public class AttendanceService(IActivityRepo activitysRepo, IRecordRepo recordRe
 
         // columns of report
         record.UserRecords
-            .Select(ur => ur.DoneDate!.Value.Date)
+            .Select(ur => ur.DoneDate)
             .Distinct()
             .ToList()
-            .ForEach(d => result.RecordDates.Add(new InstanceAttendance{InstanceDate = d}));
+            .ForEach(d => result.RecordDates.Add(new InstanceAttendance{InstanceDate = d.Value}));
 
         // rows of report
         var userClasses = await _recordRepo.GetUserClassesByRecordId(id);
         foreach (var userClass in userClasses)
         {
-            var userAttendance = new UserAttendance
+            var userAttendance = new ClassUserAttendance
             {
                 ClassId = userClass.Classroom!.Id,
                 ClassName = userClass.Classroom.Name,
@@ -96,7 +96,7 @@ public class AttendanceService(IActivityRepo activitysRepo, IRecordRepo recordRe
             {
                 if (userRecord.UserId == userClass.UserId)
                 {
-                    userAttendance.InstanceIds.Add(userRecord.Id);
+                    userAttendance.RecordDates.Add(userRecord.DoneDate.Value);
                 }
             }
             result.ClassUsers.Add(userAttendance);

@@ -11,7 +11,8 @@
 }
 else
 {
-    <table id="attendance-table" class="table">
+    @* <table id="attendance-table" class="table"> *@
+    <table class="table">
         <thead>
             <tr>
                 <th>
@@ -47,11 +48,11 @@ else
                     </td>
                     @foreach (var instance in Model.RecordDates)
                     {
-                        <td style="color: @(item.InstanceIds.Contains(instance.InstanceId) ? "green" : "red")">
-                            @(item.InstanceIds.Contains(instance.InstanceId) ? "Yes" : "No")
+                        <td style="color: @(item.RecordDates.Contains(instance.InstanceDate) ? "green" : "red")">
+                            @(item.RecordDates.Contains(instance.InstanceDate) ? "Yes" : "No")
                         </td>
                     }
-                    <td>@($"{item.InstanceIds.Count}/{Model.RecordDates.Count}")</td>
+                    <td>@($"{item.RecordDates.Count}/{Model.RecordDates.Count}")</td>
                 </tr>
             }
         </tbody>
