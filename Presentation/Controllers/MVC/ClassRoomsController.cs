@@ -1,32 +1,21 @@
 ﻿namespace Presentation.Controllers.MVC
 {
-    public class ClassroomsController : Controller
+    public class ClassroomsController(
+        IClassroomRepo classroomRepo,
+        IGradeRepo gradeRepo,
+        ISchoolRepo schoolRepo,
+        IWebHostEnvironment webHostEnvironment,
+        BaseSettings baseSettings,
+        IMapper mapper,
+        IAttachmentService attachmentService) : Controller
     {
-        private readonly IClassroomRepo _classroomRepo;
-        private readonly IGradeRepo _gradeRepo;
-        private readonly ISchoolRepo _schoolRepo;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly BaseSettings _baseSettings;
-        private readonly IMapper _mapper;
-        private readonly IAttachmentService _attachmentService;
-
-        public ClassroomsController(
-            IClassroomRepo classroomRepo,
-            IGradeRepo gradeRepo,
-            ISchoolRepo schoolRepo,
-            IWebHostEnvironment webHostEnvironment,
-            BaseSettings baseSettings,
-            IMapper mapper,
-            IAttachmentService attachmentService)
-        {
-            _classroomRepo = classroomRepo;
-            _gradeRepo = gradeRepo;
-            _schoolRepo = schoolRepo;
-            _webHostEnvironment = webHostEnvironment;
-            _baseSettings = baseSettings;
-            _mapper = mapper;
-            _attachmentService = attachmentService;
-        }
+        private readonly IClassroomRepo _classroomRepo = classroomRepo;
+        private readonly IGradeRepo _gradeRepo = gradeRepo;
+        private readonly ISchoolRepo _schoolRepo = schoolRepo;
+        private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
+        private readonly BaseSettings _baseSettings = baseSettings;
+        private readonly IMapper _mapper = mapper;
+        private readonly IAttachmentService _attachmentService = attachmentService;
 
         public async Task<IActionResult> Index(int gradeId)
         {

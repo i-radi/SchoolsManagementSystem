@@ -4,36 +4,22 @@
 [Route("api/users")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Users")]
-public class UsersController : ControllerBase
+public class UsersController(
+    UserManager<User> userManager,
+    IMapper mapper,
+    IWebHostEnvironment webHostEnvironment,
+    IExportService<GetUserDto> exportService,
+    BaseSettings baseSettings,
+    IAuthService authService,
+    IAttachmentService attachmentService) : ControllerBase
 {
-    private readonly SignInManager<User> _signInManager;
-    private readonly UserManager<User> _userManager;
-    private readonly IMapper _mapper;
-    private readonly IExportService<GetUserDto> _exportService;
-    private readonly BaseSettings _baseSettings;
-    private readonly IAuthService _authService;
-    private readonly IAttachmentService _attachmentService;
-    private readonly IWebHostEnvironment _webHostEnvironment;
-
-    public UsersController(
-        SignInManager<User> signInManager,
-        UserManager<User> userManager,
-        IMapper mapper,
-        IWebHostEnvironment webHostEnvironment,
-        IExportService<GetUserDto> exportService,
-        BaseSettings baseSettings,
-        IAuthService authService,
-        IAttachmentService attachmentService)
-    {
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _mapper = mapper;
-        _exportService = exportService;
-        _baseSettings = baseSettings;
-        _authService = authService;
-        _attachmentService = attachmentService;
-        _webHostEnvironment = webHostEnvironment;
-    }
+    private readonly UserManager<User> _userManager = userManager;
+    private readonly IMapper _mapper = mapper;
+    private readonly IExportService<GetUserDto> _exportService = exportService;
+    private readonly BaseSettings _baseSettings = baseSettings;
+    private readonly IAuthService _authService = authService;
+    private readonly IAttachmentService _attachmentService = attachmentService;
+    private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
 
     [HttpPost()]
     public async Task<IActionResult> AddAsync(AddUserDto dto)
@@ -186,7 +172,7 @@ public class UsersController : ControllerBase
             usersQuery = usersQuery.Where(u => u.UserOrganizations.Any(uo => uo.OrganizationId == organizationId));
         }
 
-        var modelItems = PaginatedList<User>.Create(await usersQuery.ToListAsync(), pageNumber, pageSize);
+        var modelItems = await usersQuery.ToPaginatedListAsync(pageNumber, pageSize);
 
         foreach (var user in modelItems)
         {
@@ -198,10 +184,8 @@ public class UsersController : ControllerBase
                 user.ProfilePicturePath);
             }
         }
-
-        var result = _mapper.Map<IEnumerable<GetUserDto>>(modelItems);
-
-        return Ok(ResultHandler.Success(result));
+        Response.AddPaginationHeader(modelItems);
+        return Ok(ResultHandler.Success(modelItems));
     }
 
     [HttpGet("organization/{organizationId}/search")]
@@ -240,10 +224,10 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        var modelItems = PaginatedList<User>
-            .Create(await _userManager.Users
-            .Include(u => u.UserRoles)
-            .ToListAsync(), pageNumber, pageSize);
+        var modelItems = await _userManager.Users
+        .Include(u => u.UserRoles)
+            .Select(u => _mapper.Map<GetUserDto>(u))
+            .ToPaginatedListAsync(pageNumber, pageSize);
 
         foreach (var user in modelItems)
         {
@@ -252,10 +236,8 @@ public class UsersController : ControllerBase
                 user.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{user.ProfilePicturePath}";
             }
         }
-
-        var result = _mapper.Map<IEnumerable<GetUserDto>>(modelItems);
-
-        return Ok(ResultHandler.Success(result));
+        Response.AddPaginationHeader(modelItems);
+        return Ok(ResultHandler.Success(modelItems));
     }
 
     [HttpGet("export-users")]

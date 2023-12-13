@@ -4,27 +4,24 @@
 [Route("api/activities")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Activities")]
-public class ActivitiesController : ControllerBase
+public class ActivitiesController(IActivityService activityService) : ControllerBase
 {
-    private readonly IActivityService _activityService;
-    private readonly ILogger<ActivitiesController> _logger;
-
-    public ActivitiesController(IActivityService activityService, ILogger<ActivitiesController> logger)
-    {
-        _activityService = activityService;
-        _logger = logger;
-    }
+    private readonly IActivityService _activityService = activityService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_activityService.GetAll(pageNumber, pageSize));
+        var result = _activityService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("school/{schoolId}")]
     public IActionResult GetSchoolActivity(int schoolId, int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_activityService.GetAll(pageNumber, pageSize, schoolId));
+        var result = _activityService.GetAll(pageNumber, pageSize, schoolId);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

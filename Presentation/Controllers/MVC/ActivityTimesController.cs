@@ -1,20 +1,13 @@
 ﻿namespace Presentation.Controllers.MVC
 {
-    public class ActivityTimesController : Controller
+    public class ActivityTimesController(
+        IActivityTimeRepo activityTimeRepo,
+        IActivityRepo activityRepo,
+        IMapper mapper) : Controller
     {
-        private readonly IActivityTimeRepo _activityTimeRepo;
-        private readonly IActivityRepo _activityRepo;
-        private readonly IMapper _mapper;
-
-        public ActivityTimesController(
-            IActivityTimeRepo activityTimeRepo,
-            IActivityRepo activityRepo,
-            IMapper mapper)
-        {
-            _activityTimeRepo = activityTimeRepo;
-            _activityRepo = activityRepo;
-            _mapper = mapper;
-        }
+        private readonly IActivityTimeRepo _activityTimeRepo = activityTimeRepo;
+        private readonly IActivityRepo _activityRepo = activityRepo;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<IActionResult> Index(int? activityId)
         {

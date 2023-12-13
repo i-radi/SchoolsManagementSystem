@@ -4,20 +4,17 @@
 [Route("api/activity-classrooms")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Activities")]
-public class ActivityClassroomsController : ControllerBase
+public class ActivityClassroomsController(
+    IActivityClassroomService activityClassroomService) : ControllerBase
 {
-    private readonly IActivityClassroomService _activityClassroomService;
-
-    public ActivityClassroomsController(
-        IActivityClassroomService activityClassroomService)
-    {
-        _activityClassroomService = activityClassroomService;
-    }
+    private readonly IActivityClassroomService _activityClassroomService = activityClassroomService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_activityClassroomService.GetAll(pageNumber, pageSize));
+        var result = _activityClassroomService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

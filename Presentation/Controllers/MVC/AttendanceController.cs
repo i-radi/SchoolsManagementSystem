@@ -3,14 +3,9 @@ using StackExchange.Profiling;
 
 namespace Presentation.Controllers.MVC
 {
-    public class AttendanceController : Controller
+    public class AttendanceController(IAttendanceService attendanceService) : Controller
     {
-        private readonly IAttendanceService _attendanceService;
-
-        public AttendanceController(IAttendanceService attendanceService)
-        {
-            _attendanceService = attendanceService;
-        }
+        private readonly IAttendanceService _attendanceService = attendanceService;
 
         public async Task<IActionResult> Activity(int activityId = 0)
         {

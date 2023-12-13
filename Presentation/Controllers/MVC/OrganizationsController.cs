@@ -1,21 +1,12 @@
 ﻿namespace Presentation.Controllers.MVC
 {
-    public class OrganizationsController : Controller
+    public class OrganizationsController(IAttachmentService attachmentService, BaseSettings baseSettings, IOrganizationRepo organizationRepo, IMapper mapper, IWebHostEnvironment webHostEnvironment) : Controller
     {
-        private readonly IAttachmentService _attachmentService;
-        private readonly BaseSettings _baseSettings;
-        private readonly IOrganizationRepo _organizationRepo;
-        private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-
-        public OrganizationsController(IAttachmentService attachmentService, BaseSettings baseSettings, IOrganizationRepo organizationRepo, IMapper mapper, IWebHostEnvironment webHostEnvironment)
-        {
-            _attachmentService = attachmentService;
-            _baseSettings = baseSettings;
-            _organizationRepo = organizationRepo;
-            _mapper = mapper;
-            _webHostEnvironment = webHostEnvironment;
-        }
+        private readonly IAttachmentService _attachmentService = attachmentService;
+        private readonly BaseSettings _baseSettings = baseSettings;
+        private readonly IOrganizationRepo _organizationRepo = organizationRepo;
+        private readonly IMapper _mapper = mapper;
+        private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
 
         public IActionResult Index(int page = 1, int pageSize = 10, string searchName = "")
         {

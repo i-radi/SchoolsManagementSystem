@@ -1,20 +1,13 @@
 ﻿namespace Presentation.Controllers.MVC
 {
-    public class SeasonsController : Controller
+    public class SeasonsController(
+        ISeasonRepo seasonRepo,
+        ISchoolRepo schoolRepo,
+        IMapper mapper) : Controller
     {
-        private readonly ISeasonRepo _seasonRepo;
-        private readonly ISchoolRepo _schoolRepo;
-        private readonly IMapper _mapper;
-
-        public SeasonsController(
-            ISeasonRepo seasonRepo,
-            ISchoolRepo schoolRepo,
-            IMapper mapper)
-        {
-            _seasonRepo = seasonRepo;
-            _schoolRepo = schoolRepo;
-            _mapper = mapper;
-        }
+        private readonly ISeasonRepo _seasonRepo = seasonRepo;
+        private readonly ISchoolRepo _schoolRepo = schoolRepo;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<IActionResult> Index(int schoolId)
         {

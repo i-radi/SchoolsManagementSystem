@@ -4,19 +4,16 @@
 [Route("api/grades")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Grades")]
-public class GradesController : ControllerBase
+public class GradesController(IGradeService gradeService) : ControllerBase
 {
-    private readonly IGradeService _gradeService;
-
-    public GradesController(IGradeService gradeService)
-    {
-        _gradeService = gradeService;
-    }
+    private readonly IGradeService _gradeService = gradeService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_gradeService.GetAll(pageNumber, pageSize));
+        var result = _gradeService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

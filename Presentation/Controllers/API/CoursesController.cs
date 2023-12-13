@@ -4,19 +4,16 @@
 [Route("api/courses")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Courses")]
-public class CoursesController : ControllerBase
+public class CoursesController(ICourseService courseService) : ControllerBase
 {
-    private readonly ICourseService _courseService;
-
-    public CoursesController(ICourseService courseService)
-    {
-        _courseService = courseService;
-    }
+    private readonly ICourseService _courseService = courseService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10, int schoolId = 0)
     {
-        return Ok(_courseService.GetAll(pageNumber, pageSize, schoolId));
+        var result = _courseService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

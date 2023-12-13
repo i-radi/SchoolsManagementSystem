@@ -1,24 +1,13 @@
 ﻿namespace Presentation.Controllers.MVC
 {
-    public class SchoolsController : Controller
+    public class SchoolsController(IAttachmentService attachmentService, BaseSettings baseSettings, ISchoolRepo schoolsRepo, IOrganizationRepo organizationRepo, IWebHostEnvironment webHostEnvironment, IMapper mapper) : Controller
     {
-        private readonly IAttachmentService _attachmentService;
-        private readonly BaseSettings _baseSettings;
-        private readonly ISchoolRepo _schoolsRepo;
-        private readonly IOrganizationRepo _organizationRepo;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly IMapper _mapper;
-
-
-        public SchoolsController(IAttachmentService attachmentService, BaseSettings baseSettings, ISchoolRepo schoolsRepo, IOrganizationRepo organizationRepo, IWebHostEnvironment webHostEnvironment, IMapper mapper)
-        {
-            _attachmentService = attachmentService;
-            _baseSettings = baseSettings;
-            _schoolsRepo = schoolsRepo;
-            _organizationRepo = organizationRepo;
-            _webHostEnvironment = webHostEnvironment;
-            _mapper = mapper;
-        }
+        private readonly IAttachmentService _attachmentService = attachmentService;
+        private readonly BaseSettings _baseSettings = baseSettings;
+        private readonly ISchoolRepo _schoolsRepo = schoolsRepo;
+        private readonly IOrganizationRepo _organizationRepo = organizationRepo;
+        private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
+        private readonly IMapper _mapper = mapper;
 
         public IActionResult Index(int page = 1, int pageSize = 10, int organizationId = 0)
         {

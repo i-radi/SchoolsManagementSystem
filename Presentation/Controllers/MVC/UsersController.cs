@@ -4,73 +4,48 @@ using OfficeOpenXml;
 namespace Presentation.Controllers.MVC;
 
 [Authorize(Policy = "SuperAdmin")]
-public class UsersController : Controller
+public class UsersController(
+    ILogger<UsersController> logger,
+    SignInManager<User> signInManager,
+    UserManager<User> userManager,
+    RoleManager<Role> roleManager,
+    IOrganizationRepo organizationRepo,
+    IUserOrganizationRepo userOrganizationRepo,
+    IUserRoleRepo userRoleRepo,
+    IUserClassRepo userClassRepo,
+    ISchoolRepo schoolRepo,
+    IActivityRepo activityRepo,
+    ISeasonRepo seasonRepo,
+    IGradeRepo gradeRepo,
+    IClassroomRepo classroomRepo,
+    IUserTypeRepo userTypeRepo,
+    IAuthService authService,
+    IMapper mapper,
+    ApplicationDBContext context,
+    IWebHostEnvironment webHostEnvironment,
+    BaseSettings baseSettings,
+    IAttachmentService attachmentService) : Controller
 {
-    private readonly ILogger<UsersController> _logger;
-    private readonly SignInManager<User> _signInManager;
-    private readonly UserManager<User> _userManager;
-    private readonly RoleManager<Role> _roleManager;
-    private readonly IOrganizationRepo _organizationRepo;
-    private readonly IUserOrganizationRepo _userOrganizationRepo;
-    private readonly IUserRoleRepo _userRoleRepo;
-    private readonly IUserClassRepo _userClassRepo;
-    private readonly ISchoolRepo _schoolRepo;
-    private readonly IActivityRepo _activityRepo;
-    private readonly ISeasonRepo _seasonRepo;
-    private readonly IGradeRepo _gradeRepo;
-    private readonly IClassroomRepo _classroomRepo;
-    private readonly IUserTypeRepo _userTypeRepo;
-    private readonly IAuthService _authService;
-    private readonly IMapper _mapper;
-    private readonly ApplicationDBContext _context;
-    private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly BaseSettings _baseSettings;
-    private readonly IAttachmentService _attachmentService;
-
-    public UsersController(
-        ILogger<UsersController> logger,
-        SignInManager<User> signInManager,
-        UserManager<User> userManager,
-        RoleManager<Role> roleManager,
-        IOrganizationRepo organizationRepo,
-        IUserOrganizationRepo userOrganizationRepo,
-        IUserRoleRepo userRoleRepo,
-        IUserClassRepo userClassRepo,
-        ISchoolRepo schoolRepo,
-        IActivityRepo activityRepo,
-        ISeasonRepo seasonRepo,
-        IGradeRepo gradeRepo,
-        IClassroomRepo classroomRepo,
-        IUserTypeRepo userTypeRepo,
-        IAuthService authService,
-        IMapper mapper,
-        ApplicationDBContext context,
-        IWebHostEnvironment webHostEnvironment,
-        BaseSettings baseSettings,
-        IAttachmentService attachmentService)
-    {
-        _userManager = userManager;
-        _roleManager = roleManager;
-        _organizationRepo = organizationRepo;
-        _userOrganizationRepo = userOrganizationRepo;
-        _userRoleRepo = userRoleRepo;
-        _userClassRepo = userClassRepo;
-        _schoolRepo = schoolRepo;
-        _activityRepo = activityRepo;
-        _seasonRepo = seasonRepo;
-        _gradeRepo = gradeRepo;
-        _classroomRepo = classroomRepo;
-        _userTypeRepo = userTypeRepo;
-        _logger = logger;
-        _signInManager = signInManager;
-        _authService = authService;
-        _mapper = mapper;
-        _context = context;
-        _webHostEnvironment = webHostEnvironment;
-        _baseSettings = baseSettings;
-        _attachmentService = attachmentService;
-    }
-
+    private readonly ILogger<UsersController> _logger = logger;
+    private readonly SignInManager<User> _signInManager = signInManager;
+    private readonly UserManager<User> _userManager = userManager;
+    private readonly RoleManager<Role> _roleManager = roleManager;
+    private readonly IOrganizationRepo _organizationRepo = organizationRepo;
+    private readonly IUserOrganizationRepo _userOrganizationRepo = userOrganizationRepo;
+    private readonly IUserRoleRepo _userRoleRepo = userRoleRepo;
+    private readonly IUserClassRepo _userClassRepo = userClassRepo;
+    private readonly ISchoolRepo _schoolRepo = schoolRepo;
+    private readonly IActivityRepo _activityRepo = activityRepo;
+    private readonly ISeasonRepo _seasonRepo = seasonRepo;
+    private readonly IGradeRepo _gradeRepo = gradeRepo;
+    private readonly IClassroomRepo _classroomRepo = classroomRepo;
+    private readonly IUserTypeRepo _userTypeRepo = userTypeRepo;
+    private readonly IAuthService _authService = authService;
+    private readonly IMapper _mapper = mapper;
+    private readonly ApplicationDBContext _context = context;
+    private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
+    private readonly BaseSettings _baseSettings = baseSettings;
+    private readonly IAttachmentService _attachmentService = attachmentService;
 
     public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10, string searchName = "", string searchRole = "", int searchOrg = 0)
     {

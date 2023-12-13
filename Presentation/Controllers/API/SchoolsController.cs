@@ -1,29 +1,20 @@
 ﻿namespace Presentation.Controllers.API;
 
-//[Authorize]
+[Authorize]
 [Route("api/schools")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Schools")]
-public class SchoolsController : ControllerBase
+public class SchoolsController(ISchoolService schoolService, ISeasonService seasonService, IOrganizationService organizationService) : ControllerBase
 {
-    private readonly ISchoolService _schoolService;
-    private readonly ISeasonService _seasonService;
-    private readonly IOrganizationService _organizationService;
-
-    public SchoolsController(ISchoolService schoolService, ISeasonService seasonService, IOrganizationService organizationService)
-    {
-        _schoolService = schoolService;
-        _seasonService = seasonService;
-        _organizationService = organizationService;
-    }
+    private readonly ISchoolService _schoolService = schoolService;
+    private readonly ISeasonService _seasonService = seasonService;
+    private readonly IOrganizationService _organizationService = organizationService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
         var result = _schoolService.GetAll(pageNumber, pageSize);
-
         Response.AddPaginationHeader(result.Data);
-
         return Ok(result);
     }
 

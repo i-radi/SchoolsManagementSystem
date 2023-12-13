@@ -1,35 +1,23 @@
 ﻿namespace Presentation.Controllers.MVC
 {
-    public class CoursesController : Controller
+    public class CoursesController(
+        ICourseRepo courseRepo,
+        ISchoolRepo schoolRepo,
+        IOrganizationRepo organizationRepo,
+        BaseSettings baseSettings,
+        IWebHostEnvironment webHostEnvironment,
+        ICourseDetailsRepo courseDetailsRepo,
+        IMapper mapper,
+        IAttachmentService attachmentService) : Controller
     {
-        private readonly ICourseRepo _courseRepo;
-        private readonly ISchoolRepo _schoolRepo;
-        private readonly IOrganizationRepo _organizationRepo;
-        private readonly BaseSettings _baseSettings;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly ICourseDetailsRepo _courseDetailsRepo;
-        private readonly IMapper _mapper;
-        private readonly IAttachmentService _attachmentService;
-
-        public CoursesController(
-            ICourseRepo courseRepo,
-            ISchoolRepo schoolRepo,
-            IOrganizationRepo organizationRepo,
-            BaseSettings baseSettings,
-            IWebHostEnvironment webHostEnvironment,
-            ICourseDetailsRepo courseDetailsRepo,
-            IMapper mapper,
-            IAttachmentService attachmentService)
-        {
-            _courseRepo = courseRepo;
-            _schoolRepo = schoolRepo;
-            _organizationRepo = organizationRepo;
-            _baseSettings = baseSettings;
-            _webHostEnvironment = webHostEnvironment;
-            _courseDetailsRepo = courseDetailsRepo;
-            _mapper = mapper;
-            _attachmentService = attachmentService;
-        }
+        private readonly ICourseRepo _courseRepo = courseRepo;
+        private readonly ISchoolRepo _schoolRepo = schoolRepo;
+        private readonly IOrganizationRepo _organizationRepo = organizationRepo;
+        private readonly BaseSettings _baseSettings = baseSettings;
+        private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
+        private readonly ICourseDetailsRepo _courseDetailsRepo = courseDetailsRepo;
+        private readonly IMapper _mapper = mapper;
+        private readonly IAttachmentService _attachmentService = attachmentService;
 
         public async Task<IActionResult> Index(int schoolId = 0)
         {

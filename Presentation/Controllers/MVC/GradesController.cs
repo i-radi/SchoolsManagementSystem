@@ -1,20 +1,13 @@
 ﻿namespace Presentation.Controllers.MVC
 {
-    public class GradesController : Controller
+    public class GradesController(
+        IGradeRepo gradeRepo,
+        ISchoolRepo schoolRepo,
+        IMapper mapper) : Controller
     {
-        private readonly IGradeRepo _gradeRepo;
-        private readonly ISchoolRepo _schoolRepo;
-        private readonly IMapper _mapper;
-
-        public GradesController(
-            IGradeRepo gradeRepo,
-            ISchoolRepo schoolRepo,
-            IMapper mapper)
-        {
-            _gradeRepo = gradeRepo;
-            _schoolRepo = schoolRepo;
-            _mapper = mapper;
-        }
+        private readonly IGradeRepo _gradeRepo = gradeRepo;
+        private readonly ISchoolRepo _schoolRepo = schoolRepo;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<IActionResult> Index(int schoolId)
         {

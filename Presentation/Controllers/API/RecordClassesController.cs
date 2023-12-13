@@ -4,19 +4,16 @@
 [Route("api/record-classes")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Records")]
-public class RecordClassesController : ControllerBase
+public class RecordClassesController(IRecordClassService recordClassService) : ControllerBase
 {
-    private readonly IRecordClassService _recordClassService;
-
-    public RecordClassesController(IRecordClassService recordClassService)
-    {
-        _recordClassService = recordClassService;
-    }
+    private readonly IRecordClassService _recordClassService = recordClassService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_recordClassService.GetAll(pageNumber, pageSize));
+        var result = _recordClassService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

@@ -1,23 +1,15 @@
 ﻿namespace Presentation.Controllers.MVC
 {
-    public class ActivityInstanceUsersController : Controller
+    public class ActivityInstanceUsersController(
+        IActivityInstanceUserRepo activityInstanceUserRepo,
+        IActivityInstanceRepo activityInstanceRepo,
+        ApplicationDBContext context,
+        IMapper mapper) : Controller
     {
-        private readonly IActivityInstanceUserRepo _activityInstanceUserRepo;
-        private readonly IActivityInstanceRepo _activityInstanceRepo;
-        private readonly ApplicationDBContext _context;
-        private readonly IMapper _mapper;
-
-        public ActivityInstanceUsersController(
-            IActivityInstanceUserRepo activityInstanceUserRepo,
-            IActivityInstanceRepo activityInstanceRepo,
-            ApplicationDBContext context,
-            IMapper mapper)
-        {
-            _activityInstanceUserRepo = activityInstanceUserRepo;
-            _activityInstanceRepo = activityInstanceRepo;
-            _context = context;
-            _mapper = mapper;
-        }
+        private readonly IActivityInstanceUserRepo _activityInstanceUserRepo = activityInstanceUserRepo;
+        private readonly IActivityInstanceRepo _activityInstanceRepo = activityInstanceRepo;
+        private readonly ApplicationDBContext _context = context;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<IActionResult> Index(int? instanceId)
         {

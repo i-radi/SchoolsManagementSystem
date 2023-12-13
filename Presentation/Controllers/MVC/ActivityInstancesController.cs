@@ -1,23 +1,15 @@
 ﻿namespace Presentation.Controllers.MVC
 {
-    public class ActivityInstancesController : Controller
+    public class ActivityInstancesController(
+        IActivityInstanceRepo activityInstanceRepo,
+        IActivityRepo activityRepo,
+        ISeasonRepo seasonRepo,
+        IMapper mapper) : Controller
     {
-        private readonly IActivityInstanceRepo _activityInstanceRepo;
-        private readonly IActivityRepo _activityRepo;
-        private readonly ISeasonRepo _seasonRepo;
-        private readonly IMapper _mapper;
-
-        public ActivityInstancesController(
-            IActivityInstanceRepo activityInstanceRepo,
-            IActivityRepo activityRepo,
-            ISeasonRepo seasonRepo,
-            IMapper mapper)
-        {
-            _activityInstanceRepo = activityInstanceRepo;
-            _activityRepo = activityRepo;
-            _seasonRepo = seasonRepo;
-            _mapper = mapper;
-        }
+        private readonly IActivityInstanceRepo _activityInstanceRepo = activityInstanceRepo;
+        private readonly IActivityRepo _activityRepo = activityRepo;
+        private readonly ISeasonRepo _seasonRepo = seasonRepo;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<IActionResult> Index(int? activityId, int? id)
         {

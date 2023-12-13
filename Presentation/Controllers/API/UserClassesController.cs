@@ -6,19 +6,16 @@ namespace Presentation.Controllers.API;
 [Route("api/user-classes")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Users")]
-public class UserClassesController : ControllerBase
+public class UserClassesController(IUserClassService userClassService) : ControllerBase
 {
-    private readonly IUserClassService _userClassService;
-
-    public UserClassesController(IUserClassService userClassService)
-    {
-        _userClassService = userClassService;
-    }
+    private readonly IUserClassService _userClassService = userClassService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_userClassService.GetAll(pageNumber, pageSize));
+        var result = _userClassService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("by-user")]

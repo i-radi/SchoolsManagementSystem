@@ -4,23 +4,17 @@
 [Route("api/activity-instances")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Activities")]
-public class ActivityInstancesController : ControllerBase
+public class ActivityInstancesController(
+    IActivityInstanceService activityInstanceService) : ControllerBase
 {
-    private readonly IActivityInstanceService _activityInstanceService;
-    private readonly ILogger<ActivityInstancesController> _logger;
-
-    public ActivityInstancesController(
-        IActivityInstanceService activityInstanceService,
-        ILogger<ActivityInstancesController> logger)
-    {
-        _activityInstanceService = activityInstanceService;
-        _logger = logger;
-    }
+    private readonly IActivityInstanceService _activityInstanceService = activityInstanceService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_activityInstanceService.GetAll(pageNumber, pageSize));
+        var result = _activityInstanceService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("activity/{activityId}")]

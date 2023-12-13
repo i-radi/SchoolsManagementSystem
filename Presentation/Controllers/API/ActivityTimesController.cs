@@ -4,23 +4,17 @@
 [Route("api/activity-times")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Activities")]
-public class ActivityTimesController : ControllerBase
+public class ActivityTimesController(
+    IActivityTimeService activityTimeService) : ControllerBase
 {
-    private readonly IActivityTimeService _activityTimeService;
-    private readonly ILogger<ActivityTimesController> _logger;
-
-    public ActivityTimesController(
-        IActivityTimeService activityTimeService,
-        ILogger<ActivityTimesController> logger)
-    {
-        _activityTimeService = activityTimeService;
-        _logger = logger;
-    }
+    private readonly IActivityTimeService _activityTimeService = activityTimeService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_activityTimeService.GetAll(pageNumber, pageSize));
+        var result = _activityTimeService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

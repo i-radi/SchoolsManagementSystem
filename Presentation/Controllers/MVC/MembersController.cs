@@ -4,63 +4,42 @@ using System.Linq.Dynamic.Core;
 
 namespace Presentation.Controllers.MVC;
 
-public class MembersController : Controller
+public class MembersController(
+    ILogger<MembersController> logger,
+    SignInManager<User> signInManager,
+    UserManager<User> userManager,
+    RoleManager<Role> roleManager,
+    IOrganizationRepo organizationService,
+    ISchoolRepo schoolService,
+    IGradeRepo gradeRepo,
+    ISeasonRepo seasonRepo,
+    IUserTypeRepo userTypeRepo,
+    IClassroomRepo classroomRepo,
+    IUserClassRepo userClassRepo,
+    IAuthService authService,
+    IExportService<UserViewModel> exportService,
+    IMapper mapper,
+    ApplicationDBContext context,
+    BaseSettings baseSettings,
+    IWebHostEnvironment webHostEnvironment) : Controller
 {
-    private readonly ILogger<MembersController> _logger;
-    private readonly SignInManager<User> _signInManager;
-    private readonly UserManager<User> _userManager;
-    private readonly RoleManager<Role> _roleManager;
-    private readonly IOrganizationRepo _organizationRepo;
-    private readonly ISchoolRepo _schoolRepo;
-    private readonly IGradeRepo _gradeRepo;
-    private readonly ISeasonRepo _seasonRepo;
-    private readonly IUserTypeRepo _userTypeRepo;
-    private readonly IClassroomRepo _classroomRepo;
-    private readonly IUserClassRepo _userClassRepo;
-    private readonly IAuthService _authService;
-    private readonly IExportService<UserViewModel> _exportService;
-    private readonly IMapper _mapper;
-    private readonly ApplicationDBContext _context;
-    private readonly BaseSettings _baseSettings;
-    private readonly IWebHostEnvironment _webHostEnvironment;
-
-    public MembersController(
-        ILogger<MembersController> logger,
-        SignInManager<User> signInManager,
-        UserManager<User> userManager,
-        RoleManager<Role> roleManager,
-        IOrganizationRepo organizationService,
-        ISchoolRepo schoolService,
-        IGradeRepo gradeRepo,
-        ISeasonRepo seasonRepo,
-        IUserTypeRepo userTypeRepo,
-        IClassroomRepo classroomRepo,
-        IUserClassRepo userClassRepo,
-        IAuthService authService,
-        IExportService<UserViewModel> exportService,
-        IMapper mapper,
-        ApplicationDBContext context,
-        BaseSettings baseSettings,
-        IWebHostEnvironment webHostEnvironment)
-    {
-        _userManager = userManager;
-        _roleManager = roleManager;
-        _organizationRepo = organizationService;
-        _schoolRepo = schoolService;
-        _gradeRepo = gradeRepo;
-        _seasonRepo = seasonRepo;
-        _userTypeRepo = userTypeRepo;
-        _classroomRepo = classroomRepo;
-        _userClassRepo = userClassRepo;
-        _logger = logger;
-        _signInManager = signInManager;
-        _authService = authService;
-        _exportService = exportService;
-        _mapper = mapper;
-        _context = context;
-        _baseSettings = baseSettings;
-        _webHostEnvironment = webHostEnvironment;
-    }
+    private readonly ILogger<MembersController> _logger = logger;
+    private readonly SignInManager<User> _signInManager = signInManager;
+    private readonly UserManager<User> _userManager = userManager;
+    private readonly RoleManager<Role> _roleManager = roleManager;
+    private readonly IOrganizationRepo _organizationRepo = organizationService;
+    private readonly ISchoolRepo _schoolRepo = schoolService;
+    private readonly IGradeRepo _gradeRepo = gradeRepo;
+    private readonly ISeasonRepo _seasonRepo = seasonRepo;
+    private readonly IUserTypeRepo _userTypeRepo = userTypeRepo;
+    private readonly IClassroomRepo _classroomRepo = classroomRepo;
+    private readonly IUserClassRepo _userClassRepo = userClassRepo;
+    private readonly IAuthService _authService = authService;
+    private readonly IExportService<UserViewModel> _exportService = exportService;
+    private readonly IMapper _mapper = mapper;
+    private readonly ApplicationDBContext _context = context;
+    private readonly BaseSettings _baseSettings = baseSettings;
+    private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
 
     public async Task<IActionResult> Index(
         int pageNumber = 1,

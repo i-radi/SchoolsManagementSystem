@@ -1,29 +1,19 @@
 ﻿namespace Presentation.Controllers.MVC
 {
-    public class RecordsController : Controller
+    public class RecordsController(
+        IRecordRepo recordRepo,
+        ISchoolRepo schoolRepo,
+        IRecordClassRepo recordClassRepo,
+        IClassroomRepo classroomRepo,
+        IOrganizationRepo organizationRepo,
+        IMapper mapper) : Controller
     {
-        private readonly IRecordRepo _recordRepo;
-        private readonly ISchoolRepo _schoolRepo;
-        private readonly IRecordClassRepo _recordClassRepo;
-        private readonly IClassroomRepo _classroomRepo;
-        private readonly IOrganizationRepo _organizationRepo;
-        private readonly IMapper _mapper;
-
-        public RecordsController(
-            IRecordRepo recordRepo,
-            ISchoolRepo schoolRepo,
-            IRecordClassRepo recordClassRepo,
-            IClassroomRepo classroomRepo,
-            IOrganizationRepo organizationRepo,
-            IMapper mapper)
-        {
-            _recordRepo = recordRepo;
-            _schoolRepo = schoolRepo;
-            _recordClassRepo = recordClassRepo;
-            _classroomRepo = classroomRepo;
-            _organizationRepo = organizationRepo;
-            _mapper = mapper;
-        }
+        private readonly IRecordRepo _recordRepo = recordRepo;
+        private readonly ISchoolRepo _schoolRepo = schoolRepo;
+        private readonly IRecordClassRepo _recordClassRepo = recordClassRepo;
+        private readonly IClassroomRepo _classroomRepo = classroomRepo;
+        private readonly IOrganizationRepo _organizationRepo = organizationRepo;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<IActionResult> Index(int schoolId, int classroomId)
         {

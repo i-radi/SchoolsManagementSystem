@@ -1,26 +1,17 @@
 ﻿namespace Presentation.Controllers.MVC
 {
-    public class UserRecordsController : Controller
+    public class UserRecordsController(
+        IUserRecordRepo userRecordRepo,
+        IRecordRepo recordRepo,
+        UserManager<User> userManager,
+        IOrganizationRepo organizationRepo,
+        IMapper mapper) : Controller
     {
-        private readonly IUserRecordRepo _userRecordRepo;
-        private readonly IRecordRepo _recordRepo;
-        private readonly UserManager<User> _userManager;
-        private readonly IOrganizationRepo _organizationRepo;
-        private readonly IMapper _mapper;
-
-        public UserRecordsController(
-            IUserRecordRepo userRecordRepo,
-            IRecordRepo recordRepo,
-            UserManager<User> userManager,
-            IOrganizationRepo organizationRepo,
-            IMapper mapper)
-        {
-            _recordRepo = recordRepo;
-            _userManager = userManager;
-            _organizationRepo = organizationRepo;
-            _userRecordRepo = userRecordRepo;
-            _mapper = mapper;
-        }
+        private readonly IUserRecordRepo _userRecordRepo = userRecordRepo;
+        private readonly IRecordRepo _recordRepo = recordRepo;
+        private readonly UserManager<User> _userManager = userManager;
+        private readonly IOrganizationRepo _organizationRepo = organizationRepo;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<IActionResult> Index(string searchUserName = "", int userId = 0)
         {

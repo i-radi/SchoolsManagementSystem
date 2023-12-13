@@ -5,23 +5,16 @@
 [ApiController]
 
 [ApiExplorerSettings(GroupName = "Classes")]
-public class ClassroomsController : ControllerBase
+public class ClassroomsController(IClassroomService classroomService) : ControllerBase
 {
-    private readonly IClassroomService _classroomService;
-    private readonly IUserClassService _userClassService;
-    private readonly ILogger<ClassroomsController> _logger;
-
-    public ClassroomsController(IClassroomService classroomService, IUserClassService userClassService, ILogger<ClassroomsController> logger)
-    {
-        _classroomService = classroomService;
-        _userClassService = userClassService;
-        _logger = logger;
-    }
+    private readonly IClassroomService _classroomService = classroomService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_classroomService.GetAll(pageNumber, pageSize));
+        var result = _classroomService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

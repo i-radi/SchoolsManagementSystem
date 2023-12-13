@@ -7,37 +7,24 @@ namespace Presentation.Controllers.API;
 [Route("api/auth")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Identity")]
-public class AuthController : ControllerBase
+public class AuthController(
+    IAuthService authService,
+    RoleManager<Role> roleManager,
+    IMapper mapper,
+    UserManager<User> userManager,
+    IUserRoleService userRoleService,
+    IAttachmentService attachmentService,
+    IWebHostEnvironment webHostEnvironment,
+    BaseSettings baseSettings) : ControllerBase
 {
-    private readonly IAuthService _authService;
-    private readonly RoleManager<Role> _roleManager;
-    private readonly IMapper _mapper;
-    private readonly UserManager<User> _userManager;
-    private readonly IUserRoleService _userRoleService;
-    private readonly IAttachmentService _attachmentService;
-    private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly BaseSettings _baseSettings;
-
-    public AuthController(
-        IAuthService authService,
-        RoleManager<Role> roleManager,
-        IMapper mapper,
-        UserManager<User> userManager,
-        IUserRoleService userRoleService,
-        IAttachmentService attachmentService,
-        IWebHostEnvironment webHostEnvironment,
-        BaseSettings baseSettings)
-    {
-        _authService = authService;
-        _roleManager = roleManager;
-        _mapper = mapper;
-        _userManager = userManager;
-        _userRoleService = userRoleService;
-        _attachmentService = attachmentService;
-        _webHostEnvironment = webHostEnvironment;
-        _baseSettings = baseSettings;
-    }
-
+    private readonly IAuthService _authService = authService;
+    private readonly RoleManager<Role> _roleManager = roleManager;
+    private readonly IMapper _mapper = mapper;
+    private readonly UserManager<User> _userManager = userManager;
+    private readonly IUserRoleService _userRoleService = userRoleService;
+    private readonly IAttachmentService _attachmentService = attachmentService;
+    private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
+    private readonly BaseSettings _baseSettings = baseSettings;
 
     [SwaggerOperation(Tags = new[] { "User Informations" })]
     [HttpGet("user-details/{id}")]

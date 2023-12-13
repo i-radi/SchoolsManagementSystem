@@ -4,19 +4,16 @@
 [Route("api/user-records")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Users")]
-public class UserRecordsController : ControllerBase
+public class UserRecordsController(IUserRecordService userRecordService) : ControllerBase
 {
-    private readonly IUserRecordService _userRecordService;
-
-    public UserRecordsController(IUserRecordService userRecordService)
-    {
-        _userRecordService = userRecordService;
-    }
+    private readonly IUserRecordService _userRecordService = userRecordService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_userRecordService.GetAll(pageNumber, pageSize));
+        var result = _userRecordService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

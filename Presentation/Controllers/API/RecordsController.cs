@@ -4,19 +4,16 @@
 [Route("api/records")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Records")]
-public class RecordsController : ControllerBase
+public class RecordsController(IRecordService recordService) : ControllerBase
 {
-    private readonly IRecordService _recordService;
-
-    public RecordsController(IRecordService recordService)
-    {
-        _recordService = recordService;
-    }
+    private readonly IRecordService _recordService = recordService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10, int schoolId = 0)
     {
-        return Ok(_recordService.GetAll(pageNumber, pageSize, schoolId));
+        var result = _recordService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

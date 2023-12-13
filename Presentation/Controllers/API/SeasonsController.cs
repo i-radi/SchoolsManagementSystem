@@ -4,19 +4,16 @@
 [Route("api/seasons")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Seasons")]
-public class SeasonsController : ControllerBase
+public class SeasonsController(ISeasonService seasonService) : ControllerBase
 {
-    private readonly ISeasonService _seasonService;
-
-    public SeasonsController(ISeasonService seasonService)
-    {
-        _seasonService = seasonService;
-    }
+    private readonly ISeasonService _seasonService = seasonService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_seasonService.GetAll(pageNumber, pageSize));
+        var result = _seasonService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

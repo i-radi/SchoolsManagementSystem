@@ -1,20 +1,13 @@
 ﻿namespace Presentation.Controllers.MVC
 {
-    public class ActivitiesController : Controller
+    public class ActivitiesController(
+        IActivityRepo activityRepo,
+        ISchoolRepo schoolRepo,
+        IMapper mapper) : Controller
     {
-        private readonly IActivityRepo _activityRepo;
-        private readonly ISchoolRepo _schoolRepo;
-        private readonly IMapper _mapper;
-
-        public ActivitiesController(
-            IActivityRepo activityRepo,
-            ISchoolRepo schoolRepo,
-            IMapper mapper)
-        {
-            _activityRepo = activityRepo;
-            _schoolRepo = schoolRepo;
-            _mapper = mapper;
-        }
+        private readonly IActivityRepo _activityRepo = activityRepo;
+        private readonly ISchoolRepo _schoolRepo = schoolRepo;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<IActionResult> Index()
         {

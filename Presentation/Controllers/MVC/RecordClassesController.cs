@@ -2,24 +2,16 @@
 
 namespace Presentation.Controllers.MVC
 {
-    public class RecordClassesController : Controller
+    public class RecordClassesController(
+        IMapper mapper,
+        IRecordRepo recordRepo,
+        IClassroomRepo classroomRepo,
+        IRecordClassRepo recordClassRepo) : Controller
     {
-        private readonly IMapper _mapper;
-        private readonly IRecordRepo _recordRepo;
-        private readonly IClassroomRepo _classroomRepo;
-        private readonly IRecordClassRepo _recordClassRepo;
-
-        public RecordClassesController(
-            IMapper mapper,
-            IRecordRepo recordRepo,
-            IClassroomRepo classroomRepo,
-            IRecordClassRepo recordClassRepo)
-        {
-            _mapper = mapper;
-            _recordRepo = recordRepo;
-            _classroomRepo = classroomRepo;
-            _recordClassRepo = recordClassRepo;
-        }
+        private readonly IMapper _mapper = mapper;
+        private readonly IRecordRepo _recordRepo = recordRepo;
+        private readonly IClassroomRepo _classroomRepo = classroomRepo;
+        private readonly IRecordClassRepo _recordClassRepo = recordClassRepo;
 
         public IActionResult Index(int? recordId)
         {

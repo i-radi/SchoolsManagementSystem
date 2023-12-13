@@ -4,19 +4,16 @@
 [Route("api/organizations")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Organizations")]
-public class OrganizationsController : ControllerBase
+public class OrganizationsController(IOrganizationService organizationService) : ControllerBase
 {
-    private readonly IOrganizationService _organizationService;
-
-    public OrganizationsController(IOrganizationService organizationService)
-    {
-        _organizationService = organizationService;
-    }
+    private readonly IOrganizationService _organizationService = organizationService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_organizationService.GetAll(pageNumber, pageSize));
+        var result = _organizationService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
