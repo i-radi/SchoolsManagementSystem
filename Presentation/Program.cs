@@ -1,5 +1,6 @@
 using Infrastructure.MiddleWares;
 using Newtonsoft.Json.Converters;
+using Presentation.DI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +24,8 @@ builder.Services.AddPersistanceDependencies()
                  .AddInfrastructureDependencies(builder.Configuration)
                  .AddCoreDependencies()
                  .AddPersistanceServiceRegisteration(builder.Configuration)
-                 .AddInfrastructureServiceRegisteration(builder.Configuration);
+                 .AddInfrastructureServiceRegisteration(builder.Configuration)
+                 .AddPresentationDependencies();
 
 builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>

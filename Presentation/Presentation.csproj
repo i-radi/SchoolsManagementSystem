@@ -36,6 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DI\API\" />
     <Folder Include="wwwroot\attachments\" />
   </ItemGroup>
 
