@@ -1,7 +1,6 @@
 ﻿using Infrastructure.MiddleWares;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Models.Helpers;
 using Serilog;
@@ -14,7 +13,7 @@ namespace Infrastructure.DI;
 public static class SerilogRegisteration
 {
     [Obsolete]
-    public static IServiceCollection AddSerilogRegisteration(this IServiceCollection services, IConfiguration configuration, IHostBuilder host)
+    public static IServiceCollection AddSerilogRegisteration(this IServiceCollection services, IConfiguration configuration)
     {
 
         var connectionString = configuration.GetConnectionString("ApplicationDbContextConnection");
