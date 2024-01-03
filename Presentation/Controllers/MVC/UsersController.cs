@@ -92,6 +92,7 @@ public class UsersController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(UserFormViewModel user)
     {
+        // any text read or write must be Parameters 
         string CreatedEmail = (string.IsNullOrEmpty(user.Email)) ? Guid.NewGuid() + "@sms.com" : user.Email;
         var newUser = new User
         {

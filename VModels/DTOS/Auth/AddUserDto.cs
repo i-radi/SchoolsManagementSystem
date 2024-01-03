@@ -17,4 +17,6 @@ public class AddUserDto
     public string Password { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
     public RoleDto Role { get; set; } = new();
+
+  
 }
