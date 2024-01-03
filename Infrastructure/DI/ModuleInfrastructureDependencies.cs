@@ -18,7 +18,7 @@ public static class ModuleInfrastructureDependencies
         services.AddTransient<IEmailService, EmailService>();
 
         //user setting 
-        var usersettings = new UserSettings();
+        var usersettings = new SharedSettings();
         configuration.GetSection(nameof(usersettings)).Bind(usersettings);
         services.AddSingleton(usersettings);
 

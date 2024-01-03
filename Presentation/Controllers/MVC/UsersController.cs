@@ -25,7 +25,7 @@ public class UsersController(
     IWebHostEnvironment webHostEnvironment,
     BaseSettings baseSettings,
     IAttachmentService attachmentService,
-    UserSettings userSettings) : Controller
+    SharedSettings sharedSettings) : Controller
 {
     private readonly ILogger<UsersController> _logger = logger;
     private readonly SignInManager<User> _signInManager = signInManager;
@@ -47,7 +47,7 @@ public class UsersController(
     private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
     private readonly BaseSettings _baseSettings = baseSettings;
     private readonly IAttachmentService _attachmentService = attachmentService;
-    private readonly UserSettings _userSettings = userSettings;
+    private readonly SharedSettings _sharedSettings = sharedSettings;
     
 
     public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10, string searchName = "", string searchRole = "", int searchOrg = 0)
@@ -96,7 +96,7 @@ public class UsersController(
     public async Task<IActionResult> Create(UserFormViewModel user)
     {
         // any text read or write must be Parameters 
-        string CreatedEmail = (string.IsNullOrEmpty(user.Email)) ? Guid.NewGuid() + _userSettings.Suffix : user.Email;
+        string CreatedEmail = (string.IsNullOrEmpty(user.Email)) ? Guid.NewGuid() + _sharedSettings.Suffix : user.Email;
         var newUser = new User
         {
             Email = CreatedEmail,
@@ -202,7 +202,7 @@ public class UsersController(
         {
             return NotFound();
         }
-        userVM.Email = (string.IsNullOrEmpty(userVM.Email)) ? Guid.NewGuid() + _userSettings.Suffix : userVM.Email;
+        userVM.Email = (string.IsNullOrEmpty(userVM.Email)) ? Guid.NewGuid() + _sharedSettings.Suffix : userVM.Email;
         string oldEmail = (await _userManager.FindByIdAsync(id.ToString()))!.Email!;
 
         if (userVM.Email != oldEmail)
@@ -634,7 +634,7 @@ public class UsersController(
             else
             {
 
-                user.Email = Guid.NewGuid() + _userSettings.Suffix; 
+                user.Email = Guid.NewGuid() + _sharedSettings.Suffix; 
             }
             if (worksheet.Cells[row, 2].Value != null)
             {
@@ -712,13 +712,13 @@ public class UsersController(
     {
         Result<User> resultUser = new();
 
-        string CreatedEmail = (string.IsNullOrEmpty(user.Email)) ? Guid.NewGuid() + _userSettings.Suffix : user.Email;
+        string CreatedEmail = (string.IsNullOrEmpty(user.Email)) ? Guid.NewGuid() + _sharedSettings.Suffix : user.Email;
         var newUser = new User
         {
             Email = CreatedEmail,
             UserName = CreatedEmail.Split('@')[0],
             Name = user.Name,
-            PlainPassword = "123456",
+            PlainPassword = _sharedSettings.PlainPassword,
             RefreshToken = Guid.NewGuid(),
             RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
             Address = user.Address,
@@ -733,7 +733,7 @@ public class UsersController(
             MotherMobile = user.MotherMobile,
             SchoolUniversityJob = user.SchoolUniversityJob,
             NationalID = user.NationalID,
-            ProfilePicturePath = _userSettings.DefaultImage 
+            ProfilePicturePath = _sharedSettings.DefaultImage 
         };
 
         var result = await _userManager.CreateAsync(newUser, newUser.PlainPassword);
