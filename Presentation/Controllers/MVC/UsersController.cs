@@ -24,7 +24,8 @@ public class UsersController(
     ApplicationDBContext context,
     IWebHostEnvironment webHostEnvironment,
     BaseSettings baseSettings,
-    IAttachmentService attachmentService) : Controller
+    IAttachmentService attachmentService,
+    UserSettings userSettings) : Controller
 {
     private readonly ILogger<UsersController> _logger = logger;
     private readonly SignInManager<User> _signInManager = signInManager;
@@ -46,6 +47,8 @@ public class UsersController(
     private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
     private readonly BaseSettings _baseSettings = baseSettings;
     private readonly IAttachmentService _attachmentService = attachmentService;
+    private readonly UserSettings _userSettings = userSettings;
+    
 
     public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10, string searchName = "", string searchRole = "", int searchOrg = 0)
     {
@@ -93,7 +96,7 @@ public class UsersController(
     public async Task<IActionResult> Create(UserFormViewModel user)
     {
         // any text read or write must be Parameters 
-        string CreatedEmail = (string.IsNullOrEmpty(user.Email)) ? Guid.NewGuid() + "@sms.com" : user.Email;
+        string CreatedEmail = (string.IsNullOrEmpty(user.Email)) ? Guid.NewGuid() + _userSettings.Suffix : user.Email;
         var newUser = new User
         {
             Email = CreatedEmail,
@@ -127,7 +130,7 @@ public class UsersController(
         }
         else
         {
-            newUser.ProfilePicturePath = "emptyAvatar.png";
+            newUser.ProfilePicturePath = "";
         }
 
         var result = await _userManager.CreateAsync(newUser, newUser.PlainPassword);
@@ -199,7 +202,7 @@ public class UsersController(
         {
             return NotFound();
         }
-        userVM.Email = (string.IsNullOrEmpty(userVM.Email)) ? Guid.NewGuid() + "@sms.com" : userVM.Email;
+        userVM.Email = (string.IsNullOrEmpty(userVM.Email)) ? Guid.NewGuid() + _userSettings.Suffix : userVM.Email;
         string oldEmail = (await _userManager.FindByIdAsync(id.ToString()))!.Email!;
 
         if (userVM.Email != oldEmail)
@@ -601,7 +604,7 @@ public class UsersController(
         }
     }
 
-    private static (bool isValid, List<UserFormViewModel>? usersInfos, List<string>? errors) ValidateSheetAsync(ExcelWorksheet worksheet)
+    private (bool isValid, List<UserFormViewModel>? usersInfos, List<string>? errors) ValidateSheetAsync(ExcelWorksheet worksheet)
     {
         var users = new List<UserFormViewModel>();
         int colCount = worksheet.Dimension.Columns;
@@ -613,7 +616,7 @@ public class UsersController(
         {
             allErrors.Add("The maximum number of users to upload is 1000 users per sheet.");
         }
-
+        
         for (int row = 2; row <= rowCount; row++)
         {
             UserFormViewModel user = new();
@@ -630,7 +633,8 @@ public class UsersController(
             }
             else
             {
-                user.Email = Guid.NewGuid() + "@sms.com";
+
+                user.Email = Guid.NewGuid() + _userSettings.Suffix; 
             }
             if (worksheet.Cells[row, 2].Value != null)
             {
@@ -708,7 +712,7 @@ public class UsersController(
     {
         Result<User> resultUser = new();
 
-        string CreatedEmail = (string.IsNullOrEmpty(user.Email)) ? Guid.NewGuid() + "@sms.com" : user.Email;
+        string CreatedEmail = (string.IsNullOrEmpty(user.Email)) ? Guid.NewGuid() + _userSettings.Suffix : user.Email;
         var newUser = new User
         {
             Email = CreatedEmail,
@@ -729,7 +733,7 @@ public class UsersController(
             MotherMobile = user.MotherMobile,
             SchoolUniversityJob = user.SchoolUniversityJob,
             NationalID = user.NationalID,
-            ProfilePicturePath = "emptyAvatar.png"
+            ProfilePicturePath = _userSettings.DefaultImage 
         };
 
         var result = await _userManager.CreateAsync(newUser, newUser.PlainPassword);

@@ -24,6 +24,7 @@ public class AuthService : IAuthService
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly BaseSettings _baseSettings;
     private readonly IAttachmentService _attachmentService;
+    private readonly UserSettings _userSettings;
     #endregion
 
     #region Constructors
@@ -35,7 +36,9 @@ public class AuthService : IAuthService
         IMapper mapper,
         IWebHostEnvironment webHostEnvironment,
         BaseSettings baseSettings
-        , IAttachmentService attachmentService)
+        , IAttachmentService attachmentService,
+        UserSettings userSettings) 
+        
     {
         _jwtSettings = jwtSettings;
         _userManager = userManager;
@@ -46,6 +49,7 @@ public class AuthService : IAuthService
         _webHostEnvironment = webHostEnvironment;
         _baseSettings = baseSettings;
         _attachmentService = attachmentService;
+        _userSettings = userSettings;
     }
     #endregion
 
@@ -57,7 +61,7 @@ public class AuthService : IAuthService
 
         var user = _mapper.Map<User>(dto);
         user.UserName = dto.Email.Split('@')[0];
-        user.ProfilePicturePath = "emptyAvatar.png";
+        user.ProfilePicturePath = _userSettings.DefaultImage;
 
         var result = await _userManager.CreateAsync(user, dto.Password);
         if (!result.Succeeded)
