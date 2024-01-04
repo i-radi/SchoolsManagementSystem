@@ -1,6 +1,5 @@
 using Infrastructure.MiddleWares;
 using Newtonsoft.Json.Converters;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +16,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(option =>
 
 #region Dependency injections
 #pragma warning disable CS0612 // Type or member is obsolete
-builder.Services.AddSerilogRegisteration(builder.Configuration, builder.Host);
+builder.Services.AddSerilogRegisteration(builder.Configuration);
 #pragma warning restore CS0612 // Type or member is obsolete
 
 builder.Services.AddPersistanceDependencies()
@@ -100,7 +99,6 @@ else
     app.UseHsts();
 }
 
-//app.UseSerilogRequestLogging();
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 
@@ -112,7 +110,6 @@ app.UseCors(CORS);
 app.UseAuthentication();
 app.UseAuthorization();
 
-//app.UseMiddleware<SchoolAuthorizationMiddleware>();
 
 app.UseEndpoints(endpoints =>
 {

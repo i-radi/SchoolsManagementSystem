@@ -1,6 +1,5 @@
 ﻿using NuGet.Packaging;
 using OfficeOpenXml;
-using Presentation.DI.MVC;
 
 namespace Presentation.Controllers.MVC;
 
@@ -49,7 +48,7 @@ public class UsersController(
     private readonly BaseSettings _baseSettings = baseSettings;
     private readonly IAttachmentService _attachmentService = attachmentService;
     private readonly SharedSettings _sharedSettings = sharedSettings;
-    
+
 
     public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10, string searchName = "", string searchRole = "", int searchOrg = 0)
     {
@@ -617,7 +616,7 @@ public class UsersController(
         {
             allErrors.Add("The maximum number of users to upload is 1000 users per sheet.");
         }
-        
+
         for (int row = 2; row <= rowCount; row++)
         {
             UserFormViewModel user = new();
@@ -635,7 +634,7 @@ public class UsersController(
             else
             {
 
-                user.Email = Guid.NewGuid() + _sharedSettings.Suffix; 
+                user.Email = Guid.NewGuid() + _sharedSettings.Suffix;
             }
             if (worksheet.Cells[row, 2].Value != null)
             {
@@ -734,7 +733,7 @@ public class UsersController(
             MotherMobile = user.MotherMobile,
             SchoolUniversityJob = user.SchoolUniversityJob,
             NationalID = user.NationalID,
-            ProfilePicturePath = _sharedSettings.DefaultProfileImage 
+            ProfilePicturePath = _sharedSettings.DefaultProfileImage
         };
 
         var result = await _userManager.CreateAsync(newUser, newUser.PlainPassword);

@@ -37,8 +37,8 @@ public class AuthService : IAuthService
         IWebHostEnvironment webHostEnvironment,
         BaseSettings baseSettings
         , IAttachmentService attachmentService,
-        SharedSettings userSettings) 
-        
+        SharedSettings userSettings)
+
     {
         _jwtSettings = jwtSettings;
         _userManager = userManager;
