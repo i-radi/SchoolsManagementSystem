@@ -102,7 +102,7 @@ public class UsersController(
             Email = CreatedEmail,
             UserName = CreatedEmail.Split('@')[0],
             Name = user.Name,
-            PlainPassword = "123456",
+            PlainPassword = _sharedSettings.PlainPassword,
             RefreshToken = Guid.NewGuid(),
             RefreshTokenExpiryDate = DateTime.UtcNow.AddDays(20),
             Address = user.Address,
@@ -733,7 +733,7 @@ public class UsersController(
             MotherMobile = user.MotherMobile,
             SchoolUniversityJob = user.SchoolUniversityJob,
             NationalID = user.NationalID,
-            ProfilePicturePath = _sharedSettings.DefaultImage 
+            ProfilePicturePath = _sharedSettings.DefaultProfileImage 
         };
 
         var result = await _userManager.CreateAsync(newUser, newUser.PlainPassword);

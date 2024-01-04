@@ -61,7 +61,7 @@ public class AuthService : IAuthService
 
         var user = _mapper.Map<User>(dto);
         user.UserName = dto.Email.Split('@')[0];
-        user.ProfilePicturePath = _sharedSettings.DefaultImage;
+        user.ProfilePicturePath = _sharedSettings.DefaultProfileImage;
 
         var result = await _userManager.CreateAsync(user, dto.Password);
         if (!result.Succeeded)

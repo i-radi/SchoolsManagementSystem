@@ -1,5 +1,6 @@
 using Infrastructure.MiddleWares;
 using Newtonsoft.Json.Converters;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,9 +100,9 @@ else
     app.UseHsts();
 }
 
-//app.UseSerilogRequestLogging();
-//app.UseMiddleware<RequestResponseLoggingMiddleware>();
-//app.UseMiddleware<ErrorHandlerMiddleware>();
+app.UseSerilogRequestLogging();
+app.UseMiddleware<RequestResponseLoggingMiddleware>();
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
