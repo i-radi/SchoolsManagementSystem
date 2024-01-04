@@ -1,6 +1,6 @@
 using Infrastructure.MiddleWares;
 using Newtonsoft.Json.Converters;
-using Presentation.DI;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,14 +17,14 @@ builder.Services.AddDbContext<ApplicationDBContext>(option =>
 
 #region Dependency injections
 #pragma warning disable CS0612 // Type or member is obsolete
-builder.Services.AddSerilogRegisteration(builder.Configuration);
-    
+builder.Services.AddSerilogRegisteration(builder.Configuration, builder.Host);
+#pragma warning restore CS0612 // Type or member is obsolete
+
 builder.Services.AddPersistanceDependencies()
                  .AddInfrastructureDependencies(builder.Configuration)
                  .AddCoreDependencies()
                  .AddPersistanceServiceRegisteration(builder.Configuration)
-                 .AddInfrastructureServiceRegisteration(builder.Configuration)
-                 .AddPresentationDependencies();
+                 .AddInfrastructureServiceRegisteration(builder.Configuration);
 
 builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>

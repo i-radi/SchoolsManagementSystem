@@ -17,6 +17,11 @@ public static class ModuleInfrastructureDependencies
         services.AddSingleton(emailSettings);
         services.AddTransient<IEmailService, EmailService>();
 
+        //Shared setting 
+        var sharedSettings = new SharedSettings();
+        configuration.GetSection(nameof(sharedSettings)).Bind(sharedSettings);
+        services.AddSingleton(sharedSettings);
+
         services.AddScoped<IExportService<UserViewModel>, ExportService<UserViewModel>>();
         services.AddScoped<IExportService<GetUserDto>, ExportService<GetUserDto>>();
         services.AddScoped<IExcelService, ExcelService>();
