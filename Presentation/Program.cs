@@ -17,7 +17,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(option =>
 
 #region Dependency injections
 #pragma warning disable CS0612 // Type or member is obsolete
-//builder.Services.AddSerilogRegisteration(builder.Configuration, builder.Host);
+builder.Services.AddSerilogRegisteration(builder.Configuration, builder.Host);
 #pragma warning restore CS0612 // Type or member is obsolete
 
 builder.Services.AddPersistanceDependencies()
@@ -100,7 +100,7 @@ else
     app.UseHsts();
 }
 
-app.UseSerilogRequestLogging();
+//app.UseSerilogRequestLogging();
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 
