@@ -1,27 +1,16 @@
-﻿using Models.Entities;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
-    public class ActivityInstancesController : Controller
+    public class ActivityInstancesController(
+        IActivityInstanceRepo activityInstanceRepo,
+        IActivityRepo activityRepo,
+        ISeasonRepo seasonRepo,
+        IMapper mapper) : Controller
     {
-        private readonly IActivityInstanceRepo _activityInstanceRepo;
-        private readonly IActivityRepo _activityRepo;
-        private readonly ISeasonRepo _seasonRepo;
-        private readonly IMapper _mapper;
+        private readonly IActivityInstanceRepo _activityInstanceRepo = activityInstanceRepo;
+        private readonly IActivityRepo _activityRepo = activityRepo;
+        private readonly ISeasonRepo _seasonRepo = seasonRepo;
+        private readonly IMapper _mapper = mapper;
 
-        public ActivityInstancesController(
-            IActivityInstanceRepo activityInstanceRepo,
-            IActivityRepo activityRepo,
-            ISeasonRepo seasonRepo,
-            IMapper mapper)
-        {
-            _activityInstanceRepo = activityInstanceRepo;
-            _activityRepo = activityRepo;
-            _seasonRepo = seasonRepo;
-            _mapper = mapper;
-        }
-
-        // GET: ActivityInstances
         public async Task<IActionResult> Index(int? activityId, int? id)
         {
             var models = _activityInstanceRepo.GetTableNoTracking()
@@ -41,7 +30,6 @@ namespace Presentation.Controllers.MVC
             return View(viewmodels);
         }
 
-        // GET: ActivityInstances/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _activityInstanceRepo.GetTableNoTracking().ToList() == null)
@@ -62,7 +50,6 @@ namespace Presentation.Controllers.MVC
             return View(activityInstanceVM);
         }
 
-        // GET: ActivityInstances/Create
         public IActionResult Create()
         {
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name");
@@ -70,7 +57,6 @@ namespace Presentation.Controllers.MVC
             return View();
         }
 
-        // POST: ActivityInstances/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ActivityInstanceViewModel activityInstanceVM)
@@ -86,7 +72,6 @@ namespace Presentation.Controllers.MVC
             return View(activityInstanceVM);
         }
 
-        // GET: ActivityInstances/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _activityInstanceRepo.GetTableNoTracking().ToList() == null)
@@ -105,10 +90,9 @@ namespace Presentation.Controllers.MVC
             return View(activityInstanceVM);
         }
 
-        // POST: ActivityInstances/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,ActivityInstanceViewModel activityInstanceVM)
+        public async Task<IActionResult> Edit(int id, ActivityInstanceViewModel activityInstanceVM)
         {
             if (id != activityInstanceVM.Id)
             {
@@ -140,7 +124,6 @@ namespace Presentation.Controllers.MVC
             return View(activityInstanceVM);
         }
 
-        // GET: ActivityInstances/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _activityInstanceRepo.GetTableNoTracking().ToList() == null)
@@ -161,7 +144,6 @@ namespace Presentation.Controllers.MVC
             return View(activityInstanceVM);
         }
 
-        // POST: ActivityInstances/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

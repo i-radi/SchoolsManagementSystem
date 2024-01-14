@@ -1,26 +1,21 @@
 ﻿namespace Presentation.Controllers.MVC
 {
-    public class SchoolsController : Controller
+    public class SchoolsController(IAttachmentService attachmentService, BaseSettings baseSettings, ISchoolRepo schoolsRepo, IOrganizationRepo organizationRepo, IWebHostEnvironment webHostEnvironment, IMapper mapper) : Controller
     {
-        private readonly ISchoolRepo _schoolsRepo;
-        private readonly IOrganizationRepo _organizationRepo;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly IMapper _mapper;
+        private readonly IAttachmentService _attachmentService = attachmentService;
+        private readonly BaseSettings _baseSettings = baseSettings;
+        private readonly ISchoolRepo _schoolsRepo = schoolsRepo;
+        private readonly IOrganizationRepo _organizationRepo = organizationRepo;
+        private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
+        private readonly IMapper _mapper = mapper;
 
-
-        public SchoolsController(ISchoolRepo schoolsRepo, IOrganizationRepo organizationRepo, IWebHostEnvironment webHostEnvironment, IMapper mapper)
-        {
-            _schoolsRepo = schoolsRepo;
-            _organizationRepo = organizationRepo;
-            _webHostEnvironment = webHostEnvironment;
-            _mapper = mapper;
-        }
-
-        // GET: Schools
         public IActionResult Index(int page = 1, int pageSize = 10, int organizationId = 0)
         {
-            var modelItems = _schoolsRepo.GetTableNoTracking()
+            var modelItems = _schoolsRepo
+                .GetTableNoTracking()
                 .Include(s => s.Organization)
+                .OrderByDescending(c => c.Order)
+                .ThenBy(c => c.Id)
                 .AsQueryable();
 
             if (organizationId > 0)
@@ -32,7 +27,6 @@
             return View(result);
         }
 
-        // GET: Schools/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -50,7 +44,6 @@
             return View(dto);
         }
 
-        // GET: Schools/Create
         public IActionResult Create()
         {
             var organizations = _organizationRepo.GetTableNoTracking().ToList();
@@ -61,7 +54,6 @@
             return View(viewModel);
         }
 
-        // POST: Schools/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateSchoolViewModel viewModel)
@@ -72,11 +64,18 @@
                 {
                     Name = viewModel.Name,
                     Description = viewModel.Description,
+                    Order = viewModel.Order,
                     OrganizationId = viewModel.OrganizationId
                 };
                 if (viewModel.Picture is not null)
                 {
-                    school.PicturePath = await Picture.Upload(viewModel.Picture, _webHostEnvironment);
+                    var fileExtension = Path.GetExtension(Path.GetFileName(viewModel.Picture.FileName));
+
+                    var orgName = (await _organizationRepo.GetByIdAsync((int)school.OrganizationId)).Name;
+
+                    school.PicturePath = await _attachmentService.Upload(viewModel.Picture, _webHostEnvironment,
+                        _baseSettings.schoolsPath,
+                        $"{orgName}-{viewModel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
 
                 await _schoolsRepo.AddAsync(school);
@@ -87,7 +86,6 @@
             return View(viewModel);
         }
 
-        // GET: Schools/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -100,7 +98,8 @@
             {
                 Id = modelItem.Id,
                 Name = modelItem.Name,
-                Description = modelItem.Description,
+                Description = modelItem.Description!,
+                Order = modelItem.Order,
                 OrganizationId = modelItem.OrganizationId,
                 PicturePath = modelItem.PicturePath,
                 OrganizationOptions = new SelectList(_organizationRepo.GetTableNoTracking().ToList(), "Id", "Name", modelItem.OrganizationId)
@@ -109,7 +108,6 @@
             return View(viewModel);
         }
 
-        // POST: Schools/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, UpdateSchoolViewModel viewModel)
@@ -128,8 +126,20 @@
 
                 modelItem.Name = viewModel.Name;
                 modelItem.Description = viewModel.Description;
+                modelItem.Order = viewModel.Order;
                 modelItem.OrganizationId = viewModel.OrganizationId;
                 modelItem.PicturePath = viewModel.PicturePath;
+
+                if (viewModel.Picture is not null)
+                {
+                    var fileExtension = Path.GetExtension(Path.GetFileName(viewModel.Picture.FileName));
+
+                    var orgName = (await _organizationRepo.GetByIdAsync((int)viewModel.OrganizationId)).Name;
+
+                    modelItem.PicturePath = await _attachmentService.Upload(viewModel.Picture, _webHostEnvironment,
+                        _baseSettings.schoolsPath,
+                        $"{orgName}-{viewModel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
+                }
 
                 var model = _schoolsRepo.UpdateAsync(modelItem);
                 return RedirectToAction(nameof(Index));
@@ -137,7 +147,6 @@
             return View(viewModel);
         }
 
-        // GET: Schools/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -155,7 +164,6 @@
             return View(VM);
         }
 
-        // POST: Schools/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

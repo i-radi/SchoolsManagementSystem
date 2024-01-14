@@ -1,32 +1,60 @@
-﻿@model IEnumerable<UserViewModel>
+﻿@model PaginatedList<UserClassViewModel>
 
 @{
     ViewData["Title"] = "Index";
 }
+<form id="downloadQrImagesForm" method="post" action="@Url.Action("DownloadQrImages", "Members")">
+    <input type="hidden" name="userIds" id="userIdsInput" />
+</form>
+<h1>Class Members</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <p>
+                <a asp-action="Assign">Assign New Member</a> |
+                <a asp-action="Copy">Copy Class Members</a>
+            </p>
+        </div>
+        <div class="col-md-6">
+            <button type="submit" id="downloadQrImagesButton" class="btn btn-secondary">Download Users QR Code & Images</button>
+        </div>
+    </div>
+</div>
 
-<h1>Members</h1>
 
-<p>
-    <a asp-action="Create">Create New Member</a>
-</p>
-@using (Html.BeginForm("Index", "Members", FormMethod.Get))
+@using (Html.BeginForm("Index", "Members", FormMethod.Get, new { id = "searchForm" }))
 {
     <p>
-        @Html.TextBox("search", ViewBag.CurrentFilter as string, new { placeholder = "Search by user, classroom, season, or user type" })
-        <input type="submit" value="Search" />
+        @Html.TextBox("searchUserName", ViewBag.CurrentFilter as string, new { placeholder = "Search by username." })
+
+        @Html.DropDownList("orgId", ViewBag.OrganizationsList as SelectList, "All Organizations", new { placeholder = "filter by organization" })
+        @Html.DropDownList("schoolId", ViewBag.SchoolsList as SelectList, "All Schools", new { placeholder = "filter by school" })
+        @Html.DropDownList("seasonId", ViewBag.SeasonsList as SelectList, "All Seasons", new { placeholder = "filter by season" })
+        @Html.DropDownList("gradeId", ViewBag.GradesList as SelectList, "All Grades", new { placeholder = "filter by grade" })
+        @Html.DropDownList("classroomId", ViewBag.ClassroomsList as SelectList, "All Classrooms", new { placeholder = "filter by classroom" })
+        @Html.DropDownList("usertypeId", ViewBag.UserTypesList as SelectList, "All UserTypes", new { placeholder = "filter by usertype" })
+
+        <input type="submit" value="Search" hidden />
     </p>
 }
+
 <table class="table">
     <thead>
         <tr>
             <th>
-
+                Id
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Email)
+                ClassRoom
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                User
+            </th>
+            <th>
+                User Type
+            </th>
+            <th>
+                Season
             </th>
             <th></th>
         </tr>
@@ -36,24 +64,74 @@
         {
             <tr>
                 <td>
-                    @if (!string.IsNullOrEmpty(item.ProfilePicturePath))
-                    {
-                        <img src="~/uploads/@(item.ProfilePicturePath)" alt="Profile Picture" class="img-fluid rounded" style="max-width: 50px; max-height: 50px;">
-                    }
+                    @Html.DisplayFor(modelItem => item.Id)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Email)
+                    @Html.DisplayFor(modelItem => item.Classroom.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @Html.DisplayFor(modelItem => item.User.Name)
                 </td>
                 <td>
-                    <a asp-action="Assign" asp-route-id="@item.Id">Assign Member</a> |
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    @Html.DisplayFor(modelItem => item.UserType.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Season.Name)
+                </td>
+                <td>
+                    <a asp-action="Index" asp-controller="UserRecords" asp-route-userId="@item.UserId">Manage Record</a> |
+                    @Html.ActionLink("Edit", "Edit", new {  id=item.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id=item.Id })
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<div class="row">
+    <div class="col-md-6">
+        <p>Total Pages: @Model.TotalPages</p>
+    </div>
+</div>
+<ul class="pagination">
+    <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Index", new { pageNumber = 1 })">First</a>
+    </li>
+    <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageIndex - 1 })">Previous</a>
+    </li>
+    @for (int i = Model.PageIndex - 3; i <= Model.PageIndex + 3 && i <= Model.TotalPages; i++)
+    {
+        if (i > 0)
+        {
+            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { pageNumber = i })">@i</a>
+            </li>
+        }
+    }
+    <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageIndex + 1 })">Next</a>
+    </li>
+    <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.TotalPages })">Last</a>
+    </li>
+</ul>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(function () {
+            $("#downloadQrImagesButton").click(function (e) {
+                var selectedUserIds = @Html.Raw(Json.Serialize(Model.Select(item => item.UserId).ToList()))
+                $("#userIdsInput").val(selectedUserIds.join(','));
+                $("#downloadQrImagesForm").submit();
+            });
+        });
+    </script>
+    <script src="~/js/members/index.js"></script>
+}
+

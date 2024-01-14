@@ -1,4 +1,4 @@
-﻿@model UserFormViewModel
+﻿@model UserClassViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -6,36 +6,58 @@
 
 <h1>Edit</h1>
 
-<h4>User</h4>
+<h4>Member</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        <form asp-action="Edit" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+                <label asp-for="OrganizationId" class="control-label">Organization</label>
+                <select id="organizationDropdown" asp-for="OrganizationId" class="form-control" asp-items="ViewBag.OrgId">
+                    <option value="">-- Select Organization --</option>
+                </select>
             </div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="SchoolId" class="control-label">School</label>
+                <select id="schoolDropdown" asp-for="SchoolId" class="form-control" asp-items="ViewBag.SchoolId">
+                    <option value="">-- Select School --</option>
+                </select>
             </div>
             <div class="form-group">
-                <label asp-for="ProfilePicture" class="control-label"></label>
-                <input type="file" asp-for="ProfilePicture" class="form-control" accept=".jpg, .jpeg, .png" id="profilePictureInput">
-                <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+                <label asp-for="UserId" class="control-label">User</label>
+                <input type="text" id="userSearch" class="form-control" placeholder="Search by user name">
+                <select id="userDropdown" asp-for="UserId" class="form-control" asp-items="ViewBag.UserId">
+                    <option value="">-- Select Member --</option>
+                </select>
             </div>
-            @if (!string.IsNullOrEmpty(Model.ProfilePicturePath))
-            {
-            <dt class="col-sm-3">Profile Picture</dt>
-            <dd class="col-sm-9">
-                <img id="imagePreview" src="~/uploads/@Model.ProfilePicturePath" alt="Profile Picture Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
-            </dd>
-            }
             <div class="form-group">
-                <input type="submit" value="Edit" class="btn btn-primary" />
+                <label asp-for="GradeId" class="control-label">Grade</label>
+                <select id="gradeDropdown" asp-for="GradeId" class="form-control" asp-items="ViewBag.GradeId">
+                    <option value="">-- Select Grade --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="SeasonId" class="control-label">Season</label>
+                <select asp-for="SeasonId" class="form-control" asp-items="ViewBag.SeasonId">
+                    <option value="">-- Select Season --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ClassroomId" class="control-label">Classroom</label>
+                <select asp-for="ClassroomId" class="form-control" asp-items="ViewBag.ClassroomId">
+                    <option value="">-- Select Classroom --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserTypeId" class="control-label">UserType</label>
+                <select asp-for="UserTypeId" class="form-control" asp-items="ViewBag.UserTypeId">
+                    <option value="">-- Select User Type --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -48,27 +70,3 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $('#profilePictureInput').change(function () {
-            var input = this;
-            var preview = $('#imagePreview');
-
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-
-                reader.onload = function (e) {
-                    preview.attr('src', e.target.result);
-                    preview.show();
-                }
-
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                preview.hide();
-                preview.attr('src', '');
-            }
-        });
-    });
-</script>

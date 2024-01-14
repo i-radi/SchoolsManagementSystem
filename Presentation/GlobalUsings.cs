@@ -17,4 +17,5 @@ global using Persistance.IRepos;
 global using System.Data;
 global using VModels.DTOS;
 global using VModels.DTOS.Auth;
+global using VModels.Utilities;
 global using VModels.ViewModels;

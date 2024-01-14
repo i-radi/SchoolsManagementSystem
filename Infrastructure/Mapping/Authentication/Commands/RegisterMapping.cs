@@ -6,7 +6,7 @@ public partial class AuthenticationProfile
 {
     public void RegisterMapping()
     {
-        CreateMap<RegisterDto, User>()
+        CreateMap<AddUserDto, User>()
             .ForMember(dest => dest.PlainPassword, opt => opt.MapFrom(src => src.Password));
     }
 }

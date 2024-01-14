@@ -62,6 +62,7 @@
                     @Html.DisplayFor(modelItem => item.School.Name)
                 </td>
                 <td>
+                    <a asp-action="Activity" asp-controller="Attendance" asp-route-activityId="@item.Id">Show Attendance</a> |
                     <a asp-action="Index" asp-controller="ActivityClassrooms" asp-route-activityId="@item.Id">Manage Classrooms</a> |
                     <a asp-action="Index" asp-controller="ActivityTimes" asp-route-activityId="@item.Id">Manage Times</a> |
                     <a asp-action="Index" asp-controller="ActivityInstances" asp-route-activityId="@item.Id">Manage Instances</a> |

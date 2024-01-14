@@ -11,54 +11,54 @@ public class OrganizationService : IOrganizationService
         _mapper = mapper;
     }
 
-    public Response<List<GetOrganizationDto>> GetAll(int pageNumber, int pageSize)
+    public Result<PaginatedList<GetOrganizationDto>> GetAll(int pageNumber, int pageSize)
     {
         var modelItems = _organizationsRepo.GetTableNoTracking();
         var result = PaginatedList<GetOrganizationDto>.Create(_mapper.Map<List<GetOrganizationDto>>(modelItems), pageNumber, pageSize);
 
-        return ResponseHandler.Success(_mapper.Map<List<GetOrganizationDto>>(result));
+        return ResultHandler.Success(result);
     }
 
-    public async Task<Response<GetOrganizationDto?>> GetById(int id)
+    public async Task<Result<GetOrganizationDto?>> GetById(int id)
     {
         var modelItem = await _organizationsRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return ResponseHandler.Success(_mapper.Map<GetOrganizationDto>(modelItem))!;
+        return ResultHandler.Success(_mapper.Map<GetOrganizationDto>(modelItem))!;
     }
 
-    public async Task<Response<GetOrganizationDto>> Add(AddOrganizationDto dto)
+    public async Task<Result<GetOrganizationDto>> Add(AddOrganizationDto dto)
     {
         var modelItem = _mapper.Map<Organization>(dto);
 
         var model = await _organizationsRepo.AddAsync(modelItem);
 
-        return ResponseHandler.Created(_mapper.Map<GetOrganizationDto>(modelItem));
+        return ResultHandler.Created(_mapper.Map<GetOrganizationDto>(modelItem));
     }
 
-    public async Task<Response<bool>> Update(UpdateOrganizationDto dto)
+    public async Task<Result<bool>> Update(UpdateOrganizationDto dto)
     {
         var modelItem = await _organizationsRepo.GetByIdAsync(dto.Id);
 
         if (modelItem is null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         _mapper.Map(dto, modelItem);
 
         var model = _organizationsRepo.UpdateAsync(modelItem);
 
-        return ResponseHandler.Success(true);
+        return ResultHandler.Success(true);
     }
 
-    public async Task<Response<bool>> Delete(int id)
+    public async Task<Result<bool>> Delete(int id)
     {
 
         var dbModel = await _organizationsRepo.GetByIdAsync(id);
 
         if (dbModel == null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         await _organizationsRepo.DeleteAsync(dbModel);
-        return ResponseHandler.Deleted<bool>();
+        return ResultHandler.Deleted<bool>();
     }
 }

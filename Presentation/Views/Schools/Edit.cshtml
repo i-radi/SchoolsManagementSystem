@@ -1,5 +1,5 @@
 ﻿@model UpdateSchoolViewModel
-
+@inject BaseSettings Base
 @{
     ViewData["Title"] = "Edit";
 }
@@ -22,6 +22,11 @@
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order" class="control-label"></label>
+                <input asp-for="Order" class="form-control" value="0" />
+                <span asp-validation-for="Order" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label for="OrganizationId">Organization</label>
@@ -50,7 +55,7 @@
             {
             <dt class="col-sm-3">Profile Picture</dt>
             <dd class="col-sm-9">
-                <img id="imagePreview" src="~/uploads/@Model.PicturePath" alt="Profile Picture Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
+                <img id="imagePreview" src="~/@(Base.schoolsPath)/@Model.PicturePath" alt="Profile Picture Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
             </dd>
             }
             <div class="form-group">

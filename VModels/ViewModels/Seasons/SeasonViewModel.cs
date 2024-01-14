@@ -8,11 +8,11 @@ public class SeasonViewModel
     public string Name { get; set; }
     [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime From { get; set; }
-    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)] 
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime To { get; set; }
     public bool IsCurrent { get; set; }
     public int SchoolId { get; set; }
-    public virtual School? School { get; set; }
-    public virtual ICollection<UserClass> UserClasses { get; set; } = new HashSet<UserClass>();
-    public virtual ICollection<ActivityInstance> ActivityInstances { get; set; } = new HashSet<ActivityInstance>();
+    public virtual SchoolViewModel? School { get; set; }
+    public virtual ICollection<UserClassViewModel> UserClasses { get; set; } = new HashSet<UserClassViewModel>();
+    public virtual ICollection<ActivityInstanceViewModel> ActivityInstances { get; set; } = new HashSet<ActivityInstanceViewModel>();
 }

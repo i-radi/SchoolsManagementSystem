@@ -11,58 +11,65 @@ public class UserClassService : IUserClassService
         _mapper = mapper;
     }
 
-    public Response<List<GetUserClassDto>> GetAll(int pageNumber, int pageSize)
+    public Result<PaginatedList<GetUserClassDto>> GetAll(int pageNumber, int pageSize, int userId = 0)
     {
         var modelItems = _userClassesRepo.GetTableNoTracking()
             .Include(m => m.Classroom)
             .Include(m => m.User)
             .Include(m => m.Season)
-            .Include(m => m.UserType);
-        var result = PaginatedList<GetUserClassDto>.Create(_mapper.Map<List<GetUserClassDto>>(modelItems), pageNumber, pageSize);
+            .Include(m => m.UserType)
+            .AsQueryable();
 
-        return ResponseHandler.Success(_mapper.Map<List<GetUserClassDto>>(result));
+        if (userId > 0)
+        {
+            modelItems = modelItems.Where(m => m.UserId == userId);
+        }
+
+        var result = PaginatedList<GetUserClassDto>.Create(_mapper.Map<List<GetUserClassDto>>(modelItems.ToList()), pageNumber, pageSize);
+
+        return ResultHandler.Success(result);
     }
 
-    public async Task<Response<GetUserClassDto?>> GetById(int id)
+    public async Task<Result<GetUserClassDto?>> GetById(int id)
     {
         var modelItem = await _userClassesRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return ResponseHandler.Success(_mapper.Map<GetUserClassDto>(modelItem))!;
+        return ResultHandler.Success(_mapper.Map<GetUserClassDto>(modelItem))!;
     }
 
-    public async Task<Response<GetUserClassDto>> Add(AddUserClassDto dto)
+    public async Task<Result<GetUserClassDto>> Add(AddUserClassDto dto)
     {
         var modelItem = _mapper.Map<UserClass>(dto);
 
         var model = await _userClassesRepo.AddAsync(modelItem);
 
-        return ResponseHandler.Created(_mapper.Map<GetUserClassDto>(modelItem));
+        return ResultHandler.Created(_mapper.Map<GetUserClassDto>(modelItem));
     }
 
-    public async Task<Response<bool>> Update(UpdateUserClassDto dto)
+    public async Task<Result<bool>> Update(UpdateUserClassDto dto)
     {
         var modelItem = await _userClassesRepo.GetByIdAsync(dto.Id);
 
         if (modelItem is null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         _mapper.Map(dto, modelItem);
 
         var model = _userClassesRepo.UpdateAsync(modelItem);
 
-        return ResponseHandler.Success(true);
+        return ResultHandler.Success(true);
     }
 
-    public async Task<Response<bool>> Delete(int id)
+    public async Task<Result<bool>> Delete(int id)
     {
 
         var dbModel = await _userClassesRepo.GetByIdAsync(id);
 
         if (dbModel == null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         await _userClassesRepo.DeleteAsync(dbModel);
-        return ResponseHandler.Deleted<bool>();
+        return ResultHandler.Deleted<bool>();
     }
 }

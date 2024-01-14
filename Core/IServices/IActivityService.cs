@@ -2,9 +2,10 @@
 
 public interface IActivityService
 {
-    Response<List<GetActivityDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0);
-    Task<Response<GetActivityDto?>> GetById(int id);
-    Task<Response<GetActivityDto>> Add(AddActivityDto model);
-    Task<Response<bool>> Update(UpdateActivityDto model);
-    Task<Response<bool>> Delete(int id);
+    Result<PaginatedList<GetActivityDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0);
+    Task<Result<GetActivityDto?>?> GetById(int id);
+    Task<Result<GetActivityDto>> Add(AddActivityDto model);
+    Task<Result<bool>> Update(UpdateActivityDto model);
+    Task<Result<bool>> Delete(int id);
+    Task<Result<bool>> Archive(int activityId);
 }

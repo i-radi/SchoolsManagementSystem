@@ -1,5 +1,5 @@
 ﻿@model PaginatedList<UserViewModel>
-
+@inject BaseSettings Base
 @{
     ViewData["Title"] = "Index";
 }
@@ -7,7 +7,7 @@
 <h1>Users</h1>
 
 <p>
-    <a asp-action="Create" asp-controller="Members">Create New User</a>
+    <a asp-action="Create" asp-controller="Users">Create New User</a>
 </p>
 
 @using (Html.BeginForm("Index", "Users", FormMethod.Get, new { id = "searchForm" }))
@@ -18,7 +18,10 @@
         @Html.Label("Role:")
         @Html.DropDownList("searchRole", ViewBag.RolesList as SelectList, "All Roles", new { placeholder = "Search by role" })
 
-        <input type="submit" value="Search" />
+        @Html.Label("Organizatoin:")
+        @Html.DropDownList("searchOrg", ViewBag.OrganizationsList as SelectList, "All Organizations", new { placeholder = "Search by organization" })
+
+        <input type="submit" value="Search" hidden/>
     </p>
 }
 
@@ -32,10 +35,13 @@
                 Name
             </th>
             <th>
+                Email
+            </th>
+            <th>
                 PhoneNumber
             </th>
             <th>
-                Email
+                Password
             </th>
             <th></th>
         </tr>
@@ -47,20 +53,26 @@
                 <td>
                     @if (!string.IsNullOrEmpty(item.ProfilePicturePath))
                     {
-                        <img src="~/uploads/@(item.ProfilePicturePath)" alt="Profile Picture" class="img-fluid rounded" style="max-width: 50px; max-height: 50px;">
+                        <img src="~/@(Base.usersPath)/@(item.ProfilePicturePath)" alt="Profile Picture" class="img-fluid rounded" style="max-width: 50px; max-height: 50px;">
                     }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.PhoneNumber)
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.Email)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.PhoneNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PlainPassword)
+                </td>
+
+                <td>
                     <a href="/users/Roles/@item.Id">Manage Roles</a> |
+                    <a href="/users/UserOrganization/@item.Id">Manage Organizatrions</a> |
+                    <a asp-action="Edit" asp-controller="Users" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
@@ -69,34 +81,70 @@
     </tbody>
 </table>
 
+<div class="row">
+    <div class="col-md-6">
+        <p>Total Pages: @Model.TotalPages</p>
+    </div>
+</div>
 <ul class="pagination">
     <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
-        <a class="page-link" href="@Url.Action("Index", new { page = 1 })">First</a>
+        <a class="page-link" href="@Url.Action("Index", new { pageNumber = 1 })">First</a>
     </li>
     <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
-        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex - 1 })">Previous</a>
+        <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageIndex - 1 })">Previous</a>
     </li>
-    @for (int i = 1; i <= Model.TotalPages; i++)
+    @for (int i = Model.PageIndex - 3; i <= Model.PageIndex + 3 && i <= Model.TotalPages; i++)
     {
-        <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-            <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
-        </li>
+        if (i > 0)
+        {
+            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { pageNumber = i })">@i</a>
+            </li>
+        }
     }
     <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
-        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex + 1 })">Next</a>
+        <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageIndex + 1 })">Next</a>
     </li>
     <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
-        <a class="page-link" href="@Url.Action("Index", new { page = Model.TotalPages })">Last</a>
+        <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.TotalPages })">Last</a>
     </li>
 </ul>
 
 
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<a asp-action="Index"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 <script>
     $(document).ready(function () {
+        $("#searchName").change(function () {
+            $("#searchForm").submit();
+        });
+
         $("#searchRole").change(function () {
+            $("#searchForm").submit();
+        });
+
+        $("#searchOrg").change(function () {
             $("#searchForm").submit();
         });
     });
 </script>
+}

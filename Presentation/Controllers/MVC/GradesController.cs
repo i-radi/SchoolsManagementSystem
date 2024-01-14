@@ -1,27 +1,23 @@
-﻿using Models.Entities;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
-    public class GradesController : Controller
+    public class GradesController(
+        IGradeRepo gradeRepo,
+        ISchoolRepo schoolRepo,
+        IMapper mapper) : Controller
     {
-        private readonly IGradeRepo _gradeRepo;
-        private readonly ISchoolRepo _schoolRepo;
-        private readonly IMapper _mapper;
+        private readonly IGradeRepo _gradeRepo = gradeRepo;
+        private readonly ISchoolRepo _schoolRepo = schoolRepo;
+        private readonly IMapper _mapper = mapper;
 
-        public GradesController(
-            IGradeRepo gradeRepo,
-            ISchoolRepo schoolRepo,
-            IMapper mapper)
-        {
-            _gradeRepo = gradeRepo;
-            _schoolRepo = schoolRepo;
-            _mapper = mapper;
-        }
-
-        // GET: Grades
         public async Task<IActionResult> Index(int schoolId)
         {
-            var grades = _gradeRepo.GetTableNoTracking().Include(g => g.School).AsQueryable();
+            var grades = _gradeRepo
+                .GetTableNoTracking()
+                .Include(g => g.School)
+                .OrderByDescending(c => c.Order)
+                .ThenBy(c => c.Id)
+                .AsQueryable();
+
             if (schoolId > 0)
             {
                 grades = grades.Where(g => g.SchoolId == schoolId);
@@ -30,7 +26,6 @@ namespace Presentation.Controllers.MVC
             return View(gradesVM);
         }
 
-        // GET: Grades/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -48,14 +43,12 @@ namespace Presentation.Controllers.MVC
             return View(gradeVM);
         }
 
-        // GET: Grades/Create
         public IActionResult Create()
         {
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
             return View();
         }
 
-        // POST: Grades/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(GradeViewModel gradeVM)
@@ -71,7 +64,6 @@ namespace Presentation.Controllers.MVC
             return View(gradeVM);
         }
 
-        // GET: Grades/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -89,7 +81,6 @@ namespace Presentation.Controllers.MVC
             return View(gradeVM);
         }
 
-        // POST: Grades/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, GradeViewModel gradeVM)
@@ -123,7 +114,6 @@ namespace Presentation.Controllers.MVC
             return View(gradeVM);
         }
 
-        // GET: Grades/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -141,7 +131,6 @@ namespace Presentation.Controllers.MVC
             return View(gradeVM);
         }
 
-        // POST: Grades/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

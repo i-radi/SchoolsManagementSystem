@@ -1,0 +1,98 @@
+﻿@model ActivityAttendanceViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-10">
+            <h3>@Model.ActivityName</h3>
+        </div>
+        <div class="col-md-2">
+            <a class="btn btn-secondary" asp-action="DownloadActivityAttendance" asp-route-activityId="@Model.ActivityId">Excel</a>
+        </div>
+    </div>
+</div>
+@if (!Model.ActivityInstances.Any())
+{
+    <p>@(Model.ActivityName) doesn't contain activity instances</p>
+}
+else
+{
+    @* <table id="attendance-table" class="table"> *@
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Users[0].ClassName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Users[0].UserName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Users[0].UserType)
+                </th>
+                @foreach (var instance in Model.ActivityInstances)
+                {
+                    <th>
+                        @($"{instance.InstanceName}-{instance.InstanceDate.ToString("dd-MM-yyyy")}")
+                    </th>
+                }
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Users)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ClassName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserType)
+                    </td>
+                    @foreach (var instance in Model.ActivityInstances)
+                    {
+                        <td style="color: @(item.InstanceIds.Contains(instance.InstanceId) ? "green" : "red")">
+                            @(item.InstanceIds.Contains(instance.InstanceId) ? "Yes" : "No")
+                        </td>
+                    }
+                    <td>@($"{item.InstanceIds.Count}/{Model.ActivityInstances.Count}")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <a class="btn btn-outline-secondary" asp-action="Index" asp-controller="Activities">Back to Activities</a>
+}
+
+@section Styles {
+    <link href="~/lib/datatables/css/datatables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/datatables/css/jquery.datatables.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.0.1/css/buttons.dataTables.min.css">
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/lib/datatables/js/jquery.datatables.min.js"></script>
+    <script src="~/lib/datatables-buttons/datatables.buttons.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var table = $('#attendance-table').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'excel'
+                ]
+            });
+        });
+    </script>
+}

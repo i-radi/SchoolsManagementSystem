@@ -1,39 +1,60 @@
-﻿@model UserViewModel
+﻿@model UserClassViewModel
 
 @{
     ViewData["Title"] = "Details";
 }
 
 <div class="container">
-    <h1 class="mt-4">User Details</h1>
+    <h1 class="mt-4">Class Member Details</h1>
 
     <div class="card mt-4">
         <div class="card-header">
-            <h4>Member Details</h4>
+            <h4>Class Member Details</h4>
         </div>
         <div class="card-body">
             <dl class="row">
-                <dt class="col-sm-3">Email</dt>
-                <dd class="col-sm-9">@Html.DisplayFor(model => model.Email)</dd>
-                <dt class="col-sm-3">Name</dt>
-                <dd class="col-sm-9">@Html.DisplayFor(model => model.Name)</dd>
-                @if (!string.IsNullOrEmpty(Model.ProfilePicturePath))
-                {
-                    <dt class="col-sm-3">Picture</dt>
-                    <dd class="col-sm-9">
-                        <img src="~/uploads/@Model.ProfilePicturePath" alt="Profile Picture" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
-                    </dd>
-                }
-                <dt class="col-sm-3">QR Code</dt>
-                <dd class="col-sm-9">
-                    <img src="~/qrcodes/@(Model.Id).png" alt="QR Code" style="max-width: 400px; max-height: 400px;">
+                <dt class="col-sm-2">
+                    User
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.User.UserName)
+                </dd>
+                <dt class="col-sm-2">
+                    Organization
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Organization.Name)
+                </dd>
+                <dt class="col-sm-2">
+                    Season
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Season.Name)
+                </dd>
+                <dt class="col-sm-2">
+                    Grade
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Grade.Name)
+                </dd>
+                <dt class="col-sm-2">
+                    Classroom
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Classroom.Name)
+                </dd>
+                <dt class="col-sm-2">
+                    UserType
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.UserType.Name)
                 </dd>
             </dl>
         </div>
     </div>
 
     <div class="mt-4">
-        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+        @* <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> *@
         <a class="btn btn-secondary" asp-action="Index">Back to List</a>
     </div>
 </div>

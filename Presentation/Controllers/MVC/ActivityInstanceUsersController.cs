@@ -1,27 +1,16 @@
-﻿using Models.Entities;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
-    public class ActivityInstanceUsersController : Controller
+    public class ActivityInstanceUsersController(
+        IActivityInstanceUserRepo activityInstanceUserRepo,
+        IActivityInstanceRepo activityInstanceRepo,
+        ApplicationDBContext context,
+        IMapper mapper) : Controller
     {
-        private readonly IActivityInstanceUserRepo _activityInstanceUserRepo;
-        private readonly IActivityInstanceRepo _activityInstanceRepo;
-        private readonly ApplicationDBContext _context;
-        private readonly IMapper _mapper;
+        private readonly IActivityInstanceUserRepo _activityInstanceUserRepo = activityInstanceUserRepo;
+        private readonly IActivityInstanceRepo _activityInstanceRepo = activityInstanceRepo;
+        private readonly ApplicationDBContext _context = context;
+        private readonly IMapper _mapper = mapper;
 
-        public ActivityInstanceUsersController(
-            IActivityInstanceUserRepo activityInstanceUserRepo,
-            IActivityInstanceRepo activityInstanceRepo,
-            ApplicationDBContext context,
-            IMapper mapper)
-        {
-            _activityInstanceUserRepo = activityInstanceUserRepo;
-            _activityInstanceRepo = activityInstanceRepo;
-            _context = context;
-            _mapper = mapper;
-        }
-
-        // GET: ActivityInstanceUsers
         public async Task<IActionResult> Index(int? instanceId)
         {
             var models = _context.ActivityInstanceUsers.Include(a => a.ActivityInstance).Include(a => a.User).AsQueryable();
@@ -35,7 +24,6 @@ namespace Presentation.Controllers.MVC
             return View(viewmodels);
         }
 
-        // GET: ActivityInstanceUsers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.ActivityInstanceUsers == null)
@@ -55,14 +43,13 @@ namespace Presentation.Controllers.MVC
             return View(activityInstanceUserVM);
         }
 
-        // GET: ActivityInstanceUsers/Create
         public async Task<IActionResult> Create(int instanceId)
         {
             var activityInstance = await _context.ActivityInstances
                 .Where(a => a.Id == instanceId)
                 .ToListAsync();
             ViewData["ActivityInstanceId"] = new SelectList(activityInstance, "Id", "Name");
-            
+
             var currentUserIds = await _activityInstanceUserRepo
                 .GetTableNoTracking()
                 .Where(a => a.ActivityInstanceId == instanceId)
@@ -82,7 +69,6 @@ namespace Presentation.Controllers.MVC
             return View(new ActivityInstanceUserViewModel());
         }
 
-        // POST: ActivityInstanceUsers/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ActivityInstanceUserViewModel activityInstanceUserVM)
@@ -92,14 +78,13 @@ namespace Presentation.Controllers.MVC
                 var activityInstanceUser = _mapper.Map<ActivityInstanceUser>(activityInstanceUserVM);
                 _context.Add(activityInstanceUser);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index),new {instanceId = activityInstanceUserVM.ActivityInstanceId});
+                return RedirectToAction(nameof(Index), new { instanceId = activityInstanceUserVM.ActivityInstanceId });
             }
             ViewData["ActivityInstanceId"] = new SelectList(_context.ActivityInstances, "Id", "Name", activityInstanceUserVM.ActivityInstanceId);
             ViewData["UserId"] = new SelectList(_context.User, "Id", "Name", activityInstanceUserVM.UserId);
             return View(activityInstanceUserVM);
         }
 
-        // GET: ActivityInstanceUsers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.ActivityInstanceUsers == null)
@@ -118,10 +103,9 @@ namespace Presentation.Controllers.MVC
             return View(activityInstanceUserVM);
         }
 
-        // POST: ActivityInstanceUsers/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,ActivityInstanceUserViewModel activityInstanceUserVM)
+        public async Task<IActionResult> Edit(int id, ActivityInstanceUserViewModel activityInstanceUserVM)
         {
             if (id != activityInstanceUserVM.Id)
             {
@@ -154,7 +138,6 @@ namespace Presentation.Controllers.MVC
             return View(activityInstanceUserVM);
         }
 
-        // GET: ActivityInstanceUsers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.ActivityInstanceUsers == null)
@@ -175,7 +158,6 @@ namespace Presentation.Controllers.MVC
             return View(activityInstanceUserVM);
         }
 
-        // POST: ActivityInstanceUsers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

@@ -3,73 +3,59 @@
 [Authorize]
 [Route("api/classrooms")]
 [ApiController]
-public class ClassroomsController : ControllerBase
-{
-    private readonly IClassroomService _classroomService;
-    private readonly IUserClassService _userClassService;
-    private readonly ILogger<ClassroomsController> _logger;
 
-    public ClassroomsController(IClassroomService classroomService, IUserClassService userClassService, ILogger<ClassroomsController> logger)
-    {
-        _classroomService = classroomService;
-        _userClassService = userClassService;
-        _logger = logger;
-    }
+[ApiExplorerSettings(GroupName = "Classes")]
+public class ClassroomsController(IClassroomService classroomService) : ControllerBase
+{
+    private readonly IClassroomService _classroomService = classroomService;
 
     [HttpGet]
-    public IActionResult GetAll([FromHeader] int schoolId, int pageNumber = 1, int pageSize = 10)
+    public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_classroomService.GetAll(pageNumber, pageSize, schoolId));
+        var result = _classroomService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromHeader] int schoolId, int id)
+    public async Task<IActionResult> GetById(int id)
     {
         var dto = await _classroomService.GetById(id);
         if (dto.Data is null)
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Found Class"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Found Class"));
         return Ok(dto);
     }
 
     [HttpPost]
-    [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> Add([FromHeader] int schoolId, AddClassroomDto dto)
+    public async Task<IActionResult> Add(AddClassroomDto dto)
     {
         return Ok(await _classroomService.Add(dto));
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update([FromHeader] int schoolId, int id, UpdateClassroomDto dto)
+    public async Task<IActionResult> Update(int id, UpdateClassroomDto dto)
     {
         if (id != dto.Id)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Id not matched"));
+            return BadRequest(ResultHandler.BadRequest<string>("Id not matched"));
         }
         var result = await _classroomService.Update(dto);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Updated"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Updated"));
         }
 
         return Ok(result);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Remove([FromHeader] int schoolId, int id)
+    public async Task<IActionResult> Remove(int id)
     {
         var result = await _classroomService.Delete(id);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Deleted"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Deleted"));
         }
         return Ok(result);
-    }
-
-    [HttpPost("assign-user")]
-    [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> AssignUser([FromHeader] int schoolId, AddUserClassDto dto)
-    {
-        var result = await _userClassService.Add(dto);
-        return Ok(await _userClassService.GetById(result.Data.Id));
     }
 }

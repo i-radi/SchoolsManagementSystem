@@ -18,6 +18,16 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Location" class="control-label"></label>
+                <input asp-for="Location" class="form-control" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order" class="control-label"></label>
+                <input asp-for="Order" class="form-control" value="0"/>
+                <span asp-validation-for="Order" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="GradeId" class="control-label">Grade</label>
                 <select asp-for="GradeId" class ="form-control" asp-items="ViewBag.GradeId"></select>
             </div>
@@ -29,6 +39,24 @@
             <div class="form-group">
                 <label class="control-label"> ProfilePicture </label>
                 <img id="imagePreview" src="#" alt="Profile Picture Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px; display:none;">
+            </div>
+            <div class="form-group">
+                <label asp-for="TeacherImage" class="control-label"></label>
+                <input type="file" asp-for="TeacherImage" class="form-control" accept=".jpg, .jpeg, .png" id="teacherImageInput">
+                <span asp-validation-for="TeacherImage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label"> Teacher Image </label>
+                <img id="teacherImagePreview" src="#" alt="Teacher Image Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px; display:none;">
+            </div>
+            <div class="form-group">
+                <label asp-for="StudentImage" class="control-label"></label>
+                <input type="file" asp-for="StudentImage" class="form-control" accept=".jpg, .jpeg, .png" id="studentImageInput">
+                <span asp-validation-for="StudentImage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label"> Student Image </label>
+                <img id="studentImagePreview" src="#" alt="Student Image Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px; display:none;">
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -43,5 +71,5 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<script src="~/js/site.js"></script> 
 }
-<script src="~/js/site.js"></script>

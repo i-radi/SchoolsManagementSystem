@@ -1,0 +1,141 @@
+﻿@model CopyUserClassViewModel
+
+@{
+    ViewData["Title"] = "Copy";
+}
+<div class="container">
+    <h1 class="display-4">Copy Class Members</h1>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <h1 class="display-6">From</h1>
+            @using (Html.BeginForm("Copy", "Members", FormMethod.Get, new { id = "searchFromClass" }))
+            {
+                <p>
+                    @Html.TextBox("searchUserName", ViewBag.CurrentFilter as string, new { placeholder = "Search by username" })
+
+                    @Html.DropDownList("fromOrgId", ViewBag.OrganizationsList as SelectList, "All Organizations", new { placeholder = "Filter by organization" })
+                    @Html.DropDownList("fromSchoolId", ViewBag.SchoolsList as SelectList, "All Schools", new { placeholder = "Filter by school" })
+                    @Html.DropDownList("fromSeasonId", ViewBag.SeasonsList as SelectList, "All Seasons", new { placeholder = "Filter by season" })
+                    <br/>
+                    <br/>
+                    @Html.DropDownList("fromGradeId", ViewBag.GradesList as SelectList, "All Grades", new { placeholder = "Filter by grade" })
+                    @Html.DropDownList("fromClassroomId", ViewBag.ClassroomsList as SelectList, "All Classrooms", new { placeholder = "Filter by classroom" })
+
+                    <input type="submit" value="Search" hidden />
+                </p>
+            }
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            <input type="checkbox" id="selectAllCheckbox" />
+                        </th>
+                        <th>ClassRoom</th>
+                        <th>User</th>
+                        <th>User Type</th>
+                        <th>Season</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.From != null && Model.From.Any())
+                    {
+                        @foreach (var item in Model.From)
+                        {
+                            <tr>
+                                <td><input type="checkbox" name="selectedUserIds" value="@item.UserId" /></td>
+                                <td>@Html.DisplayFor(modelItem => item.Classroom.Name)</td>
+                                <td>@Html.DisplayFor(modelItem => item.User.Name)</td>
+                                <td>@Html.DisplayFor(modelItem => item.UserType.Name)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Season.Name)</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            @if (Model.From != null && Model.From.Any())
+            {
+                string searchUserName = ViewContext.HttpContext.Request.Query["searchUserName"].ToString() ?? "";
+                string fromOrgId = ViewContext.HttpContext.Request.Query["fromOrgId"].ToString() ?? "0";
+                string fromSchoolId = ViewContext.HttpContext.Request.Query["fromSchoolId"].ToString() ?? "0";
+                string fromSeasonId = ViewContext.HttpContext.Request.Query["fromSeasonId"].ToString() ?? "0";
+                string fromGradeId = ViewContext.HttpContext.Request.Query["fromGradeId"].ToString() ?? "0";
+                string fromClassroomId = ViewContext.HttpContext.Request.Query["fromClassroomId"].ToString() ?? "0";
+                <div class="row">
+                    <div class="col-md-6">
+                        <p>Total Pages: @Model.From.TotalPages</p>
+                    </div>
+                </div>
+                <ul class="pagination">
+                    <li class="page-item @(Model.From.HasPreviousPage ? "" : "disabled")">
+                        <a class="page-link" href="@Url.Action("Copy", new { pageNumber = 1 ,fromSeasonId = fromSeasonId, fromClassroomId = fromClassroomId})">First</a>
+                    </li>
+                    <li class="page-item @(Model.From.HasPreviousPage ? "" : "disabled")">
+                        <a class="page-link" href="@Url.Action("Copy", new { pageNumber = Model.From.PageIndex - 1,fromSeasonId = fromSeasonId, fromClassroomId = fromClassroomId })">Previous</a>
+                    </li>
+                    @for (int i = Model.From.PageIndex - 3; i <= Model.From.PageIndex + 3 && i <= Model.From.TotalPages; i++)
+                    {
+                        if (i > 0)
+                        {
+                            <li class="page-item @(i == Model.From.PageIndex ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Copy", new { pageNumber = i,fromSeasonId = fromSeasonId, fromClassroomId = fromClassroomId})">@i</a>
+                            </li>
+                        }
+                    }
+                    <li class="page-item @(Model.From.HasNextPage ? "" : "disabled")">
+                        <a class="page-link" href="@Url.Action("Copy", new { pageNumber = Model.From.PageIndex + 1,fromSeasonId = fromSeasonId, fromClassroomId = fromClassroomId})">Next</a>
+                    </li>
+                    <li class="page-item @(Model.From.HasNextPage ? "" : "disabled")">
+                        <a class="page-link" href="@Url.Action("Copy", new { pageNumber = Model.From.TotalPages ,fromSeasonId = fromSeasonId, fromClassroomId = fromClassroomId})">Last</a>
+                    </li>
+                </ul>
+            }
+        </div>
+
+        <div class="col-md-6">
+            <h1 class="display-6">To</h1>
+
+            @Html.DropDownList("toOrgId", ViewBag.OrganizationsList as SelectList, "All Organizations", new { placeholder = "Filter by organization" })
+            @Html.DropDownList("toSchoolId", ViewBag.SchoolsList as SelectList, "All Schools", new { placeholder = "Filter by school" })
+            @Html.DropDownList("toSeasonId", ViewBag.SeasonsList as SelectList, "All Seasons", new { placeholder = "Filter by season" })
+            <br/>
+            <br/>
+            @Html.DropDownList("toGradeId", ViewBag.GradesList as SelectList, "All Grades", new { placeholder = "Filter by grade" })
+            @Html.DropDownList("toClassroomId", ViewBag.ClassroomsList as SelectList, "All Classrooms", new { placeholder = "Filter by classroom" })
+            <br />
+            <br />
+            <br />
+
+            <form asp-action="Copy" asp-controller="Members" method="post">
+                <input asp-for="FromClassroomId" id="FromClassroomId" hidden />
+                <input asp-for="FromSeasonId" id="FromSeasonId" hidden />
+                <input asp-for="ToClassroomId" id="ToClassroomId" hidden />
+                <input asp-for="ToSeasonId" id="ToSeasonId" hidden />
+                <input asp-for="SelectedUserIds" id="SelectedUserIds" hidden />
+                <input asp-for="From" hidden />
+                @if (Model.From != null && Model.From.Any())
+                {
+                    <button class="btn btn-primary" id="copyButton">Copy Selected Users</button>
+                }
+                else
+                {
+                    <button disabled class="btn btn-primary" id="copyButton">Copy Selected Users</button>
+                }
+                <input type="submit" value="Copy" id="copy" hidden />
+            </form>
+
+        </div>
+    </div>
+</div>
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/members/copy.js"></script>
+}

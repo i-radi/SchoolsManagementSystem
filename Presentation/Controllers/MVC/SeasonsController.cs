@@ -1,24 +1,14 @@
-﻿using Models.Entities;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
-    public class SeasonsController : Controller
+    public class SeasonsController(
+        ISeasonRepo seasonRepo,
+        ISchoolRepo schoolRepo,
+        IMapper mapper) : Controller
     {
-        private readonly ISeasonRepo _seasonRepo;
-        private readonly ISchoolRepo _schoolRepo;
-        private readonly IMapper _mapper;
+        private readonly ISeasonRepo _seasonRepo = seasonRepo;
+        private readonly ISchoolRepo _schoolRepo = schoolRepo;
+        private readonly IMapper _mapper = mapper;
 
-        public SeasonsController(
-            ISeasonRepo seasonRepo,
-            ISchoolRepo schoolRepo,
-            IMapper mapper)
-        {
-            _seasonRepo = seasonRepo;
-            _schoolRepo = schoolRepo;
-            _mapper = mapper;
-        }
-
-        // GET: Seasons
         public async Task<IActionResult> Index(int schoolId)
         {
             var seasons = _seasonRepo.GetTableNoTracking().Include(s => s.School).AsQueryable();
@@ -30,7 +20,6 @@ namespace Presentation.Controllers.MVC
             return View(seasonsVM);
         }
 
-        // GET: Seasons/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -48,14 +37,12 @@ namespace Presentation.Controllers.MVC
             return View(seasonVM);
         }
 
-        // GET: Seasons/Create
         public IActionResult Create()
         {
             ViewData["SchoolId"] = new SelectList(_schoolRepo.GetTableNoTracking().ToList(), "Id", "Name");
             return View();
         }
 
-        // POST: Seasons/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SeasonViewModel seasonVM)
@@ -70,7 +57,6 @@ namespace Presentation.Controllers.MVC
             return View(seasonVM);
         }
 
-        // GET: Seasons/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -88,7 +74,6 @@ namespace Presentation.Controllers.MVC
             return View(seasonVM);
         }
 
-        // POST: Seasons/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, SeasonViewModel seasonVM)
@@ -122,7 +107,6 @@ namespace Presentation.Controllers.MVC
             return View(seasonVM);
         }
 
-        // GET: Seasons/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -140,7 +124,6 @@ namespace Presentation.Controllers.MVC
             return View(seasonVM);
         }
 
-        // POST: Seasons/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

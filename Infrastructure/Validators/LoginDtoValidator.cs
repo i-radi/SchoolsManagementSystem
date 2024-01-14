@@ -4,7 +4,11 @@ public class LoginDtoValidator : AbstractValidator<LoginDto>
 {
     public LoginDtoValidator()
     {
-        RuleFor(s => s.Email).NotNull().NotEmpty().Length(1, 50);
-        RuleFor(s => s.Password).NotNull().NotEmpty().Length(1, 20);
+        RuleFor(dto => dto.UserNameOrEmail)
+            .NotEmpty().WithMessage("Email is required.")
+            .EmailAddress().WithMessage("Invalid email format.");
+        RuleFor(s => s.Password)
+            .NotEmpty().WithMessage("Password is required.")
+            .Length(1, 20).WithMessage("Invalid length.");
     }
 }

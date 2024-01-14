@@ -19,6 +19,17 @@ public class UserRoleConfigurations : IEntityTypeConfiguration<UserRole>
             .HasOne(u => u.User)
             .WithMany(ur => ur.UserRoles)
             .HasForeignKey(u => u.UserId);
+
+        builder.HasData(
+            new List<UserRole>
+            {
+                new UserRole
+                {
+                    Id = 1,
+                    UserId = 1,
+                    RoleId = 1
+                }
+            });
     }
 }
 

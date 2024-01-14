@@ -57,7 +57,86 @@ public static class ServiceRegisteration
         #region Swagger Gen
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Schools Management System", Version = "v1" });
+            c.SwaggerDoc("Identity", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Identity",
+                Description = "Identity Web Api in Asp.net Core Version .net7",
+
+            });
+
+            c.SwaggerDoc("Users", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Users",
+                Description = "Users Web Api in Asp.net Core Version .net7",
+
+            });
+
+            c.SwaggerDoc("Organizations", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Organizations",
+                Description = "Organizations Web Api in Asp.net Core Version .net7",
+
+            });
+
+            c.SwaggerDoc("Schools", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Schools",
+                Description = "Schools Web Api in Asp.net Core Version .net7",
+
+            });
+
+            c.SwaggerDoc("Seasons", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Seasons",
+                Description = "Seasons Web Api in Asp.net Core Version .net7",
+
+            });
+
+            c.SwaggerDoc("Grades", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Grades",
+                Description = "Grades Web Api in Asp.net Core Version .net7",
+
+            });
+
+            c.SwaggerDoc("Classes", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Classes",
+                Description = "Classes Web Api in Asp.net Core Version .net7",
+
+            });
+
+            c.SwaggerDoc("Courses", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Courses",
+                Description = "Courses Web Api in Asp.net Core Version .net7",
+
+            });
+
+            c.SwaggerDoc("Activities", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Activities",
+                Description = "Activities Web Api in Asp.net Core Version .net7",
+
+            });
+
+            c.SwaggerDoc("Records", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Records",
+                Description = "Records Web Api in Asp.net Core Version .net7",
+
+            });
+
             c.EnableAnnotations();
 
             c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme

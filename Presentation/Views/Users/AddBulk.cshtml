@@ -1,0 +1,95 @@
+﻿@model BulkUserClassViewModel
+
+@{
+    ViewData["Title"] = "AddBulk";
+}
+
+<h1 class="display-4">Add Multiple Users</h1>
+
+<hr />
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="description">
+                <p>
+                    To upload multiple users, download our <a asp-action="DownloadExcelSheet">template sheet</a> and add their information including email, name, organizations, address, gender, birthdate, school/university/job, GPS location, national ID, mentor name, first mobile, second mobile, father's mobile, and mother's mobile.
+                </p>
+            </div>
+            <div class="note">
+                <p>Please keep in mind the following:</p>
+                <ul>
+                    <li>If you are adding users to an organization, make sure to select the correct organization.</li>
+                    <li>If you are assigning users to a school's classroom, ensure that you select the appropriate classroom, season, and user type.</li>
+                    <li>Note that the maximum number of users per sheet is 1000.</li>
+                    <li>Lastly, remember that providing a Name is mandatory.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    @using (Html.BeginForm("Filter", "Users", FormMethod.Get, new { id = "searchFrom" }))
+                    {
+                        <p>
+                            @Html.DropDownList("OrgId", ViewBag.OrganizationsList as SelectList, "All Organizations", new { placeholder = "Filter by organization" })
+                            <br />
+                            @Html.DropDownList("SchoolId", ViewBag.SchoolsList as SelectList, "All Schools", new { placeholder = "Filter by school" })
+                            @Html.DropDownList("GradeId", ViewBag.GradesList as SelectList, "All Grades", new { placeholder = "Filter by grade" })
+                            @Html.DropDownList("ClassroomId", ViewBag.ClassroomsList as SelectList, "All Classrooms", new { placeholder = "Filter by classroom" })
+                            <br />
+                            @Html.DropDownList("SeasonId", ViewBag.SeasonsList as SelectList, "All Seasons", new { placeholder = "Filter by season" })
+                            @Html.DropDownList("UserTypeId", ViewBag.UserTypesList as SelectList, "All UserTypes", new { placeholder = "Filter by user type" })
+
+                            <input type="submit" value="Search" hidden />
+                        </p>
+                    }
+                    <h5 class="card-title">Upload Excel File</h5>
+                    <form asp-action="AddBulk" asp-controller="Users" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input asp-for="OrganizationId" id="organizationId" hidden />
+                        <input asp-for="SchoolId" id="schoolId" hidden />
+                        <input asp-for="GradeId" id="gradeId" hidden />
+                        <input asp-for="SeasonId" id="seasonId" hidden />
+                        <input asp-for="ClassroomId" id="classroomId" hidden />
+                        <input asp-for="UserTypeId" id="userTypeId" hidden />
+                        <div class="form-group">
+                            <label for="UploadedFile">Choose File</label>
+                            <div class="custom-file">
+                                <input asp-for="Attachment" type="file" class="custom-file-input" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" action="AddBulk" class="btn btn-primary">Upload</button>
+                        </div>
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div id="loadingSpinner" class="spinner-border text-primary" style="display: none;"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="mt-4">
+    <a asp-action="Create" class="btn btn-secondary">Back to Create User</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>
+
+@section Styles{
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+}   
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        var successMessage = '@TempData["SuccessMessage"]';
+        if (successMessage) {
+            toastr.success(successMessage);
+        }
+    </script>
+
+    <script src="~/js/users/add_bulk.js"></script>
+}

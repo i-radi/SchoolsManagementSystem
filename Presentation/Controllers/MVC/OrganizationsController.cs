@@ -1,19 +1,13 @@
 ﻿namespace Presentation.Controllers.MVC
 {
-    public class OrganizationsController : Controller
+    public class OrganizationsController(IAttachmentService attachmentService, BaseSettings baseSettings, IOrganizationRepo organizationRepo, IMapper mapper, IWebHostEnvironment webHostEnvironment) : Controller
     {
-        private readonly IOrganizationRepo _organizationRepo;
-        private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IAttachmentService _attachmentService = attachmentService;
+        private readonly BaseSettings _baseSettings = baseSettings;
+        private readonly IOrganizationRepo _organizationRepo = organizationRepo;
+        private readonly IMapper _mapper = mapper;
+        private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
 
-        public OrganizationsController(IOrganizationRepo organizationRepo, IMapper mapper, IWebHostEnvironment webHostEnvironment)
-        {
-            _organizationRepo = organizationRepo;
-            _mapper = mapper;
-            _webHostEnvironment = webHostEnvironment;
-        }
-
-        // GET: Organizations
         public IActionResult Index(int page = 1, int pageSize = 10, string searchName = "")
         {
             var modelItems = _organizationRepo.GetTableNoTracking();
@@ -28,7 +22,6 @@
             return View(result);
         }
 
-        // GET: Organizations/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -46,13 +39,11 @@
             return View(dto);
         }
 
-        // GET: Organizations/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Organizations/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(OrganizationFormViewModel viewmodel)
@@ -63,13 +54,15 @@
             };
             if (viewmodel.Picture is not null)
             {
-                organization.PicturePath = await Picture.Upload(viewmodel.Picture, _webHostEnvironment);
+                var fileExtension = Path.GetExtension(Path.GetFileName(viewmodel.Picture.FileName));
+                organization.PicturePath = await _attachmentService.Upload(viewmodel.Picture, _webHostEnvironment,
+                    _baseSettings.organizationsPath,
+                    $"{viewmodel.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
             }
             var model = await _organizationRepo.AddAsync(organization);
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Organizations/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -91,7 +84,6 @@
             return View(viewModel);
         }
 
-        // POST: Organizations/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, OrganizationFormViewModel organization)
@@ -106,7 +98,10 @@
                 updatedOrganization.Name = organization.Name;
                 if (organization.Picture is not null)
                 {
-                    updatedOrganization.PicturePath = await Picture.Upload(organization.Picture, _webHostEnvironment);
+                    var fileExtension = Path.GetExtension(Path.GetFileName(organization.Picture.FileName));
+                    updatedOrganization.PicturePath = await _attachmentService.Upload(organization.Picture, _webHostEnvironment,
+                        _baseSettings.organizationsPath,
+                        $"{organization.Name}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
                 }
                 try
                 {
@@ -121,7 +116,6 @@
             return View(organization);
         }
 
-        // GET: Organizations/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -139,7 +133,6 @@
             return View(dto);
         }
 
-        // POST: Organizations/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

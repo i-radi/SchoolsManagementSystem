@@ -9,6 +9,7 @@ public static class ModuleCoreDependencies
     public static IServiceCollection AddCoreDependencies(this IServiceCollection services)
     {
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserRoleService, UserRoleService>();
         services.AddScoped<IClassroomService, ClassroomService>();
         services.AddScoped<IGradeService, GradeService>();
         services.AddScoped<IOrganizationService, OrganizationService>();
@@ -17,6 +18,15 @@ public static class ModuleCoreDependencies
         services.AddScoped<IUserClassService, UserClassService>();
         services.AddScoped<IUserTypeService, UserTypeService>();
         services.AddScoped<IActivityService, ActivityService>();
+        services.AddScoped<IActivityClassroomService, ActivityClassroomService>();
+        services.AddScoped<IActivityInstanceService, ActivityInstanceService>();
+        services.AddScoped<IActivityInstanceUserService, ActivityInstanceUserService>();
+        services.AddScoped<IActivityTimeService, ActivityTimeService>();
+        services.AddScoped<ICourseService, CourseService>();
+        services.AddScoped<IRecordService, RecordService>();
+        services.AddScoped<IUserRecordService, UserRecordService>();
+        services.AddScoped<IRecordClassService, RecordClassService>();
+        services.AddScoped<IAttendanceService, AttendanceService>();
 
         #region Authorization
 
@@ -28,7 +38,6 @@ public static class ModuleCoreDependencies
                 policy => policy.RequireClaim(ClaimTypes.Role, "SuperAdmin", "OrganizationAdmin"));
             options.AddPolicy("SchoolAdmin",
                 policy => policy.RequireClaim(ClaimTypes.Role, "SuperAdmin", "OrganizationAdmin", "SchoolAdmin"));
-
         }
         );
 

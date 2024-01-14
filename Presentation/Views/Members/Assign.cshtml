@@ -1,4 +1,4 @@
-﻿@model UserClassViewModel
+﻿@model MultipleUserClassViewModel
 
 @{
     ViewData["Title"] = "Assign";
@@ -10,23 +10,54 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Assign">
+        <form asp-action="Assign" id="assignForm" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group" >
-                <label asp-for="UserId" class="control-label">User</label>
-                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+            <div class="form-group">
+                <label asp-for="OrganizationId" class="control-label">Organization</label>
+                <select id="organizationDropdown" asp-for="OrganizationId" class="form-control" asp-items="ViewBag.OrgId">
+                    <option value="">-- Select Organization --</option>
+                </select>
             </div>
             <div class="form-group">
-                <label asp-for="ClassroomId" class="control-label">Classroom</label>
-                <select asp-for="ClassroomId" class="form-control" asp-items="ViewBag.ClassroomId"></select>
+                <label asp-for="SchoolId" class="control-label">School</label>
+                <select id="schoolDropdown" asp-for="SchoolId" class="form-control" asp-items="ViewBag.SchoolId">
+                    <option value="">-- Select School --</option>
+                </select>
             </div>
             <div class="form-group">
-                <label asp-for="UserTypeId" class="control-label">UserType</label>
-                <select asp-for="UserTypeId" class="form-control" asp-items="ViewBag.UserTypeId"></select>
+                <label asp-for="SelectedUserIds">Users</label>
+                <select id="UserIds" asp-for="SelectedUserIds" class="form-control select2-multi" multiple>
+                    @foreach (var user in ViewBag.UserId)
+                    {
+                        <option value="@user.Value">@user.Text</option>
+                    }
+                </select>
+                <span class="text-danger">@Html.ValidationMessageFor(m => m.SelectedUserIds)</span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="GradeId" class="control-label">Grade</label>
+                <select id="gradeDropdown" asp-for="GradeId" class="form-control" asp-items="ViewBag.GradeId">
+                    <option value="">-- Select Grade --</option>
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="SeasonId" class="control-label">Season</label>
-                <select asp-for="SeasonId" class="form-control" asp-items="ViewBag.SeasonId"></select>
+                <select asp-for="SeasonId" class="form-control" asp-items="ViewBag.SeasonId">
+                    <option value="">-- Select Season --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ClassroomId" class="control-label">Classroom</label>
+                <select asp-for="ClassroomId" class="form-control" asp-items="ViewBag.ClassroomId">
+                    <option value="">-- Select Classroom --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserTypeId" class="control-label">UserType</label>
+                <select asp-for="UserTypeId" class="form-control" asp-items="ViewBag.UserTypeId">
+                    <option value="">-- Select User Type --</option>
+                </select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Assign" class="btn btn-primary" />
@@ -39,6 +70,27 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+@section Styles{
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" asp-append-version="true" />
+}
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/members/assign.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        var successMessage = '@TempData["SuccessMessage"]';
+        if (successMessage) {
+            toastr.success(successMessage); 
+        }
+    </script>
+
+    <script src="~/lib/select2/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.select2-multi').select2();
+        });
+    </script>
 }

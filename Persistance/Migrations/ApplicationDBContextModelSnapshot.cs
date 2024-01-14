@@ -277,12 +277,23 @@ namespace Persistance.Migrations
                     b.Property<int>("GradeId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
                     b.Property<string>("PicturePath")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StudentImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TeacherImagePath")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -290,6 +301,60 @@ namespace Persistance.Migrations
                     b.HasIndex("GradeId");
 
                     b.ToTable("Classrooms");
+                });
+
+            modelBuilder.Entity("Models.Entities.Course", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CourseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SchoolId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchoolId");
+
+                    b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("Models.Entities.CourseDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ContentType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId")
+                        .IsUnique();
+
+                    b.ToTable("CourseDetails");
                 });
 
             modelBuilder.Entity("Models.Entities.Grade", b =>
@@ -300,9 +365,15 @@ namespace Persistance.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
 
                     b.Property<int>("SchoolId")
                         .HasColumnType("int");
@@ -342,6 +413,38 @@ namespace Persistance.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("Roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "SuperAdmin",
+                            NormalizedName = "SUPERADMIN"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "OrganizationAdmin",
+                            NormalizedName = "ORGANIZATIONADMIN"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "SchoolAdmin",
+                            NormalizedName = "SCHOOLADMIN"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "FullAccessActivity",
+                            NormalizedName = "FULLACCESSACTIVITY"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "ReadAccessActivity",
+                            NormalizedName = "READACCESSACTIVITY"
+                        });
                 });
 
             modelBuilder.Entity("Models.Entities.Identity.User", b =>
@@ -356,8 +459,13 @@ namespace Persistance.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("AccessToken")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Birthdate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -370,14 +478,35 @@ namespace Persistance.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("FatherMobile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstMobile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GpsLocation")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("MentorName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherMobile")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NationalID")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
@@ -388,8 +517,14 @@ namespace Persistance.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<int?>("OrganizationId")
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ParticipationNumber")
                         .HasColumnType("int");
+
+                    b.Property<string>("ParticipationQRCodePath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -404,15 +539,23 @@ namespace Persistance.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PositionType")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ProfilePicturePath")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("RefreshToken")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("RefreshTokenExpiryDate")
+                    b.Property<DateTime?>("RefreshTokenExpiryDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("SchoolUniversityJob")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecondMobile")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -438,13 +581,62 @@ namespace Persistance.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.HasIndex("OrganizationId");
-
                     b.HasIndex("UserName")
                         .IsUnique()
                         .HasFilter("[UserName] IS NOT NULL");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users", null, t =>
+                        {
+                            t.HasTrigger("trg_SetParticipationNumber");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "721a882b-410e-46e0-b878-625aaa8bbd75",
+                            Email = "admin@sms.com",
+                            EmailConfirmed = false,
+                            GpsLocation = "",
+                            LockoutEnabled = false,
+                            Name = "Admin User",
+                            NormalizedEmail = "ADMIN@SMS.COM",
+                            NormalizedUserName = "ADMIN",
+                            ParticipationNumber = 0,
+                            PasswordHash = "AQAAAAIAAYagAAAAEEEvuzV4blWESxZcSEnPlgLgae4bQZgB6A29NU/zj9FS91zzZKF9odfHtexpQHlzGg==",
+                            PhoneNumberConfirmed = false,
+                            PlainPassword = "123456",
+                            ProfilePicturePath = "emptyAvatar.png",
+                            RefreshToken = new Guid("b5a9df44-4d5e-4824-8a5d-88689fe3782a"),
+                            RefreshTokenExpiryDate = new DateTime(2023, 9, 30, 10, 57, 40, 9, DateTimeKind.Utc).AddTicks(205),
+                            SecurityStamp = "XCGDJZV44O4PZ47TD7MFQCD27H5DO4MB",
+                            TwoFactorEnabled = false,
+                            UserName = "admin"
+                        });
+                });
+
+            modelBuilder.Entity("Models.Entities.Identity.UserOrganization", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserOrganizations");
                 });
 
             modelBuilder.Entity("Models.Entities.Identity.UserRole", b =>
@@ -479,6 +671,14 @@ namespace Persistance.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            RoleId = 1,
+                            UserId = 1
+                        });
                 });
 
             modelBuilder.Entity("Models.Entities.Organization", b =>
@@ -500,6 +700,78 @@ namespace Persistance.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Organizations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Cairo Organization",
+                            PicturePath = ""
+                        });
+                });
+
+            modelBuilder.Entity("Models.Entities.Record", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Available")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("ForStudents")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ForTeachers")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Points")
+                        .HasColumnType("float");
+
+                    b.Property<int>("SchoolId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchoolId");
+
+                    b.ToTable("Records");
+                });
+
+            modelBuilder.Entity("Models.Entities.RecordClass", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClassroomId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RecordId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassroomId");
+
+                    b.HasIndex("RecordId");
+
+                    b.ToTable("RecordClasses");
                 });
 
             modelBuilder.Entity("Models.Entities.School", b =>
@@ -511,12 +783,14 @@ namespace Persistance.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
 
                     b.Property<int>("OrganizationId")
                         .HasColumnType("int");
@@ -530,6 +804,17 @@ namespace Persistance.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("Schools");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "desc. of Cairo 1 School",
+                            Name = "Cairo 1 School",
+                            Order = 0,
+                            OrganizationId = 1,
+                            PicturePath = ""
+                        });
                 });
 
             modelBuilder.Entity("Models.Entities.Season", b =>
@@ -596,6 +881,44 @@ namespace Persistance.Migrations
                     b.ToTable("UserClasses");
                 });
 
+            modelBuilder.Entity("Models.Entities.UserRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DoneDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDone")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("PaidDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RecordId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecordId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRecords");
+                });
+
             modelBuilder.Entity("Models.Entities.UserType", b =>
                 {
                     b.Property<int>("Id")
@@ -611,6 +934,23 @@ namespace Persistance.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Teacher"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Student"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Parent"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -739,10 +1079,10 @@ namespace Persistance.Migrations
                     b.Navigation("Grade");
                 });
 
-            modelBuilder.Entity("Models.Entities.Grade", b =>
+            modelBuilder.Entity("Models.Entities.Course", b =>
                 {
                     b.HasOne("Models.Entities.School", "School")
-                        .WithMany()
+                        .WithMany("Courses")
                         .HasForeignKey("SchoolId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -750,11 +1090,45 @@ namespace Persistance.Migrations
                     b.Navigation("School");
                 });
 
-            modelBuilder.Entity("Models.Entities.Identity.User", b =>
+            modelBuilder.Entity("Models.Entities.CourseDetails", b =>
                 {
-                    b.HasOne("Models.Entities.Organization", null)
-                        .WithMany("Users")
-                        .HasForeignKey("OrganizationId");
+                    b.HasOne("Models.Entities.Course", "Course")
+                        .WithOne("CourseDetails")
+                        .HasForeignKey("Models.Entities.CourseDetails", "CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("Models.Entities.Grade", b =>
+                {
+                    b.HasOne("Models.Entities.School", "School")
+                        .WithMany("Grades")
+                        .HasForeignKey("SchoolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("School");
+                });
+
+            modelBuilder.Entity("Models.Entities.Identity.UserOrganization", b =>
+                {
+                    b.HasOne("Models.Entities.Organization", "Organization")
+                        .WithMany("UserOrganizations")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Models.Entities.Identity.User", "User")
+                        .WithMany("UserOrganizations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Organization");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Models.Entities.Identity.UserRole", b =>
@@ -780,6 +1154,36 @@ namespace Persistance.Migrations
                     b.Navigation("Role");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Models.Entities.Record", b =>
+                {
+                    b.HasOne("Models.Entities.School", "School")
+                        .WithMany("Records")
+                        .HasForeignKey("SchoolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("School");
+                });
+
+            modelBuilder.Entity("Models.Entities.RecordClass", b =>
+                {
+                    b.HasOne("Models.Entities.Classroom", "Classroom")
+                        .WithMany("RecordClasses")
+                        .HasForeignKey("ClassroomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Models.Entities.Record", "Record")
+                        .WithMany("RecordClasses")
+                        .HasForeignKey("RecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Classroom");
+
+                    b.Navigation("Record");
                 });
 
             modelBuilder.Entity("Models.Entities.School", b =>
@@ -839,6 +1243,25 @@ namespace Persistance.Migrations
                     b.Navigation("UserType");
                 });
 
+            modelBuilder.Entity("Models.Entities.UserRecord", b =>
+                {
+                    b.HasOne("Models.Entities.Record", "Record")
+                        .WithMany("UserRecords")
+                        .HasForeignKey("RecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Models.Entities.Identity.User", "User")
+                        .WithMany("UserRecords")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Record");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Models.Entities.Activity", b =>
                 {
                     b.Navigation("ActivityClasses");
@@ -859,7 +1282,14 @@ namespace Persistance.Migrations
                 {
                     b.Navigation("ActivityClassrooms");
 
+                    b.Navigation("RecordClasses");
+
                     b.Navigation("UserClasses");
+                });
+
+            modelBuilder.Entity("Models.Entities.Course", b =>
+                {
+                    b.Navigation("CourseDetails");
                 });
 
             modelBuilder.Entity("Models.Entities.Grade", b =>
@@ -878,6 +1308,10 @@ namespace Persistance.Migrations
 
                     b.Navigation("UserClasses");
 
+                    b.Navigation("UserOrganizations");
+
+                    b.Navigation("UserRecords");
+
                     b.Navigation("UserRoles");
                 });
 
@@ -885,12 +1319,25 @@ namespace Persistance.Migrations
                 {
                     b.Navigation("Schools");
 
-                    b.Navigation("Users");
+                    b.Navigation("UserOrganizations");
+                });
+
+            modelBuilder.Entity("Models.Entities.Record", b =>
+                {
+                    b.Navigation("RecordClasses");
+
+                    b.Navigation("UserRecords");
                 });
 
             modelBuilder.Entity("Models.Entities.School", b =>
                 {
                     b.Navigation("Activities");
+
+                    b.Navigation("Courses");
+
+                    b.Navigation("Grades");
+
+                    b.Navigation("Records");
 
                     b.Navigation("Seasons");
                 });

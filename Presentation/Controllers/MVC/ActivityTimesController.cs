@@ -1,24 +1,14 @@
-﻿using Models.Entities;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
-    public class ActivityTimesController : Controller
+    public class ActivityTimesController(
+        IActivityTimeRepo activityTimeRepo,
+        IActivityRepo activityRepo,
+        IMapper mapper) : Controller
     {
-        private readonly IActivityTimeRepo _activityTimeRepo;
-        private readonly IActivityRepo _activityRepo;
-        private readonly IMapper _mapper;
+        private readonly IActivityTimeRepo _activityTimeRepo = activityTimeRepo;
+        private readonly IActivityRepo _activityRepo = activityRepo;
+        private readonly IMapper _mapper = mapper;
 
-        public ActivityTimesController(
-            IActivityTimeRepo activityTimeRepo,
-            IActivityRepo activityRepo,
-            IMapper mapper)
-        {
-            _activityTimeRepo = activityTimeRepo;
-            _activityRepo = activityRepo;
-            _mapper = mapper;
-        }
-
-        // GET: ActivityTimes
         public async Task<IActionResult> Index(int? activityId)
         {
             var models = _activityTimeRepo.GetTableNoTracking().Include(a => a.Activity).AsQueryable();
@@ -30,7 +20,6 @@ namespace Presentation.Controllers.MVC
             return View(viewmodels);
         }
 
-        // GET: ActivityTimes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _activityTimeRepo.GetTableNoTracking().ToList() == null)
@@ -50,14 +39,12 @@ namespace Presentation.Controllers.MVC
             return View(activityTimeVM);
         }
 
-        // GET: ActivityTimes/Create
         public IActionResult Create()
         {
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name");
             return View();
         }
 
-        // POST: ActivityTimes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ActivityTimeViewModel activityTimeVM)
@@ -72,7 +59,6 @@ namespace Presentation.Controllers.MVC
             return View(activityTimeVM);
         }
 
-        // GET: ActivityTimes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _activityTimeRepo.GetTableNoTracking().ToList() == null)
@@ -90,10 +76,9 @@ namespace Presentation.Controllers.MVC
             return View(activityTimeVM);
         }
 
-        // POST: ActivityTimes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,ActivityTimeViewModel activityTimeVM)
+        public async Task<IActionResult> Edit(int id, ActivityTimeViewModel activityTimeVM)
         {
             if (id != activityTimeVM.Id)
             {
@@ -124,7 +109,6 @@ namespace Presentation.Controllers.MVC
             return View(activityTimeVM);
         }
 
-        // GET: ActivityTimes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _activityTimeRepo.GetTableNoTracking().ToList() == null)
@@ -140,11 +124,10 @@ namespace Presentation.Controllers.MVC
                 return NotFound();
             }
 
-            var activityTimeVM = _mapper.Map<ActivityTimeViewModel>(activityTime); 
+            var activityTimeVM = _mapper.Map<ActivityTimeViewModel>(activityTime);
             return View(activityTimeVM);
         }
 
-        // POST: ActivityTimes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

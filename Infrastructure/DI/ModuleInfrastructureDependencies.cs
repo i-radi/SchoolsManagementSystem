@@ -1,9 +1,7 @@
-﻿using Infrastructure.IServices;
-using Infrastructure.Services;
+﻿using Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Models.Helpers;
-using System.Reflection;
 
 namespace Infrastructure.DI;
 
@@ -12,16 +10,33 @@ public static class ModuleInfrastructureDependencies
     public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services, IConfiguration configuration)
     {
         // Configuration Of Automapper
-        services.AddAutoMapper(Assembly.GetExecutingAssembly());
+        services.AddAutoMapper(AssemblyReference.Assembly);
 
         var emailSettings = new EmailSettings();
         configuration.GetSection(nameof(emailSettings)).Bind(emailSettings);
         services.AddSingleton(emailSettings);
-        services.AddTransient<IEmailSender, EmailSender>();
+        services.AddTransient<IEmailService, EmailService>();
+
+        //Shared setting 
+        var sharedSettings = new SharedSettings();
+        configuration.GetSection(nameof(sharedSettings)).Bind(sharedSettings);
+        services.AddSingleton(sharedSettings);
+
+        services.AddScoped<IExportService<UserViewModel>, ExportService<UserViewModel>>();
+        services.AddScoped<IExportService<GetUserDto>, ExportService<GetUserDto>>();
+        services.AddScoped<IExcelService, ExcelService>();
+        services.AddScoped<ICsvService, CsvService>();
+        services.AddScoped<IHtmlService, HtmlService>();
+        services.AddScoped<IJsonService, JsonService>();
+        services.AddScoped<IXmlService, XmlService>();
+        services.AddScoped<IYamlService, YamlService>();
+        services.AddScoped<IAttachmentService, AttachmentService>();
+
 
         // Get Validators
-        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-        services.AddControllersWithViews().ConfigureApiBehaviorOptions(options =>
+        services.AddValidatorsFromAssembly(AssemblyReference.Assembly);
+        services.AddControllersWithViews()
+            .ConfigureApiBehaviorOptions(options =>
         {
             options.InvalidModelStateResponseFactory = c =>
             {
@@ -34,6 +49,11 @@ public static class ModuleInfrastructureDependencies
         });
         services.AddRazorPages();
         services.AddMvc();
+
+        var baseSettings = new BaseSettings();
+        configuration.GetSection(nameof(baseSettings)).Bind(baseSettings);
+        services.AddSingleton(baseSettings);
+
         return services;
     }
 }

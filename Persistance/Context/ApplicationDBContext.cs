@@ -2,13 +2,15 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Models.Entities.Identity;
-using System.Reflection;
 
 namespace Persistance.Context;
 
 public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>, UserRole, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
 {
+    #region feilds
     private readonly IConfiguration _configuration;
+    #endregion
+
     #region ctor
     public ApplicationDBContext(IConfiguration configuration)
     {
@@ -25,6 +27,7 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
     public virtual DbSet<Role> Role => Set<Role>();
     public virtual DbSet<UserRole> UserRole => Set<UserRole>();
     public virtual DbSet<Organization> Organizations => Set<Organization>();
+    public virtual DbSet<UserOrganization> UserOrganizations => Set<UserOrganization>();
     public virtual DbSet<School> Schools => Set<School>();
     public virtual DbSet<Grade> Grades => Set<Grade>();
     public virtual DbSet<Classroom> Classrooms => Set<Classroom>();
@@ -36,34 +39,21 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
     public virtual DbSet<ActivityInstance> ActivityInstances => Set<ActivityInstance>();
     public virtual DbSet<ActivityInstanceUser> ActivityInstanceUsers => Set<ActivityInstanceUser>();
     public virtual DbSet<ActivityTime> ActivityTimes => Set<ActivityTime>();
+    public virtual DbSet<Record> Records => Set<Record>();
+    public virtual DbSet<UserRecord> UserRecords => Set<UserRecord>();
+    public virtual DbSet<RecordClass> RecordClasses => Set<RecordClass>();
+    public virtual DbSet<Course> Courses => Set<Course>();
+    public virtual DbSet<CourseDetails> CourseDetails => Set<CourseDetails>();
     #endregion
 
     #region OnModelCreating & OnConfiguring
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        modelBuilder.Entity<ActivityInstance>()
-        .HasOne(a => a.Season)
-        .WithMany(a => a.ActivityInstances)
-        .HasForeignKey(a => a.SeasonId)
-        .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<ActivityClassroom>()
-        .HasOne(a => a.Classroom)
-        .WithMany(a => a.ActivityClassrooms)
-        .HasForeignKey(a => a.ClassroomId)
-        .OnDelete(DeleteBehavior.Restrict);
-
-        //Change Identity Schema and Table Names
-        modelBuilder.Entity<User>().ToTable("Users");
-        modelBuilder.Entity<Role>().ToTable("Roles");
-        modelBuilder.Entity<UserRole>().ToTable("UserRoles");
-        modelBuilder.Entity<IdentityUserLogin<int>>().ToTable("UserLogins");
-        modelBuilder.Entity<IdentityUserClaim<int>>().ToTable("UserClaims");
-        modelBuilder.Entity<IdentityRoleClaim<int>>().ToTable("RoleClaims");
-        modelBuilder.Entity<IdentityUserToken<int>>().ToTable("UserTokens");
+        modelBuilder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
+        ChangeIdentitSchemaAndTableNames(modelBuilder);
     }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -72,5 +62,20 @@ public class ApplicationDBContext : IdentityDbContext<User, Role, int, IdentityU
             optionsBuilder.UseSqlServer(connectionString);
         }
     }
+    #endregion
+
+    #region PrivateMethods
+
+    private static void ChangeIdentitSchemaAndTableNames(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>().ToTable("Users");
+        modelBuilder.Entity<Role>().ToTable("Roles");
+        modelBuilder.Entity<UserRole>().ToTable("UserRoles");
+        modelBuilder.Entity<IdentityUserLogin<int>>().ToTable("UserLogins");
+        modelBuilder.Entity<IdentityUserClaim<int>>().ToTable("UserClaims");
+        modelBuilder.Entity<IdentityRoleClaim<int>>().ToTable("RoleClaims");
+        modelBuilder.Entity<IdentityUserToken<int>>().ToTable("UserTokens");
+    }
+
     #endregion
 }

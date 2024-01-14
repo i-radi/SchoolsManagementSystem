@@ -1,12 +1,12 @@
 using Infrastructure.MiddleWares;
-using Persistance.Seeder;
+using Newtonsoft.Json.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 #region Services
 
 #region Connection To SQL Server
-
+builder.Services.AddMiniProfiler(options => options.RouteBasePath = "/profiler").AddEntityFramework();
 builder.Services.AddDbContext<ApplicationDBContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbContextConnection")!);
@@ -15,20 +15,27 @@ builder.Services.AddDbContext<ApplicationDBContext>(option =>
 #endregion
 
 #region Dependency injections
+#pragma warning disable CS0612 // Type or member is obsolete
+builder.Services.AddSerilogRegisteration(builder.Configuration);
+#pragma warning restore CS0612 // Type or member is obsolete
 
 builder.Services.AddPersistanceDependencies()
                  .AddInfrastructureDependencies(builder.Configuration)
                  .AddCoreDependencies()
                  .AddPersistanceServiceRegisteration(builder.Configuration)
-                 .AddSerilogRegisteration(builder.Configuration, builder.Host)
                  .AddInfrastructureServiceRegisteration(builder.Configuration);
+
+builder.Services.AddControllersWithViews()
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.Converters.Add(new StringEnumConverter());
+    });
 
 #endregion
 
 #region API
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 #endregion
 
@@ -53,23 +60,37 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-#region Seed 3 roles and superAdmin user only first time
+#region Intiate database
 
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
-    await SeedData.SeedAsync(dbContext, userManager, roleManager,builder.Configuration);
+    dbContext.Database.Migrate();
 }
 
 #endregion
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseMiniProfiler();
     app.UseMigrationsEndPoint();
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/Identity/swagger.json", "Identity");
+        options.SwaggerEndpoint("/swagger/Users/swagger.json", "Users");
+        options.SwaggerEndpoint("/swagger/Organizations/swagger.json", "Organizations");
+        options.SwaggerEndpoint("/swagger/Schools/swagger.json", "Schools");
+        options.SwaggerEndpoint("/swagger/Seasons/swagger.json", "Seasons");
+        options.SwaggerEndpoint("/swagger/Grades/swagger.json", "Grades");
+        options.SwaggerEndpoint("/swagger/Classes/swagger.json", "Classes");
+        options.SwaggerEndpoint("/swagger/Courses/swagger.json", "Courses");
+        options.SwaggerEndpoint("/swagger/Activities/swagger.json", "Activities");
+        options.SwaggerEndpoint("/swagger/Records/swagger.json", "Records");
+        options.RoutePrefix = "swagger";
+        options.DisplayRequestDuration();
+        options.DefaultModelsExpandDepth(-1);
+    });
 }
 else
 {
@@ -78,7 +99,6 @@ else
     app.UseHsts();
 }
 
-//app.UseSerilogRequestLogging();
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 
@@ -90,7 +110,6 @@ app.UseCors(CORS);
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseMiddleware<SchoolAuthorizationMiddleware>();
 
 app.UseEndpoints(endpoints =>
 {

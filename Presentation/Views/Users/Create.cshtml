@@ -1,0 +1,163 @@
+﻿@model UserFormViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Member</h4>
+
+<p>
+    <a asp-action="AddBulk" asp-controller="Users">Add Multiple Users</a>
+</p>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="OrganizationIds">Organizations</label>
+                <select id="OrganizationIds" name="SelectedOrganizationIds" class="form-control select2-multi" multiple>
+                    @foreach (var organization in ViewBag.OrganizationId)
+                    {
+                        <option value="@organization.Value">@organization.Text</option>
+                    }
+                </select>
+                <span class="text-danger">@Html.ValidationMessageFor(m => m.SelectedOrganizationIds)</span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Gender</label><br>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="Gender" id="genderMale" value="Male">
+                    <label class="form-check-label" for="genderMale">Male</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="Gender" id="genderFemale" value="Female">
+                    <label class="form-check-label" for="genderFemale">Female</label>
+                </div>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Birthdate" class="control-label"></label>
+                <input asp-for="Birthdate" class="form-control" type="date" asp-format="{0:yyyy-MM-dd}    />
+                <span asp-validation-for="Birthdate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SchoolUniversityJob" class="control-label"></label>
+                <input asp-for="SchoolUniversityJob" class="form-control" />
+                <span asp-validation-for="SchoolUniversityJob" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GpsLocation" class="control-label"></label>
+                <input id="GpsLocation" asp-for="GpsLocation" class="form-control" />
+                <span asp-validation-for="GpsLocation" class="text-danger"></span>
+                <button type="button" id="getLocationButton" class="btn btn-secondary">Get GPS Location</button>
+            </div>
+            <div class="form-group">
+                <label asp-for="Notes" class="control-label"></label>
+                <input asp-for="Notes" class="form-control" />
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NationalID" class="control-label"></label>
+                <input asp-for="NationalID" class="form-control" />
+                <span asp-validation-for="NationalID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MentorName" class="control-label"></label>
+                <input asp-for="MentorName" class="form-control" />
+                <span asp-validation-for="MentorName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FirstMobile" class="control-label"></label>
+                <input asp-for="FirstMobile" class="form-control" />
+                <span asp-validation-for="FirstMobile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SecondMobile" class="control-label"></label>
+                <input asp-for="SecondMobile" class="form-control" />
+                <span asp-validation-for="SecondMobile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FatherMobile" class="control-label"></label>
+                <input asp-for="FatherMobile" class="form-control" />
+                <span asp-validation-for="FatherMobile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MotherMobile" class="control-label"></label>
+                <input asp-for="MotherMobile" class="form-control" />
+                <span asp-validation-for="MotherMobile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProfilePicture" class="control-label"></label>
+                <input type="file" asp-for="ProfilePicture" class="form-control" accept=".jpg, .jpeg, .png" id="profilePictureInput">
+            </div>
+            <div class="form-group">
+                <img id="imagePreview" src="#" alt="Profile Picture Preview" class="img-fluid rounded" style="max-width: 200px; max-height: 200px; display:none;">
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Styles{
+    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            $('#getLocationButton').click(function () {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        var latitude = position.coords.latitude;
+                        var longitude = position.coords.longitude;
+                        var gpsLocationInput = $('#GpsLocation');
+
+                        gpsLocationInput.val(latitude + ', ' + longitude);
+                    }, function (error) {
+                        console.log("Error getting location:", error);
+                    });
+                } else {
+                    console.log("Geolocation not available");
+                }
+            });
+        });
+    </script>
+
+    <script src="~/lib/select2/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.select2-multi').select2();
+        });
+    </script>
+
+}

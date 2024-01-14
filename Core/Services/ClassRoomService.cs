@@ -11,7 +11,7 @@ public class ClassroomService : IClassroomService
         _mapper = mapper;
     }
 
-    public Response<List<GetClassroomDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0)
+    public Result<PaginatedList<GetClassroomDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0)
     {
         var modelItems = _classroomsRepo.GetTableNoTracking();
         ;
@@ -26,49 +26,49 @@ public class ClassroomService : IClassroomService
 
         var result = PaginatedList<GetClassroomDto>.Create(_mapper.Map<List<GetClassroomDto>>(modelItems), pageNumber, pageSize);
 
-        return ResponseHandler.Success(_mapper.Map<List<GetClassroomDto>>(result));
+        return ResultHandler.Success(result);
     }
 
-    public async Task<Response<GetClassroomDto?>> GetById(int id)
+    public async Task<Result<GetClassroomDto?>> GetById(int id)
     {
         var modelItem = await _classroomsRepo.GetByIdAsync(id);
         if (modelItem == null)
             return null;
-        return ResponseHandler.Success(_mapper.Map<GetClassroomDto>(modelItem))!;
+        return ResultHandler.Success(_mapper.Map<GetClassroomDto>(modelItem))!;
     }
 
-    public async Task<Response<GetClassroomDto>> Add(AddClassroomDto dto)
+    public async Task<Result<GetClassroomDto>> Add(AddClassroomDto dto)
     {
         var modelItem = _mapper.Map<Classroom>(dto);
 
         var model = await _classroomsRepo.AddAsync(modelItem);
 
-        return ResponseHandler.Created(_mapper.Map<GetClassroomDto>(modelItem));
+        return ResultHandler.Created(_mapper.Map<GetClassroomDto>(modelItem));
     }
 
-    public async Task<Response<bool>> Update(UpdateClassroomDto dto)
+    public async Task<Result<bool>> Update(UpdateClassroomDto dto)
     {
         var modelItem = await _classroomsRepo.GetByIdAsync(dto.Id);
 
         if (modelItem is null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         _mapper.Map(dto, modelItem);
 
         var model = _classroomsRepo.UpdateAsync(modelItem);
 
-        return ResponseHandler.Success(true);
+        return ResultHandler.Success(true);
     }
 
-    public async Task<Response<bool>> Delete(int id)
+    public async Task<Result<bool>> Delete(int id)
     {
 
         var dbModel = await _classroomsRepo.GetByIdAsync(id);
 
         if (dbModel == null)
-            return ResponseHandler.NotFound<bool>();
+            return ResultHandler.NotFound<bool>();
 
         await _classroomsRepo.DeleteAsync(dbModel);
-        return ResponseHandler.Deleted<bool>();
+        return ResultHandler.Deleted<bool>();
     }
 }

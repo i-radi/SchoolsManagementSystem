@@ -1,27 +1,16 @@
-﻿using Models.Entities;
-
-namespace Presentation.Controllers.MVC
+﻿namespace Presentation.Controllers.MVC
 {
-    public class ActivityClassroomsController : Controller
+    public class ActivityClassroomsController(
+        IActivityClassroomRepo activityClassroomRepo,
+        IActivityRepo activityRepo,
+        IClassroomRepo classroomRepo,
+        IMapper mapper) : Controller
     {
-        private readonly IActivityClassroomRepo _activityClassroomRepo;
-        private readonly IActivityRepo _activityRepo;
-        private readonly IClassroomRepo _classroomRepo;
-        private readonly IMapper _mapper;
+        private readonly IActivityClassroomRepo _activityClassroomRepo = activityClassroomRepo;
+        private readonly IActivityRepo _activityRepo = activityRepo;
+        private readonly IClassroomRepo _classroomRepo = classroomRepo;
+        private readonly IMapper _mapper = mapper;
 
-        public ActivityClassroomsController(
-            IActivityClassroomRepo activityClassroomRepo,
-            IActivityRepo activityRepo,
-            IClassroomRepo classroomRepo,
-            IMapper mapper)
-        {
-            _activityClassroomRepo = activityClassroomRepo;
-            _activityRepo = activityRepo;
-            _classroomRepo = classroomRepo;
-            _mapper = mapper;
-        }
-
-        // GET: ActivityClassrooms
         public async Task<IActionResult> Index(int? activityId)
         {
             var models = _activityClassroomRepo.GetTableNoTracking().Include(a => a.Activity).Include(a => a.Classroom).AsQueryable();
@@ -34,7 +23,6 @@ namespace Presentation.Controllers.MVC
             return View(viewmodels);
         }
 
-        // GET: ActivityClassrooms/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _activityClassroomRepo.GetTableNoTracking().ToList() == null)
@@ -54,7 +42,6 @@ namespace Presentation.Controllers.MVC
             return View(activityClassroomVM);
         }
 
-        // GET: ActivityClassrooms/Create
         public IActionResult Create()
         {
             ViewData["ActivityId"] = new SelectList(_activityRepo.GetTableNoTracking().ToList(), "Id", "Name");
@@ -62,7 +49,6 @@ namespace Presentation.Controllers.MVC
             return View();
         }
 
-        // POST: ActivityClassrooms/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ActivityClassroomViewModel activityClassroomVM)
@@ -78,7 +64,6 @@ namespace Presentation.Controllers.MVC
             return View(activityClassroomVM);
         }
 
-        // GET: ActivityClassrooms/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _activityClassroomRepo.GetTableNoTracking().ToList() == null)
@@ -97,10 +82,9 @@ namespace Presentation.Controllers.MVC
             return View(activityClassroomVM);
         }
 
-        // POST: ActivityClassrooms/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,ActivityClassroomViewModel activityClassroomVM)
+        public async Task<IActionResult> Edit(int id, ActivityClassroomViewModel activityClassroomVM)
         {
             if (id != activityClassroomVM.Id)
             {
@@ -133,7 +117,6 @@ namespace Presentation.Controllers.MVC
             return View(activityClassroomVM);
         }
 
-        // GET: ActivityClassrooms/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _activityClassroomRepo.GetTableNoTracking().ToList() == null)
@@ -154,7 +137,6 @@ namespace Presentation.Controllers.MVC
             return View(activityClassroomVM);
         }
 
-        // POST: ActivityClassrooms/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

@@ -3,19 +3,17 @@
 [Authorize]
 [Route("api/organizations")]
 [ApiController]
-public class OrganizationsController : ControllerBase
+[ApiExplorerSettings(GroupName = "Organizations")]
+public class OrganizationsController(IOrganizationService organizationService) : ControllerBase
 {
-    private readonly IOrganizationService _organizationService;
-
-    public OrganizationsController(IOrganizationService organizationService)
-    {
-        _organizationService = organizationService;
-    }
+    private readonly IOrganizationService _organizationService = organizationService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        return Ok(_organizationService.GetAll(pageNumber, pageSize));
+        var result = _organizationService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
@@ -23,12 +21,11 @@ public class OrganizationsController : ControllerBase
     {
         var dto = await _organizationService.GetById(id);
         if (dto.Data is null)
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Found Organization"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Found Organization"));
         return Ok(dto);
     }
 
     [HttpPost]
-    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> Add(AddOrganizationDto dto)
     {
         return Ok(await _organizationService.Add(dto));
@@ -39,12 +36,12 @@ public class OrganizationsController : ControllerBase
     {
         if (id != dto.Id)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Id not matched"));
+            return BadRequest(ResultHandler.BadRequest<string>("Id not matched"));
         }
         var result = await _organizationService.Update(dto);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Updated"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Updated"));
         }
 
         return Ok(result);
@@ -56,7 +53,7 @@ public class OrganizationsController : ControllerBase
         var result = await _organizationService.Delete(id);
         if (!result.Data)
         {
-            return BadRequest(ResponseHandler.BadRequest<string>("Not Deleted"));
+            return BadRequest(ResultHandler.BadRequest<string>("Not Deleted"));
         }
         return Ok(result);
     }

@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-
-namespace Infrastructure.Mapping;
+﻿namespace Infrastructure.Mapping;
 
 public partial class SchoolProfile : Profile
 {

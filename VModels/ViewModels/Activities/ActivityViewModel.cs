@@ -9,9 +9,9 @@ public class ActivityViewModel
     public bool ForStudents { get; set; }
     public bool ForTeachers { get; set; }
     public int SchoolId { get; set; }
-    public virtual School? School { get; set; }
-    public virtual ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
-    public virtual ICollection<ActivityClassroom> ActivityClasses { get; set; } = new HashSet<ActivityClassroom>();
-    public virtual ICollection<ActivityTime> ActivityTimes { get; set; } = new HashSet<ActivityTime>();
-    public virtual ICollection<ActivityInstance> ActivityInstances { get; set; } = new HashSet<ActivityInstance>();
+    public virtual SchoolViewModel? School { get; set; }
+    public virtual ICollection<UserRoleViewModel> UserRoles { get; set; } = new HashSet<UserRoleViewModel>();
+    public virtual ICollection<ActivityClassroomViewModel> ActivityClasses { get; set; } = new HashSet<ActivityClassroomViewModel>();
+    public virtual ICollection<ActivityTimeViewModel> ActivityTimes { get; set; } = new HashSet<ActivityTimeViewModel>();
+    public virtual ICollection<ActivityInstanceViewModel> ActivityInstances { get; set; } = new HashSet<ActivityInstanceViewModel>();
 }

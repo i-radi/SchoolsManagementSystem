@@ -2,5 +2,5 @@
 
 public class RoleViewModel
 {
-    public virtual ICollection<UserRole>? UserRoles { get; set; } = new HashSet<UserRole>();
+    public virtual ICollection<UserRoleViewModel>? UserRoles { get; set; } = new HashSet<UserRoleViewModel>();
 }
