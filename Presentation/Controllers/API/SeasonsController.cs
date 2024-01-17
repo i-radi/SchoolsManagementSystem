@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Presentation.Controllers.API;
 
@@ -17,13 +18,15 @@ public class SeasonsController(ISeasonService seasonService) : ControllerBase
         Response.AddPaginationHeader(result.Data);
         return Ok(result);
     }
-    [HttpGet("Get All Season for School ")]
+
+    [ApiExplorerSettings(GroupName = "V2")]
+    [SwaggerOperation(Tags = new[] { "Seasons" })]
+    [HttpGet("{schoolid}")]
     public async Task<ActionResult<List<GetSeasonDto>>> GetAllBySchoolId(int schoolid)
     {
-        var result = await _seasonService.GetAllSeasonsBySchoolId(schoolid);
+        var result = await _seasonService.GetSeasonsBySchoolId(schoolid);
         return Ok(result);
     }
-
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)

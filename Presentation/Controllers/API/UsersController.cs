@@ -353,7 +353,7 @@ public class UsersController(
 
     [ApiExplorerSettings(GroupName = "V2")]
     [SwaggerOperation(Tags = new[] { "User" })]
-    [HttpPost("assign-user-to-organization")]
+    [HttpPost("into-organization")]
     public async Task<IActionResult> AddUserToOrganizations(AddUserToOrganizationsDto dto)
     {
         if (!ModelState.IsValid)
