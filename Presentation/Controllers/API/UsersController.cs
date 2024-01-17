@@ -1,4 +1,11 @@
-﻿namespace Presentation.Controllers.API;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Identity;
+using Persistance.Repos;
+using Swashbuckle.AspNetCore.Annotations;
+using System.IO;
+using VModels.DTOS.Users.Commands;
+
+namespace Presentation.Controllers.API;
 
 [Authorize]
 [Route("api/users")]
@@ -6,19 +13,24 @@
 [ApiExplorerSettings(GroupName = "Users")]
 public class UsersController(
     UserManager<User> userManager,
+    RoleManager<Role> roleManager ,
     IMapper mapper,
     IWebHostEnvironment webHostEnvironment,
     IExportService<GetUserDto> exportService,
     BaseSettings baseSettings,
     IAuthService authService,
-    IAttachmentService attachmentService) : ControllerBase
+    IAttachmentService attachmentService ,
+    SharedSettings sharedSettings
+    ) : ControllerBase
 {
     private readonly UserManager<User> _userManager = userManager;
+    private readonly RoleManager<Role> _roleManager = roleManager;
     private readonly IMapper _mapper = mapper;
     private readonly IExportService<GetUserDto> _exportService = exportService;
     private readonly BaseSettings _baseSettings = baseSettings;
     private readonly IAuthService _authService = authService;
     private readonly IAttachmentService _attachmentService = attachmentService;
+    private readonly SharedSettings _sharedSettings = sharedSettings;
     private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
 
     [HttpPost()]
@@ -36,7 +48,12 @@ public class UsersController(
     public async Task<IActionResult> GetById(int id)
     {
         var modelItem = await _userManager.Users
-            .Include(u => u.UserRoles)
+            .Include(u => u.UserRoles) 
+            .ThenInclude(u=>u.Role)
+            .Include(u=>u.UserOrganizations)
+            .ThenInclude(u=>u.Organization)
+           
+            
             .FirstOrDefaultAsync(u => u.Id == id);
         if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
         {
@@ -47,17 +64,31 @@ public class UsersController(
         return Ok(ResultHandler.Success(result));
     }
 
-    [HttpGet("profile/{id}")]
+    [HttpGet("profile/{id}")]// includ roles orgs schools 
     public async Task<IActionResult> GetProfileById(int id)
     {
+
         var modelItem = await _userManager.Users
+            .Include(x => x.UserRoles)
+            .ThenInclude(x => x.Role)
+            .Include(x => x.UserRoles)
+            .ThenInclude(x => x.Organization)
+            .Include(x => x.UserRoles)
+            .ThenInclude(x => x.School)
+            .Include(x => x.UserRoles)
+            .ThenInclude(x => x.Activity)
+            .Include(x => x.UserOrganizations)
+            .ThenInclude(x => x.Organization)
+            .AsSplitQuery() 
             .FirstOrDefaultAsync(u => u.Id == id);
+            
         if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
         {
             modelItem.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{modelItem.ProfilePicturePath}";
         }
 
-        var result = _mapper.Map<GetProfileDto>(modelItem);
+        var result = modelItem.GetUserProfile();
+        
         return Ok(ResultHandler.Success(result));
     }
 
@@ -92,7 +123,6 @@ public class UsersController(
     }
 
     [HttpPut("change-image/{id}")]
-    [Obsolete("This endpoint is deprecated. Use the new endpoint in identity group.", false)]
     public async Task<IActionResult> UploadImage(int id, IFormFile image)
     {
         var modelItem = await _userManager.Users
@@ -111,12 +141,24 @@ public class UsersController(
         {
             return BadRequest(ResultHandler.BadRequest<string>("Image size exceeds the limit (5 MB)."));
         }
-
+        
         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
         var fileExtension = Path.GetExtension(image.FileName).ToLower();
         if (!allowedExtensions.Contains(fileExtension))
         {
             return BadRequest(ResultHandler.BadRequest<string>("Invalid file format. Allowed formats: jpg, jpeg, png, gif."));
+        }
+
+        if(modelItem.ProfilePicturePath != null && modelItem.ProfilePicturePath != _sharedSettings.DefaultProfileImage)
+        {
+         
+            var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, _baseSettings.usersPath,modelItem.ProfilePicturePath);
+            
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
+
         }
 
         modelItem.ProfilePicturePath = await _attachmentService.Upload(
@@ -288,4 +330,33 @@ public class UsersController(
 
         return Ok(ResultHandler.Success(result));
     }
+
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangeUserPasswordByUserIdAsync(ChangeUserPasswordByIdDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _authService.ChangeUserPasswordByIdAsync(dto);
+
+        if (!result.Succeeded)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+
+    [HttpPost("Assign-User-To-Organization")]
+    public async Task<IActionResult> AddUserToOrganizations(AddUserToOrganizationsDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _authService.AddUserToOrganizationAsync(dto);
+
+        return Ok(result);
+      
+
+    }
 }
+

@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.IdentityModel.Tokens;
 using Models.Entities.Identity;
+using Models.Results;
 using Persistance.Context;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using VModels.DTOS.Auth;
+using VModels.DTOS.Users.Commands;
 
 namespace Core.Services;
 
@@ -18,38 +20,43 @@ public class AuthService : IAuthService
     private readonly JwtSettings _jwtSettings;
     private readonly UserManager<User> _userManager;
     private readonly ApplicationDBContext _applicationDBContext;
-    private readonly IUserRoleRepo _userRoleRepo;
+    private readonly IOrganizationRepo _organizationRepo;
+    private readonly IUserOrganizationRepo _userOrganizationRepo;
+    private readonly IUserRoleRepo _userRoleRepo; 
     private readonly IUserClassRepo _userClassRepo;
+    private readonly ApplicationDBContext _context;
     private readonly IMapper _mapper;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly BaseSettings _baseSettings;
     private readonly IAttachmentService _attachmentService;
-    private readonly SharedSettings _sharedSettings;
     #endregion
 
     #region Constructors
     public AuthService(JwtSettings jwtSettings,
         UserManager<User> userManager,
         ApplicationDBContext applicationDBContext,
+        IOrganizationRepo organizationRepo,
+        IUserOrganizationRepo userOrganizationRepo ,
         IUserRoleRepo userRoleRepo,
         IUserClassRepo userClassRepo,
+        ApplicationDBContext context ,
         IMapper mapper,
         IWebHostEnvironment webHostEnvironment,
         BaseSettings baseSettings
-        , IAttachmentService attachmentService,
-        SharedSettings userSettings)
-
+        , IAttachmentService attachmentService)
     {
         _jwtSettings = jwtSettings;
         _userManager = userManager;
         _applicationDBContext = applicationDBContext;
+        _organizationRepo = organizationRepo;
+        _userOrganizationRepo = userOrganizationRepo;
         _userRoleRepo = userRoleRepo;
         _userClassRepo = userClassRepo;
+        _context = context;
         _mapper = mapper;
         _webHostEnvironment = webHostEnvironment;
         _baseSettings = baseSettings;
         _attachmentService = attachmentService;
-        _sharedSettings = userSettings;
     }
     #endregion
 
@@ -58,10 +65,11 @@ public class AuthService : IAuthService
     {
         if (await _userManager.FindByEmailAsync(dto.Email) is not null)
             return ResultHandler.BadRequest<string>("Email is already registered!");
-
         var user = _mapper.Map<User>(dto);
         user.UserName = dto.Email.Split('@')[0];
-        user.ProfilePicturePath = _sharedSettings.DefaultProfileImage;
+        if (await _userManager.FindByNameAsync(user.UserName) is not null)
+            return ResultHandler.BadRequest<string>("UserName is already registered , try with another email");
+        user.ProfilePicturePath = "emptyAvatar.png";
 
         var result = await _userManager.CreateAsync(user, dto.Password);
         if (!result.Succeeded)
@@ -91,6 +99,53 @@ public class AuthService : IAuthService
 
         return ResultHandler.Success<string>($"{dto.Email} created successfully");
     }
+    public async Task<Result<string>> AddUserToOrganizationAsync(AddUserToOrganizationsDto dto)
+    {
+        if (await _userManager.FindByEmailAsync(dto.Email) is not null)
+            return ResultHandler.BadRequest<string>("Email is already registered!");
+
+        var user = _mapper.Map<User>(dto);
+        user.UserName = dto.Email.Split('@')[0];
+        if (await _userManager.FindByNameAsync(user.UserName) is not null)
+            return ResultHandler.BadRequest<string>("UserName is already registered , try with another email");
+
+        user.ProfilePicturePath = "emptyAvatar.png";
+
+        var result = await _userManager.CreateAsync(user, dto.Password);
+        if (!result.Succeeded)
+        {
+            var errors = string.Empty;
+
+            foreach (var error in result.Errors)
+                errors += $"{error.Description},";
+
+            return ResultHandler.BadRequest<string>(errors);
+        }
+
+        var createdUser = _userManager.FindByEmailAsync(user.Email!);
+        _attachmentService.GenerateQrCode(createdUser.Result!.Id, _webHostEnvironment);
+
+        if (dto.Role.roleId > 0)
+        {
+            await _userRoleRepo.AddAsync(new()
+            {
+                UserId = (await _userManager.FindByEmailAsync(dto.Email))!.Id,
+                RoleId = dto.Role.roleId,
+                OrganizationId = dto.Role.organizationId,
+                SchoolId = dto.Role.schoolId,
+                ActivityId = dto.Role.activityId
+            });
+        }
+        if(dto.OrganizationIds!=null && dto.OrganizationIds.Count > 0) {
+            foreach (var orgid in dto.OrganizationIds)
+            {
+
+                await _userOrganizationRepo.AddAsync(new UserOrganization() { UserId = createdUser.Id, OrganizationId = orgid });
+            }
+        }
+
+        return ResultHandler.Success<string>($"{dto.Email} created successfully");
+    }
 
     public async Task<Result<GetUserDto>> ChangeUserPasswordAsync(ChangeUserPasswordDto dto)
     {
@@ -98,7 +153,7 @@ public class AuthService : IAuthService
 
         if (user == null)
         {
-            return ResultHandler.BadRequest<GetUserDto>("Invalid Email...");
+            return ResultHandler.BadRequest<GetUserDto>("Invalid Email..."); 
         }
 
         var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
@@ -134,7 +189,6 @@ public class AuthService : IAuthService
 
         return ResultHandler.Success<GetUserDto>(viewmodel);
     }
-
     public async Task<Result<JwtAuthResult>> UpdateAsync(ChangeUserDto dto)
     {
         var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
@@ -185,7 +239,8 @@ public class AuthService : IAuthService
 
     public async Task<Result<JwtAuthResult>> LoginAsync(LoginDto dto)
     {
-        var user = await _userManager.FindByEmailAsync(dto.UserNameOrEmail);
+        var user = await _userManager.FindByEmailAsync(dto.UserName);
+   
 
         if (user is null || !await _userManager.CheckPasswordAsync(user, dto.Password))
         {
@@ -197,12 +252,18 @@ public class AuthService : IAuthService
 
     public async Task<Result<JwtAuthResult>> LoginByUserNameAsync(LoginDto dto)
     {
-        var user = await _userManager.FindByNameAsync(dto.UserNameOrEmail);
+        var user = await _userManager.FindByNameAsync(dto.UserName);
+        if (!IsUsernameUnique(dto.UserName))
+        {
+            return ResultHandler.NotFound<JwtAuthResult>("UserName is incorrect!");
+
+        }
 
         if (user is null || !await _userManager.CheckPasswordAsync(user, dto.Password))
         {
             return ResultHandler.NotFound<JwtAuthResult>("Email or Password is incorrect!");
         }
+       
 
         return ResultHandler.Success<JwtAuthResult>(await GetJWTToken(user, Guid.NewGuid()));
     }
@@ -217,10 +278,6 @@ public class AuthService : IAuthService
 
         var (accessToken, expireDate) = await GenerateJWTToken(user);
         var response = CreateJwtResponse(user, refreshToken, userroles, accessToken, expireDate);
-        //SetUserInformations(user, response);
-        //await SetRoles(userroles, response);
-        //await SetClassrooms(user, response);
-
         var updatedUser = await UpdateAccessAndRefreshToken(user, response);
         if (updatedUser.Entity.Id != user.Id)
         {
@@ -240,92 +297,33 @@ public class AuthService : IAuthService
             RefreshTokenExpiryDate = DateTime.Now.AddMinutes(_jwtSettings.RefreshTokenExpireDate),
             IsAuthenticated = true,
             IsSuperAdmin = userroles.Any(r => r.Role!.Name == "SuperAdmin"),
+            UserInformations = new UserInformation()
+            {
+                UserName = user.Name,
+                Email = user.Email,
+                FirstMobile = user.FirstMobile,
+                Gender = user.Gender,
+                GpsLocation = user.GpsLocation,
+                MentorName = user.MentorName,
+                Name = user.Name,
+                MotherMobile = user.MotherMobile,
+                NationalID = user.NationalID,
+                Notes = user.Notes,
+                ParticipationNumber = user.ParticipationNumber,
+                PhoneNumber = user.PhoneNumber,
+                ProfilePicturePath = user.ProfilePicturePath,
+                SchoolUniversityJob = user.SchoolUniversityJob,
+                SecondMobile = user.SecondMobile,
+                PositionType = user.PositionType,
+                FatherMobile = user.FatherMobile,
+                Address = user.Address,
+                Birthdate = user.Birthdate,
+            },
+           
         };
     }
 
-    #region SetUserInformations&SetRoles& SetClassrooms
-    /*
-    private void SetUserInformations(User user, JwtAuthResult response)
-    {
-        response.UserInformations.Name = user.Name;
-        response.UserInformations.Email = user.Email!;
-        response.UserInformations.Birthdate = user.Birthdate;
-        response.UserInformations.Address = user.Address;
-        response.UserInformations.PhoneNumber = user.PhoneNumber!;
-        response.UserInformations.UserName = user.UserName!;
-        response.UserInformations.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{user.ProfilePicturePath}";
-        response.UserInformations.FatherMobile = user.FatherMobile;
-        response.UserInformations.MotherMobile = user.MotherMobile;
-        response.UserInformations.FirstMobile = user.FirstMobile;
-        response.UserInformations.SecondMobile = user.SecondMobile;
-        response.UserInformations.Gender = user.Gender;
-        response.UserInformations.GpsLocation = user.GpsLocation;
-        response.UserInformations.MentorName = user.MentorName;
-        response.UserInformations.NationalID = user.NationalID;
-        response.UserInformations.Notes = user.Notes;
-        response.UserInformations.SchoolUniversityJob = user.SchoolUniversityJob;
-        response.UserInformations.PositionType = user.PositionType;
-        response.UserInformations.ParticipationNumber = user.ParticipationNumber;
-    }
-
-    private async Task SetRoles(List<UserRole> userroles, JwtAuthResult response)
-    {
-        foreach (var role in userroles)
-        {
-            response.Roles.Add(new()
-            {
-                Name = role.Role!.Name!,
-                OrganizationId = role.OrganizationId,
-                Organization = (await _applicationDBContext.Organizations.FirstOrDefaultAsync(o => o.Id == role.OrganizationId))?.Name!,
-                SchoolId = role.SchoolId,
-                School = (await _applicationDBContext.Schools.FirstOrDefaultAsync(o => o.Id == role.SchoolId))?.Name!,
-                ActivityId = role.ActivityId,
-                Activity = (await _applicationDBContext.Activities.FirstOrDefaultAsync(o => o.Id == role.ActivityId))?.Name!,
-            });
-        }
-    }
-
-    private async Task SetClassrooms(User user, JwtAuthResult response)
-    {
-        var userClassrooms = await _userClassRepo
-            .GetTableNoTracking()
-            .Include(ur => ur.Season)
-            .Include(ur => ur.UserType)
-            .Include(ur => ur.Classroom)
-            .ThenInclude(c => c.Grade)
-            .ThenInclude(g => g.School)
-            .ThenInclude(s => s.Organization)
-            .AsSplitQuery()
-            .Where(ur => ur.UserId == user.Id && ur.Season.IsCurrent)
-            .ToListAsync();
-
-        foreach (var item in userClassrooms)
-        {
-            response.Classrooms.Add(
-                new ClassroomResult
-                {
-                    Id = item.ClassroomId,
-                    Name = item.Classroom.Name,
-                    PicturePath = item.Classroom.PicturePath,
-                    Location = item.Classroom.Location,
-                    Order = item.Classroom.Order,
-                    StudentImagePath = item.Classroom.StudentImagePath,
-                    TeacherImagePath = item.Classroom.TeacherImagePath,
-                    GradeId = item.Classroom.GradeId,
-                    GradeName = item.Classroom.Grade.Name,
-                    SeasonId = item.SeasonId,
-                    SeasonName = item.Season.Name,
-                    UserTypeId = item.UserTypeId,
-                    UserTypeName = item.UserType.Name,
-                    SchoolId = item.Classroom.Grade.SchoolId,
-                    SchoolName = item.Classroom.Grade.School.Name,
-                    OrganizationId = item.Classroom.Grade.School.OrganizationId,
-                    OrganizationName = item.Classroom.Grade.School.Organization.Name,
-                });
-        }
-    }
-    */
-    #endregion
+   
     private async Task<EntityEntry<User>> UpdateAccessAndRefreshToken(User user, JwtAuthResult response)
     {
         user.AccessToken = response.AccessToken;
@@ -493,6 +491,64 @@ public class AuthService : IAuthService
         }
         return ResultHandler.Success<List<ClassroomResult>>(classroomsResult);
     }
+
+    public async Task<Result<bool>> ChangeUserPasswordByIdAsync(ChangeUserPasswordByIdDto dto)
+    {
+        var user = await _userManager.FindByIdAsync(dto.UserId);
+        IdentityResult result = null; 
+        if (user == null)
+        {
+            return ResultHandler.BadRequest<bool>("Invalid ID...");
+        }
+        if(dto.AdminForce==false)
+             result = await _userManager.ChangePasswordAsync(user, dto.OldPassword, dto.NewPassword);
+
+        else
+        {
+           result =   await  _userManager.AddPasswordAsync(user , dto.NewPassword);
+        }
+
+        if (!result.Succeeded)
+        {
+            var errors = string.Empty;
+
+            foreach (var error in result.Errors)
+                errors += $"{error.Description},";
+
+            return ResultHandler.BadRequest<bool>(errors);
+        }
+
+        user.PlainPassword = dto.NewPassword;
+        var updatedUserResult = await _userManager.UpdateAsync(user);
+        if (!updatedUserResult.Succeeded)
+        {
+            var errors = string.Empty;
+
+            foreach (var error in updatedUserResult.Errors)
+                errors += $"{error.Description},";
+
+            return ResultHandler.BadRequest<bool>(errors);
+        }
+
+        if (!string.IsNullOrEmpty(user.ProfilePicturePath))
+        {
+            user.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{user.ProfilePicturePath}";
+        }
+
+        var viewmodel = _mapper.Map<GetUserDto>(user);
+
+        return ResultHandler.UnprocessableEntity<bool>("Password Changed");
+
+    }
+
+
+
+    private bool IsUsernameUnique(string username)
+    {
+        return _context.Users.Any(u => u.UserName == username);
+    }
+
+   
 
     #endregion
 }

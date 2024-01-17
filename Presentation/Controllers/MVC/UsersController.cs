@@ -118,6 +118,7 @@ public class UsersController(
             SchoolUniversityJob = user.SchoolUniversityJob,
             NationalID = user.NationalID
         };
+  
         if (user.ProfilePicture is not null)
         {
             var fileExtension = Path.GetExtension(Path.GetFileName(user.ProfilePicture.FileName));
@@ -132,8 +133,11 @@ public class UsersController(
         {
             newUser.ProfilePicturePath = "";
         }
+        if (await _userManager.FindByNameAsync(newUser.UserName) is not null)
+            return BadRequest("UserName is already registered , try with another email");
 
         var result = await _userManager.CreateAsync(newUser, newUser.PlainPassword);
+
         if (!result.Succeeded)
         {
             return BadRequest(result.Errors);

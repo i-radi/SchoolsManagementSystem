@@ -26,7 +26,7 @@ public class OrganizationsController(IOrganizationService organizationService) :
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add(AddOrganizationDto dto)
+    public async Task<IActionResult> Add(AddOrganizationDto dto) 
     {
         return Ok(await _organizationService.Add(dto));
     }

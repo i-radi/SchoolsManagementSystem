@@ -12,6 +12,9 @@ public class AuthController(
     RoleManager<Role> roleManager,
     IMapper mapper,
     UserManager<User> userManager,
+    IOrganizationService organizationService ,
+    ISchoolService schoolService , 
+    IActivityService activityService , 
     IUserRoleService userRoleService,
     IAttachmentService attachmentService,
     IWebHostEnvironment webHostEnvironment,
@@ -21,6 +24,9 @@ public class AuthController(
     private readonly RoleManager<Role> _roleManager = roleManager;
     private readonly IMapper _mapper = mapper;
     private readonly UserManager<User> _userManager = userManager;
+    private readonly IOrganizationService _organizationService = organizationService;
+    private readonly ISchoolService _schoolService = schoolService;
+    private readonly IActivityService _activityService = activityService;
     private readonly IUserRoleService _userRoleService = userRoleService;
     private readonly IAttachmentService _attachmentService = attachmentService;
     private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
@@ -91,17 +97,9 @@ public class AuthController(
             return BadRequest(ModelState);
 
         var result = new Result<JwtAuthResult>();
-
-        if (Check.IsEmail(model.UserNameOrEmail))
-        {
-            result = await _authService.LoginAsync(model);
-        }
-        else
-        {
-            result = await _authService.LoginByUserNameAsync(model);
-        }
-
-        if (!result.Succeeded)
+           result = await _authService.LoginByUserNameAsync(model);
+        
+          if (!result.Succeeded)
             return BadRequest(result);
 
         return Ok(result);
@@ -190,6 +188,38 @@ public class AuthController(
         {
             return BadRequest(ResultHandler.BadRequest<string>("Invalid User Id."));
         }
+         var role = await _roleManager.Roles.FirstOrDefaultAsync(r => r.Id== request.RoleId);  
+        if (role ==null )
+        {
+            return BadRequest(ResultHandler.BadRequest<string>("Invalid Role  Id."));
+        }
+
+       if(request.OrganizationId !=null)
+        {
+            var org = await _organizationService.GetById(request.OrganizationId.Value);
+            if (org == null)
+            {
+                return BadRequest(ResultHandler.BadRequest<string>("Invalid Organization Id"));
+            }
+        }
+       if(request.SchoolId!=null)
+        {
+            var school = _schoolService.GetById(request.SchoolId.Value); 
+            if(school==null)
+            {
+                return BadRequest(ResultHandler.BadRequest<string>("Invalid School Id"));
+
+            }
+        }
+        if (request.ActivityId != null)
+        {
+            var activity = _activityService.GetById(request.ActivityId.Value);
+            if (activity == null)
+            {
+                return BadRequest(ResultHandler.BadRequest<string>("Invalid Activity Id"));
+
+            }
+        }
         var dto = request.ToDto(request.UserId);
         if ((await _userRoleService.IsExists(dto)).Data)
         {
@@ -202,25 +232,12 @@ public class AuthController(
         }
         return Ok(result);
     }
-
+  
     [SwaggerOperation(Tags = new[] { "Roles" })]
     [HttpDelete("user-roles/{userRoleId}")]
     public async Task<IActionResult> DeleteUserRoles(int userRoleId)
     {
-        var userRoleResponse = await _userRoleService.GetById(userRoleId);
-        if (userRoleResponse is null || userRoleResponse.Data is null)
-        {
-            return BadRequest(ResultHandler.BadRequest<string>("Invalid UserRole Id."));
-        }
-        var dto = new AddUserRoleDto
-        {
-            UserId = userRoleResponse.Data.UserId,
-            RoleId = userRoleResponse.Data.RoleId,
-            OrganizationId = userRoleResponse.Data.OrganizationId,
-            SchoolId = userRoleResponse.Data.SchoolId,
-            ActivityId = userRoleResponse.Data.ActivityId
-        };
-        var result = await _userRoleService.Delete(dto);
+        var result = await _userRoleService.Delete(userRoleId);
         if (!result.Succeeded)
         {
             return BadRequest(result);
@@ -228,75 +245,6 @@ public class AuthController(
         return Ok(result);
     }
 
-    [SwaggerOperation(Tags = new[] { "Roles" })]
-    [HttpDelete("user-roles")]
-    public async Task<IActionResult> DeleteUserRoles(UserRoleRequest request)
-    {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == request.UserId);
-        if (user == null)
-        {
-            return BadRequest(ResultHandler.BadRequest<string>("Invalid User Id."));
-        }
-        var dto = request.ToDto(request.UserId);
-        if (!(await _userRoleService.IsExists(dto)).Data)
-        {
-            return BadRequest(ResultHandler.BadRequest<string>("This role not exist."));
-        }
-        var result = await _userRoleService.Delete(dto);
-        if (!result.Succeeded)
-        {
-            return BadRequest(result);
-        }
-        return Ok(result);
-    }
-
-    [HttpPut("change-image/{id}")]
-    [SwaggerOperation(description: "maximum image size equals (5 MB) <br/> allowed formats: jpg, jpeg, png, gif.", Tags = new[] { "Identity" })]
-    public async Task<IActionResult> UploadImage(int id, IFormFile image)
-    {
-        var modelItem = await _userManager.Users
-            .FirstOrDefaultAsync(u => u.Id == id);
-        if (modelItem is null)
-        {
-            return NotFound(ResultHandler.NotFound<string>("not found user.."));
-        }
-
-        if (image is null || image.Length == 0)
-        {
-            return BadRequest(ResultHandler.BadRequest<string>("Invalid image."));
-        }
-
-        if (image.Length > 5 * 1024 * 1024)
-        {
-            return BadRequest(ResultHandler.BadRequest<string>("Image size exceeds the limit (5 MB)."));
-        }
-
-        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-        var fileExtension = Path.GetExtension(image.FileName).ToLower();
-        if (!allowedExtensions.Contains(fileExtension))
-        {
-            return BadRequest(ResultHandler.BadRequest<string>("Invalid file format. Allowed formats: jpg, jpeg, png, gif."));
-        }
-
-        modelItem.ProfilePicturePath = await _attachmentService.Upload(
-            image,
-            _webHostEnvironment,
-            _baseSettings.usersPath,
-            $"{modelItem.UserName}-{DateTime.Now.ToShortDateString().Replace('/', '_')}{fileExtension}");
-
-        var updatedModel = await _userManager.UpdateAsync(modelItem);
-
-        if (!updatedModel.Succeeded)
-        {
-            return BadRequest(ResultHandler.BadRequest<string>(updatedModel.Errors.ToString()));
-        }
-
-        if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
-        {
-            modelItem.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{modelItem.ProfilePicturePath}";
-        }
-
-        var result = _mapper.Map<GetUserDto>(modelItem);
-        return Ok(ResultHandler.Success(result));
-    }
+    
 }
+

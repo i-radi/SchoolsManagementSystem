@@ -1,4 +1,6 @@
-﻿namespace Models.Entities;
+﻿using Models.Entities.Identity;
+
+namespace Models.Entities;
 
 public class School
 {
@@ -12,6 +14,7 @@ public class School
     public int OrganizationId { get; set; }
     [ForeignKey(nameof(OrganizationId))]
     public virtual Organization? Organization { get; set; }
+    public virtual ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
     public virtual ICollection<Season> Seasons { get; set; } = new HashSet<Season>();
     public virtual ICollection<Grade> Grades { get; set; } = new HashSet<Grade>();
     public virtual ICollection<Activity> Activities { get; set; } = new HashSet<Activity>();

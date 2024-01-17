@@ -63,15 +63,10 @@ public class UserRoleService : IUserRoleService
         return ResultHandler.Success(true);
     }
 
-    public async Task<Result<bool>> Delete(AddUserRoleDto model)
+    public async Task<Result<bool>> Delete(int userRoldId)
     {
         var dbModel = await _userRolesRepo.GetTableNoTracking()
-            .FirstOrDefaultAsync(ur => ur.UserId == model.UserId
-            && ur.RoleId == model.RoleId
-            && ur.OrganizationId == model.OrganizationId
-            && ur.SchoolId == model.SchoolId
-            && ur.ActivityId == model.ActivityId);
-
+            .FirstOrDefaultAsync(ur => ur.Id == userRoldId);    
         if (dbModel == null)
             return ResultHandler.NotFound<bool>();
 
