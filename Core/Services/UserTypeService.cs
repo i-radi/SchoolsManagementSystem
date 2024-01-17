@@ -11,10 +11,10 @@ public class UserTypeService : IUserTypeService
         _mapper = mapper;
     }
 
-    public Result<PaginatedList<GetUserTypeDto>> GetAll(int pageNumber, int pageSize)
+    public Result<List<GetUserTypeDto>> GetAll()
     {
-        var modelItems = _userTypesRepo.GetTableNoTracking();
-        var result = PaginatedList<GetUserTypeDto>.Create(_mapper.Map<List<GetUserTypeDto>>(modelItems), pageNumber, pageSize);
+        var modelItems = _userTypesRepo.GetTableNoTracking().ToList();
+        var result = _mapper.Map<List<GetUserTypeDto>>(modelItems);
 
         return ResultHandler.Success(result);
     }

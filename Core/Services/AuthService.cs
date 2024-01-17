@@ -136,10 +136,10 @@ public class AuthService : IAuthService
                 ActivityId = dto.Role.activityId
             });
         }
+
         if(dto.OrganizationIds!=null && dto.OrganizationIds.Count > 0) {
             foreach (var orgid in dto.OrganizationIds)
             {
-
                 await _userOrganizationRepo.AddAsync(new UserOrganization() { UserId = createdUser.Id, OrganizationId = orgid });
             }
         }
@@ -500,9 +500,10 @@ public class AuthService : IAuthService
         {
             return ResultHandler.BadRequest<bool>("Invalid ID...");
         }
-        if(dto.AdminForce==false)
+        if(dto.AdminForce == false)
+        {
              result = await _userManager.ChangePasswordAsync(user, dto.OldPassword, dto.NewPassword);
-
+        }
         else
         {
            result =   await  _userManager.AddPasswordAsync(user , dto.NewPassword);
@@ -535,20 +536,13 @@ public class AuthService : IAuthService
             user.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{user.ProfilePicturePath}";
         }
 
-        var viewmodel = _mapper.Map<GetUserDto>(user);
-
-        return ResultHandler.UnprocessableEntity<bool>("Password Changed");
-
+        return ResultHandler.Success<bool>(true);
     }
-
-
 
     private bool IsUsernameUnique(string username)
     {
         return _context.Users.Any(u => u.UserName == username);
     }
-
-   
 
     #endregion
 }

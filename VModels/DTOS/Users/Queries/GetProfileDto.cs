@@ -24,7 +24,6 @@ public class GetProfileDto
     public int ParticipationNumber { get; set; }
     public List<UserRolesDto> Roles { get; set; } = new List<UserRolesDto>();
     public List<OrganizationDto> Organizations { get; set; } = new List<OrganizationDto>();
-
 }
 
  public class UserRolesDto
@@ -38,16 +37,17 @@ public class GetProfileDto
     public string? SchoolName { get; set; }
     public int? ActivityId { get; set; }
     public string? ActivityName { get; set; }
-
 }
+
 public class OrganizationDto
 {
     public int Id { get; set; }
     public string Name { get; set; }
 }
+
 public static class GetProfileDtoMapping
 {
-    public static GetProfileDto GetUserProfile(this User user)
+    public static GetProfileDto ToGetProfileDto(this User user)
     {
         var userProfile = new GetProfileDto()
         {
@@ -70,10 +70,8 @@ public static class GetProfileDtoMapping
             SchoolUniversityJob = user.SchoolUniversityJob,
             SecondMobile = user.SecondMobile,
             UserName = user.UserName,
-
-
-
         };
+
         foreach (var userRole in user.UserRoles)
         {
             userProfile.Roles.Add(new UserRolesDto()
@@ -87,9 +85,9 @@ public static class GetProfileDtoMapping
                 SchoolName = userRole.School?.Name,
                 ActivityId = userRole.ActivityId,
                 ActivityName = userRole.Activity?.Name
-
             });
         }
+
         foreach (var userorg in user.UserOrganizations)
         {
             userProfile.Organizations.Add(new OrganizationDto()
@@ -98,7 +96,7 @@ public static class GetProfileDtoMapping
                 Name = userorg.Organization?.Name
             });
         }
-        return userProfile;
 
+        return userProfile;
     }
 }
