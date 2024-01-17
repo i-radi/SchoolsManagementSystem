@@ -53,7 +53,7 @@ public class SchoolsController(ISchoolService schoolService, ISeasonService seas
     public async Task<IActionResult> GetById(int id)
     {
         var dto = await _schoolService.GetById(id);
-        if (dto.Data is null)
+        if (dto is null)
             return BadRequest(ResultHandler.BadRequest<string>("Not Found School"));
         return Ok(dto);
     }

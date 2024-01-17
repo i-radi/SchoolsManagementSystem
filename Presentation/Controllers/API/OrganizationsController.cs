@@ -9,10 +9,9 @@ public class OrganizationsController(IOrganizationService organizationService) :
     private readonly IOrganizationService _organizationService = organizationService;
 
     [HttpGet]
-    public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
+    public async Task<IActionResult> GetAll()
     {
-        var result = _organizationService.GetAll(pageNumber, pageSize);
-        Response.AddPaginationHeader(result.Data);
+        var result = await _organizationService.GetAll();
         return Ok(result);
     }
 

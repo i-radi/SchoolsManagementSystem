@@ -1,4 +1,6 @@
-﻿namespace Persistance.Repos;
+﻿using VModels.DTOS;
+
+namespace Persistance.Repos;
 
 public class SeasonRepo : GenericRepoAsync<Season>, ISeasonRepo
 {
@@ -11,6 +13,7 @@ public class SeasonRepo : GenericRepoAsync<Season>, ISeasonRepo
     {
         seasons = dbContext.Set<Season>();
     }
+
     #endregion
 
     #region Handle Methods

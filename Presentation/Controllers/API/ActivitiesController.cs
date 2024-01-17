@@ -39,6 +39,12 @@ public class ActivitiesController(IActivityService activityService) : Controller
         return Ok(await _activityService.Add(dto));
     }
 
+    [HttpPost("add activity instance to activity")]
+    public async Task<ActionResult<GetActivityInstanceDto>> Add(AddActivityInstanceDto dto)
+    {
+      var instance =  await _activityService.AddActivityInstanceToActivity(dto);   
+        return Ok(instance);
+    }
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, UpdateActivityDto dto)
     {

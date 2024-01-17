@@ -1,4 +1,6 @@
-﻿namespace Presentation.Controllers.API;
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace Presentation.Controllers.API;
 
 [Authorize]
 [Route("api/seasons")]
@@ -15,6 +17,13 @@ public class SeasonsController(ISeasonService seasonService) : ControllerBase
         Response.AddPaginationHeader(result.Data);
         return Ok(result);
     }
+    [HttpGet("Get All Season for School ")]
+    public async Task<ActionResult<List<GetSeasonDto>>> GetAllBySchoolId(int schoolid)
+    {
+        var result = await _seasonService.GetAllSeasonsBySchoolId(schoolid);
+        return Ok(result);
+    }
+
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)

@@ -11,7 +11,7 @@ public class Season
     public bool IsCurrent { get; set; }
     public int SchoolId { get; set; }
     [ForeignKey(nameof(SchoolId))]
-    public virtual School? School { get; set; }
+    public virtual School School { get; set; }
     public virtual ICollection<UserClass> UserClasses { get; set; } = new HashSet<UserClass>();
     public virtual ICollection<ActivityInstance> ActivityInstances { get; set; } = new HashSet<ActivityInstance>();
 }

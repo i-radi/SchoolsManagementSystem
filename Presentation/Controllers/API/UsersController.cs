@@ -14,6 +14,7 @@ namespace Presentation.Controllers.API;
 public class UsersController(
     UserManager<User> userManager,
     RoleManager<Role> roleManager ,
+    IUserTypeService userTypeService,
     IMapper mapper,
     IWebHostEnvironment webHostEnvironment,
     IExportService<GetUserDto> exportService,
@@ -25,6 +26,7 @@ public class UsersController(
 {
     private readonly UserManager<User> _userManager = userManager;
     private readonly RoleManager<Role> _roleManager = roleManager;
+    private readonly IUserTypeService _userTypeService = userTypeService;
     private readonly IMapper _mapper = mapper;
     private readonly IExportService<GetUserDto> _exportService = exportService;
     private readonly BaseSettings _baseSettings = baseSettings;
@@ -357,6 +359,14 @@ public class UsersController(
         return Ok(result);
       
 
+    }
+
+    [HttpGet("Get-All-User-Types")]
+    public IActionResult GetAllUsersTypes(int pageNumber = 1, int pageSize =10)
+    {
+        var result = _userTypeService.GetAll(pageNumber, pageSize);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
     }
 }
 

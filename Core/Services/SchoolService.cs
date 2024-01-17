@@ -1,4 +1,5 @@
-﻿using VModels.DTOS.Report;
+﻿using Microsoft.AspNetCore.Mvc;
+using VModels.DTOS.Report;
 
 namespace Core.Services;
 
@@ -144,12 +145,59 @@ public class SchoolService : ISchoolService
         return ResultHandler.Success(_mapper.Map<List<GetSchoolDto>>(result));
     }
 
-    public async Task<Result<GetSchoolDto?>> GetById(int id)
+    public async Task<GetSchoolDto?> GetById(int id)
     {
-        var modelItem = await _schoolsRepo.GetByIdAsync(id);
-        if (modelItem == null)
-            return null;
-        return ResultHandler.Success(_mapper.Map<GetSchoolDto>(modelItem))!;
+        var modelItem = await _schoolsRepo.GetTableAsTracking()
+            .Include(s => s.Grades)
+            .ThenInclude(c => c.Classrooms)
+            .FirstOrDefaultAsync(s => s.Id == id);
+        var schooldto = new GetSchoolDto();
+ 
+        if (modelItem is not null)
+        {
+            schooldto.Name = modelItem.Name;
+            schooldto.Description = modelItem.Description;
+            schooldto.PicturePath = modelItem.PicturePath;
+            schooldto.Order = modelItem.Order;
+            if(modelItem.Grades.Any())
+            {
+                var grades = new List<GradesDto>();
+                foreach (var grade in modelItem.Grades)
+                {
+                    var gradeDto = new GradesDto
+                    {
+                        Id = grade.Id,
+                        Name = grade.Name,
+                        Description = grade.Description,
+                        Order = grade.Order
+                    };
+                    if (grade.Classrooms.Any())
+                    {
+                        foreach (var classroom in grade.Classrooms)
+                        {
+                            gradeDto.Classrooms.Add(new ClassroomDto()
+                            {
+                                Name = classroom.Name,
+                                Location = classroom.Location,
+                                Order = classroom.Order,
+                                PicturePath = classroom.PicturePath,
+                                StudentImagePath = classroom.StudentImagePath,
+                                TeacherImagePath = classroom.TeacherImagePath,
+
+                            }) ;
+                            grades.Add(gradeDto);
+                        }
+                        schooldto.Grades.AddRange(grades);  
+                    }
+                    
+                }
+            }
+                
+          
+        }
+
+
+        return (schooldto);
     }
 
     public async Task<Result<GetSchoolDto>> Add(AddSchoolDto dto)
@@ -186,4 +234,6 @@ public class SchoolService : ISchoolService
         await _schoolsRepo.DeleteAsync(dbModel);
         return ResultHandler.Deleted<bool>();
     }
+
+
 }

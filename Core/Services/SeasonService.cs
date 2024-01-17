@@ -26,6 +26,26 @@ public class SeasonService : ISeasonService
             return null;
         return ResultHandler.Success(_mapper.Map<GetSeasonDto>(modelItem))!;
     }
+    public async Task<List<GetSeasonDto>> GetAllSeasonsBySchoolId(int schoolid)
+    {
+        var modelItem = await _seasonsRepo.GetTableAsTracking().Include(s=>s.School).Where(s=>s.SchoolId==s.SchoolId).ToListAsync();
+        if (modelItem == null)
+            return null;
+        var seasonOfSchool = new List<GetSeasonDto>();
+        var season = new GetSeasonDto();
+        foreach (var item in modelItem)
+        {
+            season.Id = item.Id; 
+            season.Name = item.Name;
+            season.From = item.From; 
+            season.School = item.School.Name;
+            season.To = item.To;    
+            season.IsCurrent = item.IsCurrent;  
+            seasonOfSchool.Add(season);
+             
+        }
+        return seasonOfSchool;
+    }
 
     public async Task<Result<GetSeasonDto>> Add(AddSeasonDto dto)
     {

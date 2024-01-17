@@ -4,11 +4,13 @@ public class ActivityService : IActivityService
 {
     private readonly IActivityRepo _activitiesRepo;
     private readonly IMapper _mapper;
+    private readonly IActivityInstanceRepo _activityInstanceRepo;
 
-    public ActivityService(IActivityRepo activitysRepo, IMapper mapper)
+    public ActivityService(IActivityRepo activitysRepo, IMapper mapper , IActivityInstanceRepo activityInstanceRepo)
     {
         _activitiesRepo = activitysRepo;
         _mapper = mapper;
+        _activityInstanceRepo = activityInstanceRepo;
     }
 
     public Result<PaginatedList<GetActivityDto>> GetAll(int pageNumber, int pageSize, int schoolId = 0)
@@ -83,6 +85,35 @@ public class ActivityService : IActivityService
         _ = _activitiesRepo.UpdateAsync(modelItem);
 
         return ResultHandler.Success(true);
+    }
+
+    public async Task<GetActivityInstanceDto> AddActivityInstanceToActivity(AddActivityInstanceDto dto)
+    {
+        var avtivity = await _activitiesRepo.GetByIdAsync(dto.ActivityId);
+        if (avtivity is null)
+            return null;
+        var modelItem = new ActivityInstance()
+        {
+            Name = dto.Name,
+            CreatedDate = dto.CreatedDate,
+            ForDate = dto.ForDate,
+            IsLocked = dto.IsLocked,
+            SeasonId = dto.SeasonId,
+            ActivityId = dto.ActivityId,
+        };
+        var activityinst =  await _activityInstanceRepo.AddAsync(modelItem);
+        var returnedInstance = new GetActivityInstanceDto()
+        {
+            Id = activityinst.Id,
+            Name = activityinst.Name,
+            CreatedDate = activityinst.CreatedDate,
+            ForDate = activityinst.ForDate,
+            IsLocked = activityinst.IsLocked,
+            SeasonId = activityinst.SeasonId,
+            ActivityId = activityinst.ActivityId
+        };
+
+        return returnedInstance;   
     }
 }
 
