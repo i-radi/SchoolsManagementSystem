@@ -66,7 +66,7 @@ public class UsersController(
         return Ok(ResultHandler.Success(result));
     }
 
-    [HttpGet("profile/{id}")]// includ roles orgs schools 
+    [HttpGet("profile/{id}")]
     public async Task<IActionResult> GetProfileById(int id)
     {
 

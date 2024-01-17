@@ -4,6 +4,5 @@ public partial class CourseDetailsProfile
 {
     public void UpdateCourseDetailsMapping()
     {
-        //CreateMap<UpdateCourseDetailsDto, CourseDetails>();
     }
 }
