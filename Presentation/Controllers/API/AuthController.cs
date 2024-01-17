@@ -179,7 +179,8 @@ public class AuthController(
         return Ok(roles);
     }
 
-    [SwaggerOperation(Tags = new[] { "Roles" })]
+    [ApiExplorerSettings(GroupName = "V2")]
+    [SwaggerOperation(Tags = new[] { "Auth" })]
     [HttpPost("user-roles")]
     public async Task<IActionResult> AddUserRoles(UserRoleRequest request)
     {
@@ -194,48 +195,38 @@ public class AuthController(
             return BadRequest(ResultHandler.BadRequest<string>("Invalid Role  Id."));
         }
 
-       if(request.OrganizationId !=null)
+       if(request.OrganizationId != null && await _organizationService.GetById(request.OrganizationId.Value) ==null)
         {
-            var org = await _organizationService.GetById(request.OrganizationId.Value);
-            if (org == null)
-            {
                 return BadRequest(ResultHandler.BadRequest<string>("Invalid Organization Id"));
-            }
         }
-       if(request.SchoolId!=null)
+       if(request.SchoolId != null && await _schoolService.GetById(request.SchoolId.Value) == null)
         {
-            var school = _schoolService.GetById(request.SchoolId.Value); 
-            if(school==null)
-            {
                 return BadRequest(ResultHandler.BadRequest<string>("Invalid School Id"));
-
-            }
         }
-        if (request.ActivityId != null)
+        if (request.ActivityId != null && await _activityService.GetById(request.ActivityId.Value) == null)
         {
-            var activity = _activityService.GetById(request.ActivityId.Value);
-            if (activity == null)
-            {
                 return BadRequest(ResultHandler.BadRequest<string>("Invalid Activity Id"));
-
-            }
         }
-        var dto = request.ToDto(request.UserId);
+
+        var dto = request.ToAddUserRoleDto(request.UserId);
         if ((await _userRoleService.IsExists(dto)).Data)
         {
             return BadRequest(ResultHandler.BadRequest<string>("This role already exists."));
         }
+
         var result = await _userRoleService.Add(dto);
         if (!result.Succeeded)
         {
             return BadRequest(result);
         }
+
         return Ok(result);
     }
-  
-    [SwaggerOperation(Tags = new[] { "Roles" })]
+
+    [ApiExplorerSettings(GroupName = "V2")]
+    [SwaggerOperation(Tags = new[] { "Auth" })]
     [HttpDelete("user-roles/{userRoleId}")]
-    public async Task<IActionResult> DeleteUserRoles(int userRoleId)
+    public async Task<IActionResult> DeleteUserRole(int userRoleId)
     {
         var result = await _userRoleService.Delete(userRoleId);
         if (!result.Succeeded)

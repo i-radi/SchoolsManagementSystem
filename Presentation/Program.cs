@@ -77,6 +77,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
+        options.SwaggerEndpoint("/swagger/V2/swagger.json", "V2");
         options.SwaggerEndpoint("/swagger/Identity/swagger.json", "Identity");
         options.SwaggerEndpoint("/swagger/Users/swagger.json", "Users");
         options.SwaggerEndpoint("/swagger/Organizations/swagger.json", "Organizations");
