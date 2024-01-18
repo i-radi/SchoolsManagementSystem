@@ -22,11 +22,12 @@ public class DeleteTest
     {
         //Arrange
         var userClass = new UserClass() { ClassroomId = 1, UserId = 1 };
+        var dto = new AddUserClassDto();
 
         _userClassRepoMock.Setup(x => x.GetByIdAsync(id)).Returns(Task.FromResult(userClass));
 
         //Act
-        var result = await _userClassService.Delete(id);
+        var result = await _userClassService.Delete(dto);
 
         //Assert
         result.Succeeded.Should().BeTrue();
@@ -40,9 +41,10 @@ public class DeleteTest
     {
         //Arrange
         _userClassRepoMock.Setup(x => x.GetByIdAsync(id)).Returns(Task.FromResult<UserClass>(null));
+        var dto = new AddUserClassDto();    
 
         //Act
-        var result = await _userClassService.Delete(id);
+        var result = await _userClassService.Delete(dto);
 
         //Assert
         result.Succeeded.Should().BeFalse();

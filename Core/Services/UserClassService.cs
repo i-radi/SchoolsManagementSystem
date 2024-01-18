@@ -61,10 +61,11 @@ public class UserClassService : IUserClassService
         return ResultHandler.Success(true);
     }
 
-    public async Task<Result<bool>> Delete(int id)
+    public async Task<Result<bool>> Delete(AddUserClassDto dto)
     {
 
-        var dbModel = await _userClassesRepo.GetByIdAsync(id);
+        var dbModel = await _userClassesRepo.GetTableNoTracking()
+            .FirstOrDefaultAsync(x => x.UserId == dto.UserId && x.SeasonId == dto.SeasonId && x.ClassroomId == dto.ClassroomId && x.UserTypeId == dto.UserTypeId);
 
         if (dbModel == null)
             return ResultHandler.NotFound<bool>();
@@ -72,4 +73,6 @@ public class UserClassService : IUserClassService
         await _userClassesRepo.DeleteAsync(dbModel);
         return ResultHandler.Deleted<bool>();
     }
+
+
 }

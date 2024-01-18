@@ -1,4 +1,6 @@
-﻿namespace Presentation.Controllers.API;
+﻿using Swashbuckle.AspNetCore.Annotations;
+
+namespace Presentation.Controllers.API;
 
 [Authorize]
 [Route("api/schools")]
@@ -48,7 +50,8 @@ public class SchoolsController(ISchoolService schoolService, ISeasonService seas
         return Ok(_schoolService.GetAll(pageNumber, pageSize));
     }
 
-
+    [ApiExplorerSettings(GroupName = "V2")]
+    [SwaggerOperation(Tags = new[] { "Schools" })]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
