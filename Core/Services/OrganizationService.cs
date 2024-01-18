@@ -11,35 +11,37 @@ public class OrganizationService : IOrganizationService
         _mapper = mapper;
     }
 
-    public async Task<Result<List<GetOrganizationDto>>> GetAll()
+    public async Task<Result<List<GetOrganizationDto>>> GetAllWithSchools()
     {
-        var modelItems = await _organizationsRepo.GetTableNoTracking().Include(s => s.Schools).ToListAsync();
-        List<GetOrganizationDto> allorgs = new List<GetOrganizationDto>();
-        var orgsdto = new GetOrganizationDto(); 
-        if(modelItems is not null || !modelItems.Any())
+        var modelItems = await _organizationsRepo
+            .GetTableNoTracking()
+            .Include(s => s.Schools)
+            .ToListAsync();
+
+        var orgs = new List<GetOrganizationDto>();
+
+        if (modelItems != null && modelItems.Any())
         {
             foreach (var organization in modelItems)
             {
-                orgsdto.Name = organization.Name;
-                orgsdto.PicturePath = organization.PicturePath; 
-                foreach (var school in organization.Schools)
+                var orgDto = new GetOrganizationDto
                 {
-                    orgsdto.Schools.Add(new GetSchoolDto()
+                    Name = organization.Name,
+                    PicturePath = organization.PicturePath,
+                    Schools = organization.Schools.Select(school => new GetSchoolDto
                     {
                         Name = school.Name,
                         PicturePath = school.PicturePath,
                         Description = school.Description,
-                        Order = school.Order,
-                    });
+                        Order = school.Order
+                    }).ToList()
+                };
 
-                }
-                allorgs.Add(orgsdto);
-
-
+                orgs.Add(orgDto);
             }
-
         }
-        return ResultHandler.Success(allorgs);
+
+        return ResultHandler.Success(orgs);
     }
 
     public async Task<Result<GetOrganizationDto?>> GetById(int id)

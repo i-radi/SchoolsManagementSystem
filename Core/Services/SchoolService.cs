@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using VModels.DTOS.Report;
+﻿using VModels.DTOS.Report;
 
 namespace Core.Services;
 
@@ -147,19 +146,19 @@ public class SchoolService : ISchoolService
 
     public async Task<GetSchoolDto?> GetById(int id)
     {
-        var modelItem = await _schoolsRepo.GetTableAsTracking()
+        var modelItem = await _schoolsRepo.GetTableNoTracking()
             .Include(s => s.Grades)
             .ThenInclude(c => c.Classrooms)
             .FirstOrDefaultAsync(s => s.Id == id);
         var schooldto = new GetSchoolDto();
- 
+
         if (modelItem is not null)
         {
             schooldto.Name = modelItem.Name;
             schooldto.Description = modelItem.Description;
             schooldto.PicturePath = modelItem.PicturePath;
             schooldto.Order = modelItem.Order;
-            if(modelItem.Grades.Any())
+            if (modelItem.Grades.Any())
             {
                 var grades = new List<GradesDto>();
                 foreach (var grade in modelItem.Grades)
@@ -184,16 +183,16 @@ public class SchoolService : ISchoolService
                                 StudentImagePath = classroom.StudentImagePath,
                                 TeacherImagePath = classroom.TeacherImagePath,
 
-                            }) ;
+                            });
                             grades.Add(gradeDto);
                         }
-                        schooldto.Grades.AddRange(grades);  
+                        schooldto.Grades.AddRange(grades);
                     }
-                    
+
                 }
             }
-                
-          
+
+
         }
 
 

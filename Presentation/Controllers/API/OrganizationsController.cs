@@ -1,4 +1,6 @@
-﻿namespace Presentation.Controllers.API;
+﻿using Swashbuckle.AspNetCore.Annotations;
+
+namespace Presentation.Controllers.API;
 
 [Authorize]
 [Route("api/organizations")]
@@ -8,10 +10,12 @@ public class OrganizationsController(IOrganizationService organizationService) :
 {
     private readonly IOrganizationService _organizationService = organizationService;
 
+    [ApiExplorerSettings(GroupName = "V2")]
+    [SwaggerOperation(Tags = new[] { "Organizations" })]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var result = await _organizationService.GetAll();
+        var result = await _organizationService.GetAllWithSchools();
         return Ok(result);
     }
 
@@ -25,7 +29,7 @@ public class OrganizationsController(IOrganizationService organizationService) :
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add(AddOrganizationDto dto) 
+    public async Task<IActionResult> Add(AddOrganizationDto dto)
     {
         return Ok(await _organizationService.Add(dto));
     }

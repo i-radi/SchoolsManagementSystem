@@ -26,7 +26,7 @@ public class GetProfileDto
     public List<OrganizationDto> Organizations { get; set; } = new List<OrganizationDto>();
 }
 
- public class UserRolesDto
+public class UserRolesDto
 {
     public int UserRoleId { get; set; }
     public int RoleId { get; set; }

@@ -16,9 +16,8 @@ public class GetAllTest
         _userTypeService = new(_userTypeRepoMock.Object, _mapperMock);
     }
 
-    [Theory]
-    [InlineData(1, 10)]
-    public void GetAll_ExistItems_ReturnsSuccessMsg(int pageNumber, int pageSize)
+    [Fact]
+    public void GetAll_ExistItems_ReturnsSuccessMsg()
     {
         //Arrange
         var userTypeList = new List<UserType>()
@@ -29,17 +28,16 @@ public class GetAllTest
         _userTypeRepoMock.Setup(x => x.GetTableNoTracking()).Returns(userTypeList.AsQueryable());
 
         //Act
-        var result = _userTypeService.GetAll(pageNumber, pageSize);
+        var result = _userTypeService.GetAll();
 
         //Assert
         result.Data.Should().NotBeNullOrEmpty();
         result.Succeeded.Should().BeTrue();
-        result.Data.Should().BeOfType<PaginatedList<GetUserTypeDto>>();
+        result.Data.Should().BeOfType<List<GetUserTypeDto>>();
     }
 
-    [Theory]
-    [InlineData(1, 10)]
-    public void GetAll_EmptyItems_ReturnsSuccessMsg(int pageNumber, int pageSize)
+    [Fact]
+    public void GetAll_EmptyItems_ReturnsSuccessMsg()
     {
         //Arrange
         var userTypeList = new List<UserType>();
@@ -47,11 +45,11 @@ public class GetAllTest
         _userTypeRepoMock.Setup(x => x.GetTableNoTracking()).Returns(userTypeList.AsQueryable());
 
         //Act
-        var result = _userTypeService.GetAll(pageNumber, pageSize);
+        var result = _userTypeService.GetAll();
 
         //Assert
         result.Data.Should().HaveCount(0);
         result.Succeeded.Should().BeTrue();
-        result.Data.Should().BeOfType<PaginatedList<GetUserTypeDto>>();
+        result.Data.Should().BeOfType<List<GetUserTypeDto>>();
     }
 }

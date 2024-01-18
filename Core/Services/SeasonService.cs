@@ -30,8 +30,8 @@ public class SeasonService : ISeasonService
     {
         var modelItem = await _seasonsRepo
             .GetTableAsTracking()
-            .Include(s=>s.School)
-            .Where(s=>s.SchoolId==s.SchoolId)
+            .Include(s => s.School)
+            .Where(s => s.SchoolId == s.SchoolId)
             .ToListAsync();
 
         if (modelItem == null)

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.IdentityModel.Tokens;
 using Models.Entities.Identity;
-using Models.Results;
 using Persistance.Context;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -22,7 +21,7 @@ public class AuthService : IAuthService
     private readonly ApplicationDBContext _applicationDBContext;
     private readonly IOrganizationRepo _organizationRepo;
     private readonly IUserOrganizationRepo _userOrganizationRepo;
-    private readonly IUserRoleRepo _userRoleRepo; 
+    private readonly IUserRoleRepo _userRoleRepo;
     private readonly IUserClassRepo _userClassRepo;
     private readonly ApplicationDBContext _context;
     private readonly IMapper _mapper;
@@ -36,10 +35,10 @@ public class AuthService : IAuthService
         UserManager<User> userManager,
         ApplicationDBContext applicationDBContext,
         IOrganizationRepo organizationRepo,
-        IUserOrganizationRepo userOrganizationRepo ,
+        IUserOrganizationRepo userOrganizationRepo,
         IUserRoleRepo userRoleRepo,
         IUserClassRepo userClassRepo,
-        ApplicationDBContext context ,
+        ApplicationDBContext context,
         IMapper mapper,
         IWebHostEnvironment webHostEnvironment,
         BaseSettings baseSettings
@@ -137,7 +136,8 @@ public class AuthService : IAuthService
             });
         }
 
-        if(dto.OrganizationIds!=null && dto.OrganizationIds.Count > 0) {
+        if (dto.OrganizationIds != null && dto.OrganizationIds.Count > 0)
+        {
             foreach (var orgid in dto.OrganizationIds)
             {
                 await _userOrganizationRepo.AddAsync(new UserOrganization() { UserId = createdUser.Id, OrganizationId = orgid });
@@ -153,7 +153,7 @@ public class AuthService : IAuthService
 
         if (user == null)
         {
-            return ResultHandler.BadRequest<GetUserDto>("Invalid Email..."); 
+            return ResultHandler.BadRequest<GetUserDto>("Invalid Email...");
         }
 
         var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
@@ -240,7 +240,7 @@ public class AuthService : IAuthService
     public async Task<Result<JwtAuthResult>> LoginAsync(LoginDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.UserName);
-   
+
 
         if (user is null || !await _userManager.CheckPasswordAsync(user, dto.Password))
         {
@@ -263,7 +263,7 @@ public class AuthService : IAuthService
         {
             return ResultHandler.NotFound<JwtAuthResult>("Email or Password is incorrect!");
         }
-       
+
 
         return ResultHandler.Success<JwtAuthResult>(await GetJWTToken(user, Guid.NewGuid()));
     }
@@ -319,11 +319,11 @@ public class AuthService : IAuthService
                 Address = user.Address,
                 Birthdate = user.Birthdate,
             },
-           
+
         };
     }
 
-   
+
     private async Task<EntityEntry<User>> UpdateAccessAndRefreshToken(User user, JwtAuthResult response)
     {
         user.AccessToken = response.AccessToken;
@@ -495,18 +495,18 @@ public class AuthService : IAuthService
     public async Task<Result<bool>> ChangeUserPasswordByIdAsync(ChangeUserPasswordByIdDto dto)
     {
         var user = await _userManager.FindByIdAsync(dto.UserId);
-        IdentityResult result = null; 
+        IdentityResult result = null;
         if (user == null)
         {
             return ResultHandler.BadRequest<bool>("Invalid ID...");
         }
-        if(dto.AdminForce == false)
+        if (dto.AdminForce == false)
         {
-             result = await _userManager.ChangePasswordAsync(user, dto.OldPassword, dto.NewPassword);
+            result = await _userManager.ChangePasswordAsync(user, dto.OldPassword, dto.NewPassword);
         }
         else
         {
-           result =   await  _userManager.AddPasswordAsync(user , dto.NewPassword);
+            result = await _userManager.AddPasswordAsync(user, dto.NewPassword);
         }
 
         if (!result.Succeeded)

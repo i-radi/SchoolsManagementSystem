@@ -118,7 +118,7 @@ public class UsersController(
             SchoolUniversityJob = user.SchoolUniversityJob,
             NationalID = user.NationalID
         };
-  
+
         if (user.ProfilePicture is not null)
         {
             var fileExtension = Path.GetExtension(Path.GetFileName(user.ProfilePicture.FileName));

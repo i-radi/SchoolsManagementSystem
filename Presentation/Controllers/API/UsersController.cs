@@ -1,8 +1,4 @@
-﻿using Humanizer;
-using Microsoft.AspNetCore.Identity;
-using Persistance.Repos;
-using Swashbuckle.AspNetCore.Annotations;
-using System.IO;
+﻿using Swashbuckle.AspNetCore.Annotations;
 using VModels.DTOS.Users.Commands;
 
 namespace Presentation.Controllers.API;
@@ -13,14 +9,14 @@ namespace Presentation.Controllers.API;
 [ApiExplorerSettings(GroupName = "Users")]
 public class UsersController(
     UserManager<User> userManager,
-    RoleManager<Role> roleManager ,
+    RoleManager<Role> roleManager,
     IUserTypeService userTypeService,
     IMapper mapper,
     IWebHostEnvironment webHostEnvironment,
     IExportService<GetUserDto> exportService,
     BaseSettings baseSettings,
     IAuthService authService,
-    IAttachmentService attachmentService ,
+    IAttachmentService attachmentService,
     SharedSettings sharedSettings
     ) : ControllerBase
 {
@@ -46,16 +42,14 @@ public class UsersController(
         return Ok(result);
     }
 
-    [ApiExplorerSettings(GroupName = "V2")]
-    [SwaggerOperation(Tags = new[] { "User" })]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
         var modelItem = await _userManager.Users
-            .Include(u => u.UserRoles) 
-            .ThenInclude(u=>u.Role)
-            .Include(u=>u.UserOrganizations)
-            .ThenInclude(u=>u.Organization)       
+            .Include(u => u.UserRoles)
+            .ThenInclude(u => u.Role)
+            .Include(u => u.UserOrganizations)
+            .ThenInclude(u => u.Organization)
             .FirstOrDefaultAsync(u => u.Id == id);
 
         if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
@@ -68,7 +62,7 @@ public class UsersController(
     }
 
     [ApiExplorerSettings(GroupName = "V2")]
-    [SwaggerOperation(Tags = new[] { "User" })]
+    [SwaggerOperation(Tags = new[] { "Users" })]
     [HttpGet("profile/{id}")]
     public async Task<IActionResult> GetProfileById(int id)
     {
@@ -83,19 +77,21 @@ public class UsersController(
             .ThenInclude(x => x.Activity)
             .Include(x => x.UserOrganizations)
             .ThenInclude(x => x.Organization)
-            .AsSplitQuery() 
+            .AsSplitQuery()
             .FirstOrDefaultAsync(u => u.Id == id);
-            
+
         if (!string.IsNullOrEmpty(modelItem.ProfilePicturePath))
         {
             modelItem.ProfilePicturePath = $"{_baseSettings.url}/{_baseSettings.usersPath}/{modelItem.ProfilePicturePath}";
         }
 
         var result = modelItem.ToGetProfileDto();
-        
+
         return Ok(ResultHandler.Success(result));
     }
 
+    [ApiExplorerSettings(GroupName = "V2")]
+    [SwaggerOperation(Tags = new[] { "Users" })]
     [HttpPut("{id}")]
     public async Task<IActionResult> EditUserById(int id, UpdateUserDto dto)
     {
@@ -127,7 +123,7 @@ public class UsersController(
     }
 
     [ApiExplorerSettings(GroupName = "V2")]
-    [SwaggerOperation(Tags = new[] { "User" })]
+    [SwaggerOperation(Tags = new[] { "Users" })]
     [HttpPut("change-image/{id}")]
     public async Task<IActionResult> ChangeImage(int id, IFormFile image)
     {
@@ -147,7 +143,7 @@ public class UsersController(
         {
             return BadRequest(ResultHandler.BadRequest<string>("Image size exceeds the limit (5 MB)."));
         }
-        
+
         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
         var fileExtension = Path.GetExtension(image.FileName).ToLower();
         if (!allowedExtensions.Contains(fileExtension))
@@ -155,10 +151,10 @@ public class UsersController(
             return BadRequest(ResultHandler.BadRequest<string>("Invalid file format. Allowed formats: jpg, jpeg, png, gif."));
         }
 
-        if(modelItem.ProfilePicturePath != null && modelItem.ProfilePicturePath != _sharedSettings.DefaultProfileImage)
-        {      
-            var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, _baseSettings.usersPath,modelItem.ProfilePicturePath);
-            
+        if (modelItem.ProfilePicturePath != null && modelItem.ProfilePicturePath != _sharedSettings.DefaultProfileImage)
+        {
+            var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, _baseSettings.usersPath, modelItem.ProfilePicturePath);
+
             if (System.IO.File.Exists(imagePath))
             {
                 System.IO.File.Delete(imagePath);
@@ -336,7 +332,7 @@ public class UsersController(
     }
 
     [ApiExplorerSettings(GroupName = "V2")]
-    [SwaggerOperation(Tags = new[] { "User" })]
+    [SwaggerOperation(Tags = new[] { "Users" })]
     [HttpPut("change-password")]
     public async Task<IActionResult> ChangePasswordByIdAsync(ChangeUserPasswordByIdDto dto)
     {
@@ -352,7 +348,7 @@ public class UsersController(
     }
 
     [ApiExplorerSettings(GroupName = "V2")]
-    [SwaggerOperation(Tags = new[] { "User" })]
+    [SwaggerOperation(Tags = new[] { "Users" })]
     [HttpPost("into-organization")]
     public async Task<IActionResult> AddUserToOrganizations(AddUserToOrganizationsDto dto)
     {
@@ -365,7 +361,7 @@ public class UsersController(
     }
 
     [ApiExplorerSettings(GroupName = "V2")]
-    [SwaggerOperation(Tags = new[] { "User" })]
+    [SwaggerOperation(Tags = new[] { "Users" })]
     [HttpGet("user-types")]
     public IActionResult GetUsersTypes()
     {

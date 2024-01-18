@@ -12,9 +12,9 @@ public class AuthController(
     RoleManager<Role> roleManager,
     IMapper mapper,
     UserManager<User> userManager,
-    IOrganizationService organizationService ,
-    ISchoolService schoolService , 
-    IActivityService activityService , 
+    IOrganizationService organizationService,
+    ISchoolService schoolService,
+    IActivityService activityService,
     IUserRoleService userRoleService,
     IAttachmentService attachmentService,
     IWebHostEnvironment webHostEnvironment,
@@ -89,7 +89,8 @@ public class AuthController(
     }
 
     [AllowAnonymous]
-    [SwaggerOperation(Tags = new[] { "Identity" })]
+    [ApiExplorerSettings(GroupName = "V2")]
+    [SwaggerOperation(Tags = new[] { "Auth" })]
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto model)
     {
@@ -97,9 +98,9 @@ public class AuthController(
             return BadRequest(ModelState);
 
         var result = new Result<JwtAuthResult>();
-           result = await _authService.LoginByUserNameAsync(model);
-        
-          if (!result.Succeeded)
+        result = await _authService.LoginByUserNameAsync(model);
+
+        if (!result.Succeeded)
             return BadRequest(result);
 
         return Ok(result);
@@ -189,23 +190,23 @@ public class AuthController(
         {
             return BadRequest(ResultHandler.BadRequest<string>("Invalid User Id."));
         }
-         var role = await _roleManager.Roles.FirstOrDefaultAsync(r => r.Id== request.RoleId);  
-        if (role ==null )
+        var role = await _roleManager.Roles.FirstOrDefaultAsync(r => r.Id == request.RoleId);
+        if (role == null)
         {
             return BadRequest(ResultHandler.BadRequest<string>("Invalid Role  Id."));
         }
 
-       if(request.OrganizationId != null && await _organizationService.GetById(request.OrganizationId.Value) ==null)
+        if (request.OrganizationId != null && await _organizationService.GetById(request.OrganizationId.Value) == null)
         {
-                return BadRequest(ResultHandler.BadRequest<string>("Invalid Organization Id"));
+            return BadRequest(ResultHandler.BadRequest<string>("Invalid Organization Id"));
         }
-       if(request.SchoolId != null && await _schoolService.GetById(request.SchoolId.Value) == null)
+        if (request.SchoolId != null && await _schoolService.GetById(request.SchoolId.Value) == null)
         {
-                return BadRequest(ResultHandler.BadRequest<string>("Invalid School Id"));
+            return BadRequest(ResultHandler.BadRequest<string>("Invalid School Id"));
         }
         if (request.ActivityId != null && await _activityService.GetById(request.ActivityId.Value) == null)
         {
-                return BadRequest(ResultHandler.BadRequest<string>("Invalid Activity Id"));
+            return BadRequest(ResultHandler.BadRequest<string>("Invalid Activity Id"));
         }
 
         var dto = request.ToAddUserRoleDto(request.UserId);
@@ -236,6 +237,6 @@ public class AuthController(
         return Ok(result);
     }
 
-    
+
 }
 

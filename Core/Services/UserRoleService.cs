@@ -66,7 +66,7 @@ public class UserRoleService : IUserRoleService
     public async Task<Result<bool>> Delete(int userRoldId)
     {
         var dbModel = await _userRolesRepo.GetTableNoTracking()
-            .FirstOrDefaultAsync(ur => ur.Id == userRoldId);    
+            .FirstOrDefaultAsync(ur => ur.Id == userRoldId);
         if (dbModel == null)
             return ResultHandler.NotFound<bool>();
 

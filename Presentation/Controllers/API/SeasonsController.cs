@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
+﻿using Swashbuckle.AspNetCore.Annotations;
 
 namespace Presentation.Controllers.API;
 

@@ -1,4 +1,6 @@
-﻿namespace Presentation.Controllers.API;
+﻿using Swashbuckle.AspNetCore.Annotations;
+
+namespace Presentation.Controllers.API;
 
 [Authorize]
 [Route("api/activity-instances")]
@@ -17,7 +19,9 @@ public class ActivityInstancesController(
         return Ok(result);
     }
 
-    [HttpGet("activity/{activityId}")]
+    [ApiExplorerSettings(GroupName = "V2")]
+    [SwaggerOperation(Tags = new[] { "Activities" })]
+    [HttpGet("{activityId}")]
     public IActionResult GetByActivity(int activityId, int pageNumber = 1, int pageSize = 10)
     {
         return Ok(_activityInstanceService.GetAll(pageNumber, pageSize, activityId));
