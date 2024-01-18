@@ -1,4 +1,5 @@
 ﻿using Swashbuckle.AspNetCore.Annotations;
+using System.Net;
 
 namespace Presentation.Controllers.API;
 
@@ -6,9 +7,10 @@ namespace Presentation.Controllers.API;
 [Route("api/activities")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Activities")]
-public class ActivitiesController(IActivityService activityService) : ControllerBase
+public class ActivitiesController(IActivityService activityService , ISchoolService schoolService) : ControllerBase
 {
     private readonly IActivityService _activityService = activityService;
+    private readonly ISchoolService _schoolService = schoolService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
@@ -37,12 +39,18 @@ public class ActivitiesController(IActivityService activityService) : Controller
         return Ok(dto);
     }
 
+    [ApiExplorerSettings(GroupName = "V2")]
+    [SwaggerOperation(Tags = new[] { "Activities" })]
     [HttpPost]
     public async Task<IActionResult> Add(AddActivityDto dto)
     {
+        var school = await _schoolService.GetById(dto.SchoolId); 
+        if (school == null) return BadRequest(ResultHandler.BadRequest<string>("School Is Not Exist"));
         return Ok(await _activityService.Add(dto));
     }
 
+    [ApiExplorerSettings(GroupName = "V2")]
+    [SwaggerOperation(Tags = new[] { "Activities" })]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, UpdateActivityDto dto)
     {
@@ -50,8 +58,11 @@ public class ActivitiesController(IActivityService activityService) : Controller
         {
             return BadRequest(ResultHandler.BadRequest<string>("Id not matched"));
         }
+        var school = await _schoolService.GetById(dto.SchoolId);
+        if (school == null) return BadRequest(ResultHandler.BadRequest<string>("School Is Not Exist"));
+
         var result = await _activityService.Update(dto);
-        if (!result.Data)
+        if (result.StatusCode!=HttpStatusCode.OK)
         {
             return BadRequest(ResultHandler.BadRequest<string>("Not Updated"));
         }
@@ -70,7 +81,9 @@ public class ActivitiesController(IActivityService activityService) : Controller
         return Ok(result);
     }
 
-    [HttpGet("archive-activity/{id}")]
+    [ApiExplorerSettings(GroupName = "V2")]
+    [SwaggerOperation(Tags = new[] { "Activities" })]
+    [HttpPut("archive/{id}")]
     public async Task<IActionResult> ArchiveActivityById(int id)
     {
         var dto = await _activityService.Archive(id);

@@ -46,17 +46,18 @@ public class ActivityService : IActivityService
         return ResultHandler.Created(_mapper.Map<GetActivityDto>(modelItem));
     }
 
-    public async Task<Result<bool>> Update(UpdateActivityDto dto)
+    public async Task<Result<GetActivityDto>> Update(UpdateActivityDto dto)
     {
         var modelItem = await _activitiesRepo.GetByIdAsync(dto.Id);
 
         if (modelItem is null)
-            return ResultHandler.NotFound<bool>();
+            return ResultHandler.NotFound<GetActivityDto>();
 
         _mapper.Map(dto, modelItem);
         _ = _activitiesRepo.UpdateAsync(modelItem);
 
-        return ResultHandler.Success(true);
+        var result = _mapper.Map<GetActivityDto>(modelItem); 
+        return ResultHandler.Success(result);
     }
 
     public async Task<Result<bool>> Delete(int id)

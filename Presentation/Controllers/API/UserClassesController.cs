@@ -50,7 +50,7 @@ public class UserClassesController(IUserClassService userClassService , ISeasonS
 
     [ApiExplorerSettings(GroupName = "V2")]
     [SwaggerOperation(Tags = new[] { "Classes" })]
-    [HttpPost]
+    [HttpPost("assign")]
     public async Task<IActionResult> Add(AddUserClassDto dto)
     {
         var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
@@ -82,7 +82,7 @@ public class UserClassesController(IUserClassService userClassService , ISeasonS
 
     [ApiExplorerSettings(GroupName = "V2")]
     [SwaggerOperation(Tags = new[] { "Classes" })]
-    [HttpDelete]
+    [HttpDelete("unassign")]
     public async Task<IActionResult> Remove(AddUserClassDto dto)
     {
         var result = await _userClassService.Delete(dto);
