@@ -7,7 +7,7 @@ namespace Presentation.Controllers.API;
 [Route("api/user-classes")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Users")]
-public class UserClassesController(IUserClassService userClassService , ISeasonService seasonService ,  IClassroomService classroomService , UserManager<User> userManager , IUserTypeService userTypeService) : ControllerBase
+public class UserClassesController(IUserClassService userClassService, ISeasonService seasonService, IClassroomService classroomService, UserManager<User> userManager, IUserTypeService userTypeService) : ControllerBase
 {
     private readonly IUserClassService _userClassService = userClassService;
     private readonly ISeasonService _seasonService = seasonService;
@@ -55,10 +55,10 @@ public class UserClassesController(IUserClassService userClassService , ISeasonS
     {
         var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
         if (user == null) return BadRequest(ResultHandler.BadRequest<string>("User Is Not Exist"));
-        var classroom =await _classroomService.GetById(dto.ClassroomId); 
-         if(classroom==null) return BadRequest(ResultHandler.BadRequest<string>("Classroom Is Not Exist"));
-        var seasson = await _seasonService.GetById(dto.SeasonId); 
-        if(seasson == null) return BadRequest(ResultHandler.BadRequest<string>("Season Is Not Exist"));
+        var classroom = await _classroomService.GetById(dto.ClassroomId);
+        if (classroom == null) return BadRequest(ResultHandler.BadRequest<string>("Classroom Is Not Exist"));
+        var seasson = await _seasonService.GetById(dto.SeasonId);
+        if (seasson == null) return BadRequest(ResultHandler.BadRequest<string>("Season Is Not Exist"));
         var usertype = await _userTypeService.GetById(dto.UserTypeId);
         if (usertype == null) return BadRequest(ResultHandler.BadRequest<string>("User Type Is Not Exist"));
         return Ok(await _userClassService.Add(dto));

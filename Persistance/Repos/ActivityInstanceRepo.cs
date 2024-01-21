@@ -13,17 +13,17 @@ public class ActivityInstanceRepo : GenericRepoAsync<ActivityInstance>, IActivit
         _activities = dbContext.Set<ActivityInstance>();
     }
 
-    public async Task<ActivityInstance> AddActivityInstanceAsync(ActivityInstance activityInstance)
-    {
-   
-        var model = await _dbContext.ActivityInstances.AddAsync(activityInstance);
-        await _dbContext.SaveChangesAsync();
-        return model.Entity;
-    
-    }
     #endregion
 
     #region Handle Methods
+
+
+    public async Task<ActivityInstance> GetActivityInstanceById(int id)
+    {
+        var model = await _dbContext.ActivityInstances.Include(x => x.Activity).FirstOrDefaultAsync(x => x.Id == id);
+        if (model == null) return null;
+        return model;
+    }
     #endregion
 
 }

@@ -7,7 +7,7 @@ namespace Presentation.Controllers.API;
 [Route("api/activities")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Activities")]
-public class ActivitiesController(IActivityService activityService , ISchoolService schoolService) : ControllerBase
+public class ActivitiesController(IActivityService activityService, ISchoolService schoolService) : ControllerBase
 {
     private readonly IActivityService _activityService = activityService;
     private readonly ISchoolService _schoolService = schoolService;
@@ -44,7 +44,7 @@ public class ActivitiesController(IActivityService activityService , ISchoolServ
     [HttpPost]
     public async Task<IActionResult> Add(AddActivityDto dto)
     {
-        var school = await _schoolService.GetById(dto.SchoolId); 
+        var school = await _schoolService.GetById(dto.SchoolId);
         if (school == null) return BadRequest(ResultHandler.BadRequest<string>("School Is Not Exist"));
         return Ok(await _activityService.Add(dto));
     }
@@ -62,7 +62,7 @@ public class ActivitiesController(IActivityService activityService , ISchoolServ
         if (school == null) return BadRequest(ResultHandler.BadRequest<string>("School Is Not Exist"));
 
         var result = await _activityService.Update(dto);
-        if (result.StatusCode!=HttpStatusCode.OK)
+        if (result.StatusCode != HttpStatusCode.OK)
         {
             return BadRequest(ResultHandler.BadRequest<string>("Not Updated"));
         }

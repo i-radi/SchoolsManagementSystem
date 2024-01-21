@@ -56,7 +56,7 @@ public class ActivityService : IActivityService
         _mapper.Map(dto, modelItem);
         _ = _activitiesRepo.UpdateAsync(modelItem);
 
-        var result = _mapper.Map<GetActivityDto>(modelItem); 
+        var result = _mapper.Map<GetActivityDto>(modelItem);
         return ResultHandler.Success(result);
     }
 

@@ -1,10 +1,13 @@
-﻿using VModels.ViewModels.Attendances;
+﻿using VModels.DTOS.ActivityInstanceUsers.Queries;
+using VModels.ViewModels.Attendances;
 
 namespace Core.Services;
 
-public class AttendanceService(IActivityRepo activitysRepo, IRecordRepo recordRepo) : IAttendanceService
+public class AttendanceService(IActivityRepo activitysRepo, IActivityInstanceRepo activityInstanceRepo, IActivityInstanceUserRepo activityInstanceUserRepo, IRecordRepo recordRepo) : IAttendanceService
 {
     private readonly IActivityRepo _activityRepo = activitysRepo;
+    private readonly IActivityInstanceRepo _activityInstanceRepo = activityInstanceRepo;
+    private readonly IActivityInstanceUserRepo _activityInstanceUserRepo = activityInstanceUserRepo;
     private readonly IRecordRepo _recordRepo = recordRepo;
 
     public async Task<ActivityAttendanceViewModel?> GetByActivityId(int id)
@@ -56,6 +59,48 @@ public class AttendanceService(IActivityRepo activitysRepo, IRecordRepo recordRe
         }
 
         return result;
+    }
+
+    public async Task<Result<GetActivityInstanceWithUsersDto>> GetByActivityInstanceId(int activityInstanceId)
+    {
+
+        var activityIntance = await _activityInstanceRepo.GetActivityInstanceById(activityInstanceId);
+        if (activityIntance == null) return ResultHandler.BadRequest<GetActivityInstanceWithUsersDto>("activity instance Id is Invalid");
+        var result = new GetActivityInstanceWithUsersDto
+        {
+            ActivityId = activityIntance.ActivityId,
+            ActivityName = activityIntance.Activity.Name,
+            ActivityInstanceId = activityIntance.Id,
+            ActivityInstanceName = activityIntance.Name
+        };
+
+
+        var userClasses = await _activityRepo.GetUserClassesByActivityId(activityIntance.Activity.Id);
+        foreach (var userClass in userClasses)
+        {
+            var userAttendance = new UserAttendanceDto
+            {
+                ClassId = userClass.Classroom!.Id,
+                ClassName = userClass.Classroom.Name,
+                UserId = userClass.User!.Id,
+                UserName = userClass.User.Name,
+                UserTypeId = userClass.UserTypeId,
+                UserType = userClass.UserType!.Name
+            };
+
+            result.Users.Add(userAttendance);
+        }
+        if (result.Users == null || !result.Users.Any())
+        {
+            return ResultHandler.NotFound<GetActivityInstanceWithUsersDto>("Users Is Not Found ");
+        }
+        var userIds = await _activityInstanceUserRepo.GetUserIdsByActivityInstanceId(activityInstanceId);
+
+        foreach (var user in result.Users)
+        {
+            user.IsAttend = userIds.Contains(user.UserId);
+        }
+        return ResultHandler.Success(result);
     }
 
     public async Task<RecordAttendanceViewModel?> GetByRecordId(int id)

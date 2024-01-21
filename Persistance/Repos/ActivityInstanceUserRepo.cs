@@ -1,4 +1,5 @@
-﻿namespace Persistance.Repos;
+﻿
+namespace Persistance.Repos;
 
 public class ActivityInstanceUserRepo : GenericRepoAsync<ActivityInstanceUser>, IActivityInstanceUserRepo
 {
@@ -11,9 +12,20 @@ public class ActivityInstanceUserRepo : GenericRepoAsync<ActivityInstanceUser>, 
     {
         _activities = dbContext.Set<ActivityInstanceUser>();
     }
+
+
     #endregion
 
     #region Handle Methods
+    public async Task<List<int>> GetUserIdsByActivityInstanceId(int acivityInstanceId)
+    {
+
+        var userIds = await _activities.AsNoTracking().Where(x => x.ActivityInstanceId == acivityInstanceId)
+          .Select(x => x.UserId)
+          .ToListAsync();
+
+        return userIds;
+    }
     #endregion
 
 }

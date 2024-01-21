@@ -1,6 +1,4 @@
-﻿using Models.Entities;
-
-namespace Models.Results;
+﻿namespace Models.Results;
 
 public class JwtAuthResult
 {

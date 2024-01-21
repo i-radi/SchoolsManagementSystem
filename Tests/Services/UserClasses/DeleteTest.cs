@@ -40,9 +40,9 @@ public class DeleteTest
     public async Task Delete_InValidItem_ReturnsNotFound(int id)
     {
         //Arrange
-        var items = new List<UserClass>(); 
+        var items = new List<UserClass>();
         _userClassRepoMock.Setup(x => x.GetTableNoTracking()).Returns(items.AsQueryable());
-        var dto = new AddUserClassDto();    
+        var dto = new AddUserClassDto();
 
         //Act
         var result = await _userClassService.Delete(dto);

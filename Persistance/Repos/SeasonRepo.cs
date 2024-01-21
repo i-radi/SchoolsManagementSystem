@@ -1,6 +1,4 @@
-﻿using VModels.DTOS;
-
-namespace Persistance.Repos;
+﻿namespace Persistance.Repos;
 
 public class SeasonRepo : GenericRepoAsync<Season>, ISeasonRepo
 {

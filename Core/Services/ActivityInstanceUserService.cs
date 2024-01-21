@@ -21,6 +21,8 @@ public class ActivityInstanceUserService : IActivityInstanceUserService
         return ResultHandler.Success(result);
     }
 
+
+
     public async Task<Result<GetActivityInstanceUserDto?>> GetById(int id)
     {
         var modelItem = await _activityInstanceUsersRepo.GetByIdAsync(id);
@@ -52,10 +54,13 @@ public class ActivityInstanceUserService : IActivityInstanceUserService
         return ResultHandler.Success(true);
     }
 
-    public async Task<Result<bool>> Delete(int id)
+    public async Task<Result<bool>> Delete(int activityinstanceid, int userid)
     {
 
-        var dbModel = await _activityInstanceUsersRepo.GetByIdAsync(id);
+        var dbModel = await _activityInstanceUsersRepo
+           .GetTableNoTracking()
+           .FirstOrDefaultAsync(x => x.UserId == userid && x.ActivityInstanceId == activityinstanceid);
+
 
         if (dbModel == null)
             return ResultHandler.NotFound<bool>();

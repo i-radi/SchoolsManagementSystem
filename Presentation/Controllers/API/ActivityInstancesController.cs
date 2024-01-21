@@ -7,7 +7,7 @@ namespace Presentation.Controllers.API;
 [ApiController]
 [ApiExplorerSettings(GroupName = "Activities")]
 public class ActivityInstancesController(
-    IActivityInstanceService activityInstanceService ,
+    IActivityInstanceService activityInstanceService,
     IActivityService activityService) : ControllerBase
 {
     private readonly IActivityInstanceService _activityInstanceService = activityInstanceService;
@@ -43,8 +43,8 @@ public class ActivityInstancesController(
     [HttpPost]
     public async Task<IActionResult> Add(AddActivityInstanceDto dto)
     {
-        var activity =await _activityService.GetById(dto.ActivityId);
-         if(activity is null)  return BadRequest(ResultHandler.BadRequest<string>("Activity Is Not Exist"));
+        var activity = await _activityService.GetById(dto.ActivityId);
+        if (activity is null) return BadRequest(ResultHandler.BadRequest<string>("Activity Is Not Exist"));
         return Ok(await _activityInstanceService.Add(dto));
     }
 
