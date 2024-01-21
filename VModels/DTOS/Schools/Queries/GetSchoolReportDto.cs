@@ -20,7 +20,7 @@ public class GradesDto
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
     public int Order { get; set; }
-    public List<ClassroomDto>? Classrooms { get; set; }
+    public List<ClassroomDto> Classrooms = new List<ClassroomDto>();
 }
 public class ClassroomDto
 {

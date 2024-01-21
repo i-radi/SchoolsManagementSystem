@@ -32,28 +32,6 @@ public static class SerilogRegisteration
         var emailSettings = new EmailSettings();
         configuration.GetSection(nameof(emailSettings)).Bind(emailSettings);
 
-        #region Senk Email
-        //if (emailSettings.SendEmails)
-        //{
-        //    loggerConfiguration = loggerConfiguration
-        //            .WriteTo.Email(new EmailConnectionInfo
-        //            {
-        //                FromEmail = emailSettings.FromEmail,
-        //                ToEmail = emailSettings.ToEmails,
-        //                MailServer = emailSettings.SmtpServer,
-        //                EnableSsl = emailSettings.EnableSsl,
-        //                Port = emailSettings.Port,
-        //                NetworkCredentials = new System.Net.NetworkCredential
-        //                {
-        //                    UserName = emailSettings.UserName,
-        //                    Password = emailSettings.Password
-        //                },
-        //                IsBodyHtml = false,
-        //                EmailSubject = "Error Logs SMS",
-
-        //            }, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error);
-        //}
-        #endregion
         loggerConfiguration = loggerConfiguration.ReadFrom.Configuration(configuration);
 
         Log.Logger = loggerConfiguration.CreateLogger();

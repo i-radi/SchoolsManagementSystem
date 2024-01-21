@@ -2,7 +2,7 @@
 
 public interface IUserTypeService
 {
-    Result<PaginatedList<GetUserTypeDto>> GetAll(int pageNumber, int pageSize);
+    Result<List<GetUserTypeDto>> GetAll();
     Task<Result<GetUserTypeDto?>> GetById(int id);
     Task<Result<GetUserTypeDto>> Add(AddUserTypeDto model);
     Task<Result<bool>> Update(UpdateUserTypeDto model);

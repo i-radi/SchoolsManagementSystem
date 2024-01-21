@@ -1,4 +1,6 @@
-﻿namespace Presentation.Controllers.API;
+﻿using Swashbuckle.AspNetCore.Annotations;
+
+namespace Presentation.Controllers.API;
 
 [Authorize]
 [Route("api/schools")]
@@ -48,12 +50,13 @@ public class SchoolsController(ISchoolService schoolService, ISeasonService seas
         return Ok(_schoolService.GetAll(pageNumber, pageSize));
     }
 
-
+    [ApiExplorerSettings(GroupName = "V2")]
+    [SwaggerOperation(Tags = new[] { "Schools" })]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
         var dto = await _schoolService.GetById(id);
-        if (dto.Data is null)
+        if (dto is null)
             return BadRequest(ResultHandler.BadRequest<string>("Not Found School"));
         return Ok(dto);
     }

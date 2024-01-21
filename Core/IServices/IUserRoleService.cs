@@ -6,6 +6,6 @@ public interface IUserRoleService
     Task<Result<GetUserRoleDto?>> GetById(int id);
     Task<Result<GetUserRoleDto>> Add(AddUserRoleDto model);
     Task<Result<bool>> Update(UpdateUserRoleDto model);
-    Task<Result<bool>> Delete(AddUserRoleDto model);
+    Task<Result<bool>> Delete(int userRoleId);
     Task<Result<bool>> IsExists(AddUserRoleDto model);
 }

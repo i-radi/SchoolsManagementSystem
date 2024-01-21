@@ -11,12 +11,37 @@ public class OrganizationService : IOrganizationService
         _mapper = mapper;
     }
 
-    public Result<PaginatedList<GetOrganizationDto>> GetAll(int pageNumber, int pageSize)
+    public async Task<Result<List<GetOrganizationDto>>> GetAllWithSchools()
     {
-        var modelItems = _organizationsRepo.GetTableNoTracking();
-        var result = PaginatedList<GetOrganizationDto>.Create(_mapper.Map<List<GetOrganizationDto>>(modelItems), pageNumber, pageSize);
+        var modelItems = await _organizationsRepo
+            .GetTableNoTracking()
+            .Include(s => s.Schools)
+            .ToListAsync();
 
-        return ResultHandler.Success(result);
+        var orgs = new List<GetOrganizationDto>();
+
+        if (modelItems != null && modelItems.Any())
+        {
+            foreach (var organization in modelItems)
+            {
+                var orgDto = new GetOrganizationDto
+                {
+                    Name = organization.Name,
+                    PicturePath = organization.PicturePath,
+                    Schools = organization.Schools.Select(school => new GetSchoolDto
+                    {
+                        Name = school.Name,
+                        PicturePath = school.PicturePath,
+                        Description = school.Description,
+                        Order = school.Order
+                    }).ToList()
+                };
+
+                orgs.Add(orgDto);
+            }
+        }
+
+        return ResultHandler.Success(orgs);
     }
 
     public async Task<Result<GetOrganizationDto?>> GetById(int id)

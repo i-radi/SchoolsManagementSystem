@@ -6,5 +6,5 @@ public interface IUserClassService
     Task<Result<GetUserClassDto?>> GetById(int id);
     Task<Result<GetUserClassDto>> Add(AddUserClassDto model);
     Task<Result<bool>> Update(UpdateUserClassDto model);
-    Task<Result<bool>> Delete(int id);
+    Task<Result<bool>> Delete(AddUserClassDto dto);
 }

@@ -6,5 +6,5 @@ public interface IActivityInstanceUserService
     Task<Result<GetActivityInstanceUserDto?>> GetById(int id);
     Task<Result<GetActivityInstanceUserDto>> Add(AddActivityInstanceUserDto model);
     Task<Result<bool>> Update(UpdateActivityInstanceUserDto model);
-    Task<Result<bool>> Delete(int id);
+    Task<Result<bool>> Delete(int activityinstanceid, int userid);
 }

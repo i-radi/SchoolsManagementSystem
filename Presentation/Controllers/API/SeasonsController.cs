@@ -1,4 +1,6 @@
-﻿namespace Presentation.Controllers.API;
+﻿using Swashbuckle.AspNetCore.Annotations;
+
+namespace Presentation.Controllers.API;
 
 [Authorize]
 [Route("api/seasons")]
@@ -13,6 +15,15 @@ public class SeasonsController(ISeasonService seasonService) : ControllerBase
     {
         var result = _seasonService.GetAll(pageNumber, pageSize);
         Response.AddPaginationHeader(result.Data);
+        return Ok(result);
+    }
+
+    [ApiExplorerSettings(GroupName = "V2")]
+    [SwaggerOperation(Tags = new[] { "Seasons" })]
+    [HttpGet("{schoolid}")]
+    public async Task<ActionResult<List<GetSeasonDto>>> GetAllBySchoolId(int schoolid)
+    {
+        var result = await _seasonService.GetSeasonsBySchoolId(schoolid);
         return Ok(result);
     }
 

@@ -5,9 +5,13 @@
 [ApiController]
 [ApiExplorerSettings(GroupName = "Activities")]
 public class ActivityInstanceUsersController(
-    IActivityInstanceUserService activityInstanceUserService) : ControllerBase
+    IActivityInstanceUserService activityInstanceUserService,
+    UserManager<User> userManager,
+      IActivityInstanceService activityInstanceService) : ControllerBase
 {
     private readonly IActivityInstanceUserService _activityInstanceUserService = activityInstanceUserService;
+    private readonly UserManager<User> _userManager = userManager;
+    private readonly IActivityInstanceService _activityInstanceService = activityInstanceService;
 
     [HttpGet]
     public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
@@ -26,19 +30,29 @@ public class ActivityInstanceUsersController(
         return Ok(dto);
     }
 
-    [HttpPost]
+
+    [HttpPost()]
     public async Task<IActionResult> Add(AddActivityInstanceUserDto dto)
     {
+        var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
+        if (user == null) return BadRequest(ResultHandler.BadRequest<string>("User Is Not Exist"));
+        var activityIntance = _activityInstanceService.GetById(dto.ActivityInstanceId);
+        if (activityIntance == null) return BadRequest(ResultHandler.BadRequest<string>("Activity Instance  Is Not Exist"));
+
         return Ok(await _activityInstanceUserService.Add(dto));
     }
 
-    [HttpPut("{id}")]
+
+    [HttpPut("{activityinstanceuserid}")]
     public async Task<IActionResult> Update(int id, UpdateActivityInstanceUserDto dto)
     {
-        if (id != dto.Id)
-        {
-            return BadRequest(ResultHandler.BadRequest<string>("Id not matched"));
-        }
+        if (id != dto.Id) return BadRequest(ResultHandler.BadRequest<string>("Id not matched"));
+
+        var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
+        if (user == null) return BadRequest(ResultHandler.BadRequest<string>("User Is Not Exist"));
+        var activityIntance = _activityInstanceService.GetById(dto.ActivityInstanceId);
+        if (activityIntance == null) return BadRequest(ResultHandler.BadRequest<string>("Activity Instance  Is Not Exist"));
+
         var result = await _activityInstanceUserService.Update(dto);
         if (!result.Data)
         {
@@ -48,10 +62,16 @@ public class ActivityInstanceUsersController(
         return Ok(result);
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Remove(int id)
+
+    [HttpDelete()]
+    public async Task<IActionResult> Remove(int activityinstanceid, int userid)
     {
-        var result = await _activityInstanceUserService.Delete(id);
+        var user = await _userManager.FindByIdAsync(userid.ToString());
+        if (user == null) return BadRequest(ResultHandler.BadRequest<string>("User Is Not Exist"));
+        var activityIntance = _activityInstanceService.GetById(activityinstanceid);
+        if (activityIntance == null) return BadRequest(ResultHandler.BadRequest<string>("Activity Instance  Is Not Exist"));
+
+        var result = await _activityInstanceUserService.Delete(userid, activityinstanceid);
         if (!result.Data)
         {
             return BadRequest(ResultHandler.BadRequest<string>("Not Deleted"));

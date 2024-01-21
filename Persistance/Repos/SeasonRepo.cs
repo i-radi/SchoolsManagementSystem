@@ -11,6 +11,7 @@ public class SeasonRepo : GenericRepoAsync<Season>, ISeasonRepo
     {
         seasons = dbContext.Set<Season>();
     }
+
     #endregion
 
     #region Handle Methods

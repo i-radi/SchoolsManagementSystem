@@ -57,6 +57,14 @@ public static class ServiceRegisteration
         #region Swagger Gen
         services.AddSwaggerGen(c =>
         {
+            c.SwaggerDoc("V2", new OpenApiInfo
+            {
+                Version = "v2",
+                Title = "Version 2",
+                Description = "All APIs version 2 , .net8",
+
+            });
+
             c.SwaggerDoc("Identity", new OpenApiInfo
             {
                 Version = "v1",

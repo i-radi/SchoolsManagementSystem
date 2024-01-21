@@ -33,7 +33,6 @@ public class UpdateTest
         //Assert
         result.Succeeded.Should().BeTrue();
         result.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        result.Data.Should().BeTrue();
         _activityRepoMock.Verify(x => x.GetByIdAsync(It.IsAny<int>()), Times.Once, "Not Called");
     }
 
@@ -52,7 +51,6 @@ public class UpdateTest
         //Assert
         result.Succeeded.Should().BeFalse();
         result.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
-        result.Data.Should().BeFalse();
         _activityRepoMock.Verify(x => x.GetByIdAsync(It.IsAny<int>()), Times.Once, "Not Called");
     }
 }

@@ -1,4 +1,5 @@
-﻿namespace Persistance.Repos;
+﻿
+namespace Persistance.Repos;
 
 public class ActivityInstanceRepo : GenericRepoAsync<ActivityInstance>, IActivityInstanceRepo
 {
@@ -11,9 +12,18 @@ public class ActivityInstanceRepo : GenericRepoAsync<ActivityInstance>, IActivit
     {
         _activities = dbContext.Set<ActivityInstance>();
     }
+
     #endregion
 
     #region Handle Methods
+
+
+    public async Task<ActivityInstance> GetActivityInstanceById(int id)
+    {
+        var model = await _dbContext.ActivityInstances.Include(x => x.Activity).FirstOrDefaultAsync(x => x.Id == id);
+        if (model == null) return null;
+        return model;
+    }
     #endregion
 
 }
