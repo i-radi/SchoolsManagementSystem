@@ -30,7 +30,7 @@ public class ActivitiesController(IActivityService activityService, ISchoolServi
         return Ok(result);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("byId/{id}")]
     public async Task<IActionResult> GetById(int id)
     {
         var dto = await _activityService.GetById(id);

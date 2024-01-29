@@ -1,4 +1,4 @@
-﻿@model ActivityInstanceUserViewModel
+﻿@model ActivityInstanceUserDataViewModel
 @{
     ViewData["Title"] = "Create";
 }
@@ -15,17 +15,34 @@
                 <label asp-for="ActivityInstanceId" class="control-label">ActivityInstance</label>
                 <select asp-for="ActivityInstanceId" class ="form-control" asp-items="ViewBag.ActivityInstanceId"></select>
             </div>
+            <table class="table table-striped">
+
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.CheckBoxFor(m => m.IsSelectAll, new { id = "selectAllCheckbox", onchange = "this.form.submit();" })
+
+                        </th>
+
+                        <th>UserName</th>
+                        <th>Note</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.activityInstanceUsersDataViewModels.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Html.CheckBoxFor(m => m.activityInstanceUsersDataViewModels[i].IsSelected, new { @class = "rowCheckbox" })
+                                @Html.HiddenFor(m => m.activityInstanceUsersDataViewModels[i].UserId)
+                            </td>
+                            <td>@Model.activityInstanceUsersDataViewModels[i].UserName</td>
+                            <td><input type="text" asp-for="@Model.activityInstanceUsersDataViewModels[i].Note"></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
             <div class="form-group">
-                <label asp-for="UserId" class="control-label">User</label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Note" class="control-label"></label>
-                <input asp-for="Note" class="form-control" />
-                <span asp-validation-for="Note" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedDate" class="control-label"></label>
                 <input asp-for="CreatedDate" class="form-control" id="createdDateInput" />
             </div>
             <div class="form-group">
@@ -41,4 +58,7 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+
 }
+

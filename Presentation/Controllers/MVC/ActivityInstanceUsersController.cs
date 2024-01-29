@@ -1,4 +1,6 @@
-﻿namespace Presentation.Controllers.MVC
+﻿using VModels.ViewModels;
+
+namespace Presentation.Controllers.MVC
 {
     public class ActivityInstanceUsersController(
         IActivityInstanceUserRepo activityInstanceUserRepo,
@@ -43,12 +45,42 @@
             return View(activityInstanceUserVM);
         }
 
+        //public async Task<IActionResult> Create(int instanceId)
+        //{
+        //    var activityInstance = await _context.ActivityInstances
+        //        .Where(a => a.Id == instanceId)
+        //        .ToListAsync();
+        //    ViewData["ActivityInstanceId"] = new SelectList(activityInstance, "Id", "Name");
+
+
+
+        //    var currentUserIds = await _activityInstanceUserRepo
+        //        .GetTableNoTracking()
+        //        .Where(a => a.ActivityInstanceId == instanceId)
+        //        .Select(a => a.UserId).ToListAsync();
+        //    var orgId = await _context.ActivityInstances
+        //        .Where(a => a.Id == instanceId)
+        //        .Include(a => a.Activity)
+        //        .ThenInclude(a => a!.School)
+        //        .Select(a => a.Activity!.School!.OrganizationId)
+        //        .FirstOrDefaultAsync();
+
+        //    var allowedUsers = await _context.User
+        //        .Include(u => u.UserClasses)
+        //        .Where(u => (!currentUserIds.Contains(u.Id))
+        //        && u.UserOrganizations.Any())
+        //        .ToListAsync();
+        //    ViewData["UserId"] = new SelectList(allowedUsers, "Id", "Name");
+        //    return View(new ActivityInstanceUserViewModel());
+        //}
         public async Task<IActionResult> Create(int instanceId)
         {
             var activityInstance = await _context.ActivityInstances
                 .Where(a => a.Id == instanceId)
                 .ToListAsync();
             ViewData["ActivityInstanceId"] = new SelectList(activityInstance, "Id", "Name");
+
+
 
             var currentUserIds = await _activityInstanceUserRepo
                 .GetTableNoTracking()
@@ -63,28 +95,70 @@
 
             var allowedUsers = await _context.User
                 .Include(u => u.UserClasses)
-                .Where(u => (!currentUserIds.Contains(u.Id)))
+                .Where(u => (!currentUserIds.Contains(u.Id))
+                && u.UserOrganizations.Any())
                 .ToListAsync();
-            ViewData["UserId"] = new SelectList(allowedUsers, "Id", "Name");
-            return View(new ActivityInstanceUserViewModel());
+            ActivityInstanceUserDataViewModel activityInstanceUserData = new ActivityInstanceUserDataViewModel();
+            foreach (var item in allowedUsers)
+            {
+
+                activityInstanceUserData.activityInstanceUsersDataViewModels
+                 .Add(new ActivityInstanceUsersDataViewMode() { UserId = item.Id , UserName =item.UserName});
+
+                                                                                                                                                                                                                                                                                                            
+            }
+            return View(activityInstanceUserData);
         }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create(ActivityInstanceUserViewModel activityInstanceUserVM)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        // foreach in userIds => insId userid note 
+        //        var activityInstanceUser = _mapper.Map<ActivityInstanceUser>(activityInstanceUserVM);
+        //        _context.Add(activityInstanceUser);
+        //        await _context.SaveChangesAsync();  
+        //        return RedirectToAction(nameof(Index), new { instanceId = activityInstanceUserVM.ActivityInstanceId });
+        //    }
+        //    ViewData["ActivityInstanceId"] = new SelectList(_context.ActivityInstances, "Id", "Name", activityInstanceUserVM.ActivityInstanceId);
+        //    ViewData["UserId"] = new SelectList(_context.User, "Id", "Name", activityInstanceUserVM.UserId);
+        //    return View(activityInstanceUserVM);
+        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ActivityInstanceUserViewModel activityInstanceUserVM)
+        public async Task<IActionResult> Create(ActivityInstanceUserDataViewModel activityInstanceUserVM)
         {
-            if (ModelState.IsValid)
-            {
-                var activityInstanceUser = _mapper.Map<ActivityInstanceUser>(activityInstanceUserVM);
-                _context.Add(activityInstanceUser);
+                     
+                List<ActivityInstanceUser> activityInstanceUsers = new List<ActivityInstanceUser>();
+                  if(activityInstanceUserVM.IsSelectAll)
+                    {
+                        foreach (var item in activityInstanceUserVM.activityInstanceUsersDataViewModels)
+                        {
+                            item.IsSelected = true;
+                        }
+
+                    }  
+            foreach (var item in activityInstanceUserVM.activityInstanceUsersDataViewModels)
+                {
+                    if(item.IsSelected)
+                    {
+                        activityInstanceUsers.Add(new ActivityInstanceUser()
+                        { 
+                             CreatedDate = DateTime.Now, 
+                             ActivityInstanceId = activityInstanceUserVM.ActivityInstanceId , 
+                             Note = item.Note , 
+                             UserId = item.UserId 
+                              
+                        });
+                    };
+                }
+                _context.AddRange(activityInstanceUsers);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index), new { instanceId = activityInstanceUserVM.ActivityInstanceId });
-            }
-            ViewData["ActivityInstanceId"] = new SelectList(_context.ActivityInstances, "Id", "Name", activityInstanceUserVM.ActivityInstanceId);
-            ViewData["UserId"] = new SelectList(_context.User, "Id", "Name", activityInstanceUserVM.UserId);
-            return View(activityInstanceUserVM);
+            
         }
-
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.ActivityInstanceUsers == null)
